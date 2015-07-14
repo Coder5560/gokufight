@@ -250,91 +250,93 @@ void GameHud::buildComponent(){
 	this->addChild(menu, 1);
 
 }
+void GameHud::setCallBack(const std::function<void(GameHud::EventType, GameHud::TouchType)> &callBack){
+	this->callBack = callBack;
+}
 void GameHud::notifyEvent(){
-	std::string str = "No Input";
+	if (callBack){
 
-	if (touchPadType == TouchType::NONE && skillType == TouchType::NONE){
-		str = "NO Input";
-	}
-	else if (touchPadType == TouchType::NONE && skillType == TouchType::A){
-		str = "A";
-	}
-	else if (touchPadType == TouchType::NONE && skillType == TouchType::B){
-		str = "B";
-	}
-	else if (touchPadType == TouchType::NONE && skillType == TouchType::X){
-		str = "X";
-	}
-	else if (touchPadType == TouchType::NONE && skillType == TouchType::Y){
-		str = "Y";
-	}
-	else if (touchPadType == TouchType::LEFT && skillType == TouchType::A){
-		str = "A_LEFT";
-	}
-	else if (touchPadType == TouchType::LEFT && skillType == TouchType::B){
-		str = "B_LEFT";
-	}
-	else if (touchPadType == TouchType::LEFT && skillType == TouchType::X){
-		str = "X_LEFT";
-	}
-	else if (touchPadType == TouchType::LEFT && skillType == TouchType::Y){
-		str = "Y_LEFT";
-	}
-	else if (touchPadType == TouchType::LEFT && skillType == TouchType::NONE){
-		str = "LEFT";
-	}
-	else if (touchPadType == TouchType::RIGHT && skillType == TouchType::A){
-		str = "A_RIGHT";
-	}
-	else if (touchPadType == TouchType::RIGHT && skillType == TouchType::B){
-		str = "B_RIGHT";
-	}
-	else if (touchPadType == TouchType::RIGHT && skillType == TouchType::X){
-		str = "X_RIGHT";
-	}
-	else if (touchPadType == TouchType::RIGHT && skillType == TouchType::Y){
-		str = "Y_RIGHT";
-	}
-	else if (touchPadType == TouchType::RIGHT && skillType == TouchType::NONE){
-		str = "RIGHT";
-	}
-	else if (touchPadType == TouchType::UP && skillType == TouchType::A){
-		str = "A_UP";
-	}
-	else if (touchPadType == TouchType::UP && skillType == TouchType::B){
-		str = "B_UP";
-	}
-	else if (touchPadType == TouchType::UP && skillType == TouchType::X){
-		str = "X_UP";
-	}
-	else if (touchPadType == TouchType::UP && skillType == TouchType::Y){
-		str = "Y_UP";
-	}
-	else if (touchPadType == TouchType::UP && skillType == TouchType::NONE){
-		str = "UP";
-	}
-	else if (touchPadType == TouchType::DOWN && skillType == TouchType::A){
-		str = "A_DOWN";
-	}
-	else if (touchPadType == TouchType::DOWN && skillType == TouchType::B){
-		str = "B_DOWN";
-	}
-	else if (touchPadType == TouchType::DOWN && skillType == TouchType::X){
-		str = "X_DOWN";
-	}
-	else if (touchPadType == TouchType::DOWN && skillType == TouchType::Y){
-		str = "Y_DOWN";
-	}
-	else if (touchPadType == TouchType::DOWN && skillType == TouchType::NONE){
-		str = "DOWN";
-	}
+		std::string str = "No Input";
 
+		if (touchPadType == TouchType::NONE && skillType == TouchType::NONE){
+			str = "NO Input";
+		}
+		else if (touchPadType == TouchType::NONE && skillType == TouchType::A){
+			str = "A";
+		}
+		else if (touchPadType == TouchType::NONE && skillType == TouchType::B){
+			str = "B";
+		}
+		else if (touchPadType == TouchType::NONE && skillType == TouchType::X){
+			str = "X";
+		}
+		else if (touchPadType == TouchType::NONE && skillType == TouchType::Y){
+			str = "Y";
+		}
+		else if (touchPadType == TouchType::LEFT && skillType == TouchType::A){
+			str = "A_LEFT";
+		}
+		else if (touchPadType == TouchType::LEFT && skillType == TouchType::B){
+			str = "B_LEFT";
+		}
+		else if (touchPadType == TouchType::LEFT && skillType == TouchType::X){
+			str = "X_LEFT";
+		}
+		else if (touchPadType == TouchType::LEFT && skillType == TouchType::Y){
+			str = "Y_LEFT";
+		}
+		else if (touchPadType == TouchType::LEFT && skillType == TouchType::NONE){
+			str = "LEFT";
+		}
+		else if (touchPadType == TouchType::RIGHT && skillType == TouchType::A){
+			str = "A_RIGHT";
+		}
+		else if (touchPadType == TouchType::RIGHT && skillType == TouchType::B){
+			str = "B_RIGHT";
+		}
+		else if (touchPadType == TouchType::RIGHT && skillType == TouchType::X){
+			str = "X_RIGHT";
+		}
+		else if (touchPadType == TouchType::RIGHT && skillType == TouchType::Y){
+			str = "Y_RIGHT";
+		}
+		else if (touchPadType == TouchType::RIGHT && skillType == TouchType::NONE){
+			str = "RIGHT";
+		}
+		else if (touchPadType == TouchType::UP && skillType == TouchType::A){
+			str = "A_UP";
+		}
+		else if (touchPadType == TouchType::UP && skillType == TouchType::B){
+			str = "B_UP";
+		}
+		else if (touchPadType == TouchType::UP && skillType == TouchType::X){
+			str = "X_UP";
+		}
+		else if (touchPadType == TouchType::UP && skillType == TouchType::Y){
+			str = "Y_UP";
+		}
+		else if (touchPadType == TouchType::UP && skillType == TouchType::NONE){
+			str = "UP";
+		}
+		else if (touchPadType == TouchType::DOWN && skillType == TouchType::A){
+			str = "A_DOWN";
+		}
+		else if (touchPadType == TouchType::DOWN && skillType == TouchType::B){
+			str = "B_DOWN";
+		}
+		else if (touchPadType == TouchType::DOWN && skillType == TouchType::X){
+			str = "X_DOWN";
+		}
+		else if (touchPadType == TouchType::DOWN && skillType == TouchType::Y){
+			str = "Y_DOWN";
+		}
+		else if (touchPadType == TouchType::DOWN && skillType == TouchType::NONE){
+			str = "DOWN";
+		}
+		labelNotify->setString(str);
 
-
-
-
-
-	labelNotify->setString(str);
+		callBack(EventType::BEGIN, TouchType::UP);
+	}
 }
 
 void GameHud::setState(HudState state){

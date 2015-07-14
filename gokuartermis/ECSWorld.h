@@ -15,10 +15,13 @@ public:
 	void setSprite(Sprite* sprite);
 	void processWorld(float delta);
 	artemis::EntitySystem* setSystem(artemis::EntitySystem* system);
+
+	InputSystem* inputSystem;
 private:
 
 	ECSWorld();
 	~ECSWorld();
+	
 	artemis::Entity* goku;
 	Sprite* sprite;
 protected:

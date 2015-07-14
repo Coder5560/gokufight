@@ -35,18 +35,19 @@ public:
 
 		A,B,X,Y
 	};
-
+	
 	GameHud(Size visibleSize);
 	~GameHud();
+
 	void buildComponent();
-
 	void notifyEvent();
-
+	void setCallBack(const std::function<void(GameHud::EventType, GameHud::TouchType)> &callBack);
 	void setState(HudState state);
 	HudState getState();
 
 
 protected:
+	std::function<void(GameHud::EventType, GameHud::TouchType)> callBack;
 	MenuItemLabel* labelNotify;
 	MenuItemImage* knob;
 	MenuItemImage* background;

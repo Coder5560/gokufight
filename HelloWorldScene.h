@@ -22,6 +22,7 @@ public:
 
 	
 protected:
+	
 	GameHud* gameHud;
 	artemis::World* world;
 	TestECS* testEcs;

@@ -3,14 +3,10 @@
 
 USING_NS_CC;
 
-Components::Components()
-{
-}
+Components::Components(){}
 
 
-Components::~Components()
-{
-}
+Components::~Components(){}
 
 PosComponent::PosComponent(float posX, float posY){
 	this->x = posX;
@@ -18,23 +14,32 @@ PosComponent::PosComponent(float posX, float posY){
 }
 
 GravityComponent::GravityComponent(){
+	DEFAULT_GRAVITY_Y = -9.8f;
 	enable = true;
 	gravityX = 0;
 	this->gravityY = DEFAULT_GRAVITY_Y;
 
 }
 GravityComponent::GravityComponent(float gravityY){
+	DEFAULT_GRAVITY_Y = -9.8f;
 	enable = true;
 	gravityX = 0;
 	this->gravityY = gravityY;
 
 }
+PhysicComponent::PhysicComponent(){
+	vx = 0;
+	vy = 0;
+	vr = 0;
+	friction = 6;
+	bounce = .5;
+}
 PhysicComponent::PhysicComponent(float vX, float vY){
 	this->vx = vX;
 	this->vy = vY;
 	vr = 0;
-	friction = 4;
-	bounce = 0;
+	friction = 6;
+	bounce = .5;
 }
 WallSensorComponent::WallSensorComponent(){
 	onFloor = false;
@@ -44,6 +49,12 @@ bool WallSensorComponent::onAnysurface(){
 }
 
 
+BoundComponent::BoundComponent(float width, float height){
+	this->x1 = 0;
+	this->x2 = width;
+	this->y1 = 0;
+	this->y2 = height;
+}
 BoundComponent::BoundComponent(float x1, float y1, float x2, float y2){
 	this->x1 = x1;
 	this->x2 = x2;
@@ -62,5 +73,8 @@ float BoundComponent::getCenterX(){
 float BoundComponent::getCenterY(){
 	return y1 + (y2 - y1) / 2;
 }
+
+
+GameStateComponent::GameStateComponent() : gameState(GameState::PREPARE) {}
 
 
