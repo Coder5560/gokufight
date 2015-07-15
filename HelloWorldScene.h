@@ -4,7 +4,8 @@
 #include "TestECS.h"
 #include "cocos2d.h"
 #include "GameHud.h"
-
+#include "spine/spine.h"
+#include <spine/spine-cocos2dx.h>
 
 class HelloWorld : public cocos2d::Layer
 {
@@ -22,7 +23,7 @@ public:
 
 	
 protected:
-	
+	spine::SkeletonAnimation* skeletonNode;
 	GameHud* gameHud;
 	artemis::World* world;
 	TestECS* testEcs;

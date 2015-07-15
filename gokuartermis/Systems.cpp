@@ -1,6 +1,6 @@
 #include "Systems.h"
 #include "gokuartermis/Components.h"
-
+#include "RenderLayer.h"
 Systems::Systems()
 {
 }
@@ -55,7 +55,7 @@ void PhysicSystem::processEntity(artemis::Entity &e){
 void PhysicSystem::push(artemis::Entity &entity, float rotation, float force){
 	PhysicComponent* physic = static_cast<PhysicComponent*>(physicMapper.get(entity));
 	if (physic){
-		float radianAngle = rotation*M_PI/180;
+		float radianAngle = rotation*M_PI / 180;
 		float plusVx = force*cos(radianAngle);
 		float plusVy = force*sin(radianAngle);
 		physic->vx += plusVx;
@@ -71,11 +71,11 @@ void PhysicSystem::stopPhysic(artemis::Entity& e){
 	}
 }
 
-void PhysicSystem::clampVelocity(artemis::Entity& e,float minSpeed, float maxSpeed){
+void PhysicSystem::clampVelocity(artemis::Entity& e, float minSpeed, float maxSpeed){
 	PhysicComponent* physic = static_cast<PhysicComponent*>(physicMapper.get(e));
 	if (physic){
 		Vec2 vTmp = Vec2(physic->vx, physic->vy);
-		float length2= vTmp.x*vTmp.x + vTmp.y*vTmp.y;
+		float length2 = vTmp.x*vTmp.x + vTmp.y*vTmp.y;
 		float angle = vTmp.getAngle();
 		float max2 = maxSpeed*maxSpeed;
 		float min2 = minSpeed*minSpeed;
@@ -88,7 +88,7 @@ void PhysicSystem::clampVelocity(artemis::Entity& e,float minSpeed, float maxSpe
 		if (length2 < min2){
 			physic->vx = minSpeed*cos(angle);
 			physic->vy = minSpeed*sin(angle);
-		}	
+		}
 	}
 }
 
@@ -168,7 +168,7 @@ void AfterPhysicSystem::processEntity(artemis::Entity &e){
 	PhysicComponent* physic = (PhysicComponent*)(pym.get(e));
 	PosComponent* position = (PosComponent*)(psm.get(e));
 	WallSensorComponent* wallSensor = (WallSensorComponent*)(wm.get(e));
-	
+
 	position->x += physic->vx*world->getDelta();
 	position->y += physic->vy*world->getDelta();
 
@@ -178,20 +178,24 @@ void AfterPhysicSystem::processEntity(artemis::Entity &e){
 
 
 	if (physic->friction != 0){
-		float adjustedFriction = physic->friction * (wallSensor->onFloor ? 0.25 : 1);
-		if (abs(physic->vx) > 0.005){
-			physic->vx = physic->vx - (physic->vx*world->getDelta()*adjustedFriction);
+		float adjustedFriction = physic->friction * (wallSensor->onFloor ? .5 : 1);
+		if (abs(physic->vx) > 2){
+			if (physic->isMoving){
+				//do nothing 
+			}
+			else{ physic->vx = physic->vx - (physic->vx*world->getDelta()*adjustedFriction); }
+
 		}
 		else{
 			physic->vx = 0;
 		}
-		if (abs(physic->vy) > 0.005){
+		if (abs(physic->vy) > 2){
 			//physic->vy -= (physic->vy*world->getDelta()*adjustedFriction);
 		}
 		else{
 			physic->vy = 0;
 		}
-		if (abs(physic->vr) > 0.005){
+		if (abs(physic->vr) > 2){
 			physic->vr = physic->vr - (physic->vr*world->getDelta()*adjustedFriction);
 		}
 		else{
@@ -259,18 +263,18 @@ void MapCollisionSystem::begin(){
 }
 
 void MapCollisionSystem::processEntity(artemis::Entity &e){
-	
+
 	PhysicComponent* physic = (PhysicComponent*)(physicMapper.get(e));
 	PosComponent* position = (PosComponent*)(posMapper.get(e));
 	BoundComponent* bound = (BoundComponent*)(boundMapper.get(e));
 
 	// no match require here, just check collision base on current infomation
 
-//	CCLOG("process mapcollision : %f - %f ", physic->vx, physic->vy);
+	//	CCLOG("process mapcollision : %f - %f ", physic->vx, physic->vy);
 
 	if (physic->vx != 0 || physic->vy != 0)
 	{
-	
+
 		float px = position->x + physic->vx*world->getDelta();
 		float py = position->y + physic->vy*world->getDelta();
 
@@ -287,7 +291,7 @@ void MapCollisionSystem::processEntity(artemis::Entity &e){
 		if (physic->vy < 0 && collideCenterDown)
 		{
 			physic->vy = (physic->bounce >0) ? -physic->vy * physic->bounce : 0;
-		//	CCLOG("bounce %f - %f", physic->vy,py + bound->y1);
+			//	CCLOG("bounce %f - %f", physic->vy,py + bound->y1);
 		}
 	}
 }
@@ -305,16 +309,321 @@ void InputSystem::initialize(){
 
 }
 void InputSystem::notifyInput(GameHud::EventType event, GameHud::TouchType touchType){
-	artemis::Entity& e = world->getTagManager()->getEntity("goku");
-	PhysicSystem* physicSystem = (PhysicSystem*)(world->getSystemManager()->getSystem<PhysicSystem>());
-	
-	if (event == GameHud::EventType::BEGIN && touchType == GameHud::TouchType::UP){
+	std::string str = (event == GameHud::EventType::BEGIN) ? "begin" : (event == GameHud::EventType::HOLD ? "Hold" : "end");
+	CCLOG("Notify Input ................. %s", str.c_str());
 
-		physicSystem->push(e,90, 400);
+	artemis::Entity& e = world->getTagManager()->getEntity("goku");
+	GokuProcessingSystem* gokuSystem = (GokuProcessingSystem*)(world->getSystemManager()->getSystem<GokuProcessingSystem>());
+
+
+
+	// sự kiện người dùng release
+	if (event == GameHud::EventType::END && touchType == GameHud::TouchType::NONE){
+		gokuSystem->actionStand();
+	}
+	if (event == GameHud::EventType::BEGIN && touchType == GameHud::TouchType::A){
+		gokuSystem->actionKick1(R::AUTO);
+	}
+	if (event == GameHud::EventType::BEGIN && touchType == GameHud::TouchType::B){
+		gokuSystem->actionPunch1(R::AUTO);
+	}
+	if (event == GameHud::EventType::BEGIN && touchType == GameHud::TouchType::X){
+		gokuSystem->actionBeat1(R::AUTO);
 	}
 
+	if (event == GameHud::EventType::BEGIN && touchType == GameHud::TouchType::UP){
+		gokuSystem->actionJump1(R::AUTO);
+	}
+
+
+	if (event == GameHud::EventType::HOLD && touchType == GameHud::TouchType::LEFT){
+		gokuSystem->actionMoveOn(R::LEFT);
+	}
+	if (event == GameHud::EventType::BEGIN && touchType == GameHud::TouchType::LEFT){
+		gokuSystem->actionMove(R::LEFT);
+	
+	}
+	if (event == GameHud::EventType::HOLD && touchType == GameHud::TouchType::RIGHT){
+		gokuSystem->actionMove(R::RIGHT);
+	}
+	if (event == GameHud::EventType::BEGIN && touchType == GameHud::TouchType::RIGHT){
+		gokuSystem->actionMove(R::RIGHT);
+	}
 }
 void InputSystem::processEntity(artemis::Entity &e){
 
 
+}
+
+
+
+GokuProcessingSystem::GokuProcessingSystem(){
+	addComponentType<PosComponent>();
+	addComponentType<PhysicComponent>();
+
+}
+void GokuProcessingSystem::initialize(){
+	posMapper.init(*world);
+	physicMapper.init(*world);
+	physicSystem = (PhysicSystem*)(world->getSystemManager()->getSystem<PhysicSystem>());
+	goku = &(world->getTagManager()->getEntity("goku"));
+
+	skeletonAnimation = spine::SkeletonAnimation::createWithFile("spine/skeleton.json", "spine/skeleton.atlas");
+	skeletonAnimation->setAnimation(0, "Stand", true);
+	skeletonAnimation->setSkin("goku");
+	node = RenderLayer::getInstance()->createGameNode();
+	node->setAnchorPoint(Vec2(.5, .5));
+	node->setContentSize(skeletonAnimation->getContentSize());
+	node->addChild(skeletonAnimation);
+
+
+
+}
+
+void GokuProcessingSystem::processEntity(artemis::Entity &e){
+
+	PosComponent* position = (PosComponent*)(posMapper.get(e));
+	PhysicComponent* physic = (PhysicComponent*)(physicMapper.get(e));
+	node->setPosition(Vec2(position->x, position->y));
+	if (physic->vx == physic->vy && physic->vx == 0){
+
+		actionStand();
+	}
+	else{
+		//	CCLOG("%f %f", physic->vx, physic->vy);
+	}
+}
+
+
+void GokuProcessingSystem::actionStand(){
+	bool dudieukien = true;
+	if (!dudieukien) {
+		return;
+	}
+	else {
+		// xử lý action
+		//	CCLOG("Stand...........");
+		skeletonAnimation->clearTracks();
+		skeletonAnimation->setAnimation(0, "Stand", true);
+		
+		physicSystem->stopPhysic(*goku);
+		((PhysicComponent*)goku->getComponent<PhysicComponent>())->isMoving = true;
+	}
+
+}
+void GokuProcessingSystem::actionStandUp(){
+	bool dudieukien = true;
+	if (!dudieukien) {
+		return;
+	}
+	else {
+		// xử lý action
+		skeletonAnimation->clearTracks();
+		skeletonAnimation->setAnimation(0, "Stand up", true);
+				physicSystem->stopPhysic(*goku);
+				((PhysicComponent*)goku->getComponent<PhysicComponent>())->isMoving = true;
+	}
+}
+void GokuProcessingSystem::actionDie(R::Direction direction){
+	bool dudieukien = true;
+	if (!dudieukien) {
+		return;
+	}
+	else {
+		// xử lý action
+	}
+}
+void GokuProcessingSystem::actionMove(R::Direction direction){
+	bool dudieukien = true;
+	if (!dudieukien) {
+		return;
+	}
+	else {
+		// xử lý action
+		if (direction == R::Direction::RIGHT){
+			physicSystem->push(*goku, 0, 200);
+			physicSystem->clampVelocity(*goku, 0, 200);
+			skeletonAnimation->setAnimation(1, "Move", true);
+			node->setScaleX(1);
+		}
+		else if (direction == R::Direction::LEFT){
+
+			physicSystem->push(*goku, 180, 200);
+			physicSystem->clampVelocity(*goku, 180, 200);
+			skeletonAnimation->setAnimation(2, "Move", true);
+			node->setScaleX(-1);
+		}
+	}
+}
+
+void GokuProcessingSystem::actionMoveOn(R::Direction direction){
+	bool dudieukien = true;
+	if (!dudieukien) {
+		return;
+	}
+	else {
+		((PhysicComponent*)goku->getComponent<PhysicComponent>())->isMoving = true;
+		// xử lý action
+		if (direction == R::Direction::RIGHT){
+			physicSystem->push(*goku, 0, 200);
+			physicSystem->clampVelocity(*goku, 0, 200);
+		}
+		else if (direction == R::Direction::LEFT){
+			physicSystem->push(*goku, 180, 200);
+			physicSystem->clampVelocity(*goku, 180, 200);
+
+		}
+	}
+}
+
+void GokuProcessingSystem::actionRun(R::Direction direction){
+	bool dudieukien = true;
+	if (!dudieukien) {
+		return;
+	}
+	else {
+		// xử lý action
+	}
+}
+void GokuProcessingSystem::actionStart(R::Direction direction){
+	bool dudieukien = true;
+	if (!dudieukien) {
+		return;
+	}
+	else {
+		// xử lý action
+	}
+}
+void GokuProcessingSystem::actionTrungDon(R::Direction direction){
+	bool dudieukien = true;
+	if (!dudieukien) {
+		return;
+	}
+	else {
+		// xử lý action
+	}
+}
+void GokuProcessingSystem::actionVictory(){
+	bool dudieukien = true;
+	if (!dudieukien) {
+		return;
+	}
+	else {
+		// xử lý action
+	}
+}
+void GokuProcessingSystem::actionBeat1(R::Direction direction){
+	bool dudieukien = true;
+	if (!dudieukien) {
+		return;
+	}
+	else {
+		// xử lý action
+	}
+}
+void GokuProcessingSystem::actionBeat2(R::Direction direction){
+	bool dudieukien = true;
+	if (!dudieukien) {
+		return;
+	}
+	else {
+		// xử lý action
+	}
+}
+void GokuProcessingSystem::actionBeat3(R::Direction direction){
+	bool dudieukien = true;
+	if (!dudieukien) {
+		return;
+	}
+	else {
+		// xử lý action
+	}
+}
+void GokuProcessingSystem::actionJump1(R::Direction direction){
+	bool dudieukien = true;
+	if (!dudieukien) {
+		return;
+	}
+	else {
+		// xử lý action
+		physicSystem->push(*goku, 90, 400);
+		physicSystem->clampVelocity(*goku, 0, 200);
+		skeletonAnimation->clearTracks();
+		skeletonAnimation->setAnimation(0,"Jump",false);
+		skeletonAnimation->addAnimation(1, "Jump", false,1);
+	}
+}
+void GokuProcessingSystem::actionJump2(R::Direction direction){
+	bool dudieukien = true;
+	if (!dudieukien) {
+		return;
+	}
+	else {
+		// xử lý action
+	}
+}
+void GokuProcessingSystem::actionJump3(R::Direction direction){
+	bool dudieukien = true;
+	if (!dudieukien) {
+		return;
+	}
+	else {
+		// xử lý action
+	}
+}
+void GokuProcessingSystem::actionKick1(R::Direction direction){
+	bool dudieukien = true;
+	if (!dudieukien) {
+		return;
+	}
+	else {
+		// xử lý action
+		skeletonAnimation->clearTrack();
+		skeletonAnimation->setAnimation(2, "Kick1", true);
+	}
+}
+void GokuProcessingSystem::actionKick2(R::Direction direction){
+	bool dudieukien = true;
+	if (!dudieukien) {
+		return;
+	}
+	else {
+		// xử lý action
+	}
+}
+void GokuProcessingSystem::actionKick3(R::Direction direction){
+	bool dudieukien = true;
+	if (!dudieukien) {
+		return;
+	}
+	else {
+		// xử lý action
+	}
+}
+void GokuProcessingSystem::actionPunch1(R::Direction direction){
+	bool dudieukien = true;
+	if (!dudieukien) {
+		return;
+	}
+	else {
+		// xử lý action
+	}
+}
+void GokuProcessingSystem::actionPunch2(R::Direction direction){
+	bool dudieukien = true;
+	if (!dudieukien) {
+		return;
+	}
+	else {
+		// xử lý action
+	}
+}
+void GokuProcessingSystem::actionPunch3(R::Direction direction){
+	bool dudieukien = true;
+	if (!dudieukien) {
+		return;
+	}
+	else {
+		// xử lý action
+	}
 }

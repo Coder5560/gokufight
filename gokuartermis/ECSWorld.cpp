@@ -3,7 +3,7 @@
 #include "gokuartermis/Systems.h"
 
 ECSWorld* ECSWorld::instance = NULL;
-ECSWorld::ECSWorld() : goku(nullptr), sprite(nullptr), world(nullptr)
+ECSWorld::ECSWorld() : goku(nullptr), world(nullptr)
 {
 }
 ECSWorld* ECSWorld::getInstance(){
@@ -24,19 +24,7 @@ ECSWorld::~ECSWorld()
 void ECSWorld::createWorld(){
 	world = new artemis::World();
 	
-	 inputSystem = new InputSystem();
-	// Tống vào world mấy cái system cho nó xử lý.
-	// importance step, the way orgnize system affect to how system running.
-	setSystem(new GameStateSystem());
-	setSystem(new GravitySystem());
-	setSystem(new PhysicSystem());
-	setSystem(new MapCollisionSystem());
-	setSystem(new AfterPhysicSystem());
-	setSystem(new WallSensorSystem());
-	setSystem(new AfterPhysicSystem());
-	setSystem(inputSystem);
 	
-	world->getSystemManager()->initializeAll();
 	// tạo những component dùng chung cho nhiều entity
 	GameStateComponent* gameStateComponent = new GameStateComponent();
 
@@ -52,15 +40,26 @@ void ECSWorld::createWorld(){
 	goku->addComponent(gameStateComponent);
 	goku->setTag("goku");
 	goku->refresh();
+	
+	((PhysicComponent*)(goku->getComponent<PhysicComponent>()))->bounce = 0;
 
 	//artemis::Entity& e = world->getTagManager()->getEntity("goku");
-	
+	inputSystem = new InputSystem();
+	// Tống vào world mấy cái system cho nó xử lý.
+	// importance step, the way orgnize system affect to how system running.
+	setSystem(new GameStateSystem());
+	setSystem(new GravitySystem());
+	setSystem(new MapCollisionSystem());
+	setSystem(new AfterPhysicSystem());
+	setSystem(new WallSensorSystem());
+	setSystem(new AfterPhysicSystem());
+	setSystem(inputSystem);
+	setSystem(new PhysicSystem());
+	setSystem(new GokuProcessingSystem());
+	world->getSystemManager()->initializeAll();
 	
 }
 
-void ECSWorld::setSprite(Sprite* sprite){
-	this->sprite = sprite;
-}
 
 artemis::EntitySystem*  ECSWorld::setSystem(artemis::EntitySystem* system){
 	return world->getSystemManager()->setSystem(system);
@@ -75,8 +74,5 @@ void ECSWorld::processWorld(float delta){
 		world->processWorld();
 		accumulate -= STEP;
 	}
-	if (sprite != nullptr){
-		PosComponent* position = (PosComponent*)(goku->getComponent<PosComponent>());
-		sprite->setPosition(Vec2(position->x, position->y));
-	}
+	
 }

@@ -4,6 +4,8 @@
 #include "gokuartermis/Components.h"
 #include "gokuartermis/MapInfo.h"
 #include "GameHud.h"
+#include "spine/SkeletonAnimation.h"
+#include "R.h"
 USING_NS_CC;
 
 class GravitySystem;
@@ -13,6 +15,7 @@ class WallSensorSystem;
 class GameStateSystem;
 class MapCollisionSystem;
 class InputSystem;
+class GokuProcessingSystem;
 
 class Systems
 {
@@ -123,8 +126,47 @@ public :
 	InputSystem();
 	virtual void initialize();
 	virtual void processEntity(artemis::Entity &e);
-
 	void notifyInput(GameHud::EventType event, GameHud::TouchType touchType);
 	
+	
+};
+class GokuProcessingSystem : public artemis::EntityProcessingSystem{
+public:
+	GokuProcessingSystem();
+	virtual void initialize();
+	virtual void processEntity(artemis::Entity &e);
 
+
+	void actionStand();
+	void actionStandUp();
+	void actionDie(R::Direction direction);
+	void actionMove(R::Direction direction);
+	void actionMoveOn(R::Direction direction);
+	void actionRun(R::Direction direction);
+	void actionStart(R::Direction direction);
+	void actionTrungDon(R::Direction direction);
+	void actionVictory();
+	void actionBeat1(R::Direction direction);
+	void actionBeat2(R::Direction direction);
+	void actionBeat3(R::Direction direction);
+	void actionJump1(R::Direction direction);
+	void actionJump2(R::Direction direction);
+	void actionJump3(R::Direction direction);
+	void actionKick1(R::Direction direction);
+	void actionKick2(R::Direction direction);
+	void actionKick3(R::Direction direction);
+	void actionPunch1(R::Direction direction);
+	void actionPunch2(R::Direction direction);
+	void actionPunch3(R::Direction direction);
+
+
+private :
+
+	artemis::Entity* goku;
+	PhysicSystem* physicSystem;
+	
+	spine::SkeletonAnimation* skeletonAnimation;
+	Node* node;
+	artemis::ComponentMapper<PosComponent> posMapper;
+	artemis::ComponentMapper<PhysicComponent> physicMapper;
 };

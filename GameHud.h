@@ -15,7 +15,7 @@ public:
 	};
 
 	enum EventType{
-		RELEASE, BEGIN,END
+		RELEASE, BEGIN,HOLD,END
 	}; 
 
 	enum TouchType{

@@ -51,6 +51,7 @@ public:
 	float vr;
 	float friction;
 	float bounce;
+	bool isMoving;
 
 };
 

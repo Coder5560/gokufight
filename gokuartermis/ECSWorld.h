@@ -12,7 +12,7 @@ public:
 	static ECSWorld* getInstance();
 	static ECSWorld* instance;
 	virtual void createWorld();
-	void setSprite(Sprite* sprite);
+	
 	void processWorld(float delta);
 	artemis::EntitySystem* setSystem(artemis::EntitySystem* system);
 
@@ -23,7 +23,7 @@ private:
 	~ECSWorld();
 	
 	artemis::Entity* goku;
-	Sprite* sprite;
+	
 protected:
 	const float STEP = 0.015f;
 	float accumulate = 0;

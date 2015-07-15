@@ -33,6 +33,7 @@ PhysicComponent::PhysicComponent(){
 	vr = 0;
 	friction = 6;
 	bounce = .5;
+	isMoving = false;
 }
 PhysicComponent::PhysicComponent(float vX, float vY){
 	this->vx = vX;
@@ -40,6 +41,7 @@ PhysicComponent::PhysicComponent(float vX, float vY){
 	vr = 0;
 	friction = 6;
 	bounce = .5;
+	isMoving = false;
 }
 WallSensorComponent::WallSensorComponent(){
 	onFloor = false;
