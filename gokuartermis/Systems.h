@@ -16,7 +16,8 @@ class GameStateSystem;
 class MapCollisionSystem;
 class InputSystem;
 class GokuProcessingSystem;
-
+class CharacterProcessingSystem;
+class YamchaCharacter;
 class Systems
 {
 public:
@@ -86,6 +87,7 @@ private:
 	artemis::ComponentMapper<PosComponent> pom;
 	artemis::ComponentMapper<WallSensorComponent> wm;
 	artemis::ComponentMapper<BoundComponent> bm;
+	artemis::ComponentMapper<PhysicComponent> physicMapper;
 };
 
 class GameStateSystem : public artemis::EntityProcessingSystem{
@@ -159,6 +161,8 @@ public:
 	void actionPunch2(R::Direction direction);
 	void actionPunch3(R::Direction direction);
 
+	
+
 
 private :
 
@@ -169,4 +173,62 @@ private :
 	Node* node;
 	artemis::ComponentMapper<PosComponent> posMapper;
 	artemis::ComponentMapper<PhysicComponent> physicMapper;
+};
+
+
+
+class CharacterProcessingSystem : public artemis::EntityProcessingSystem{
+public:
+	CharacterProcessingSystem(std::string &tag, std::string& skeletonDataFile, const std::string& atlasFile);
+	virtual void initialize();
+	virtual void initSystemInformation();
+	virtual void begin();
+	virtual void processEntity(artemis::Entity &e);
+	
+	virtual void actionStand();
+	virtual void actionStandUp();
+	virtual void actionDie(R::Direction direction);
+	virtual void actionMove(R::Direction direction);
+	virtual void actionMoveOn(R::Direction direction);
+	virtual void actionRun(R::Direction direction);
+	virtual void actionStart(R::Direction direction);
+	virtual void actionTrungDon(R::Direction direction);
+	virtual void actionVictory();
+	virtual void actionBeat(R::Direction direction);
+	virtual void actionJump(R::Direction direction);
+	virtual void actionKick(R::Direction direction);
+	virtual void actionPunch(R::Direction direction);
+	virtual void actionThink();
+	virtual void actionSpecialSkill(R::Direction direction);
+
+
+
+protected:
+	std::string &skeletonDatafile;
+	std::string &skeletonAtlas;
+	std::string &tag;
+
+
+	bool initSystem;
+	artemis::Entity* character;
+	PhysicSystem* physicSystem;
+
+	spine::SkeletonAnimation* skeletonAnimation;
+	Node* node;
+	artemis::ComponentMapper<PosComponent> posMapper;
+	artemis::ComponentMapper<PhysicComponent> physicMapper;
+};
+
+class YamchaCharecter : public CharacterProcessingSystem{
+
+public:
+	YamchaCharecter(std::string &tag, std::string& skeletonDataFile, const std::string& atlasFile);
+	virtual void initialize();
+	virtual void initSystemInformation();
+	virtual void begin();
+	virtual void processEntity(artemis::Entity &e);
+	
+
+
+
 };

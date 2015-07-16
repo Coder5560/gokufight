@@ -8,7 +8,7 @@ class BoundComponent;
 class WallSensorComponent;
 class GameStateComponent;
 class PlayerInfoComponent;
-
+class SkeletonComponent;
 
 
 
@@ -122,3 +122,17 @@ public :
 	float skill_y_power;
 };
 
+class SkeletonComponent : public artemis::Component{
+public :
+	SkeletonComponent(const std::string& skeletonDataFile, const std::string& atlasFile);
+	std::string &animation;
+	std::string &skin;
+	
+	float timeScale;
+	bool isAdded;
+	bool loop_animation;
+	bool scaleX;
+	bool changeAnimation;
+	bool changeSkin;
+	bool resetSkeletonData;
+};

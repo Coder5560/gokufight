@@ -25,7 +25,7 @@ bool HelloWorld::init()
 {
     //////////////////////////////
     // 1. super init first
-    if ( !Layer::init() )
+	if (!LayerColor::initWithColor(Color4B::WHITE))
     {
         return false;
     }
@@ -50,7 +50,7 @@ bool HelloWorld::init()
 	bg->setAnchorPoint(Vec2(.5, .5));
 	bg->setOpacity(200);
 	bg->setPosition(visibleSize / 2);
-	RenderLayer::getInstance()->getBackgroundLayer()->addChild(bg);
+	//RenderLayer::getInstance()->getBackgroundLayer()->addChild(bg);
 
 		
 	gameHud = new GameHud(visibleSize);

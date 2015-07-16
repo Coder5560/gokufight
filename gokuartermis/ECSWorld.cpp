@@ -48,14 +48,17 @@ void ECSWorld::createWorld(){
 	// Tống vào world mấy cái system cho nó xử lý.
 	// importance step, the way orgnize system affect to how system running.
 	setSystem(new GameStateSystem());
+	setSystem(inputSystem);
+	setSystem(new GokuProcessingSystem());
+	setSystem(new YamchaCharecter("yamcha","spine/skeleton.json", "spine/skeleton.atlas"));
+	setSystem(new PhysicSystem());
 	setSystem(new GravitySystem());
 	setSystem(new MapCollisionSystem());
-	setSystem(new AfterPhysicSystem());
 	setSystem(new WallSensorSystem());
 	setSystem(new AfterPhysicSystem());
-	setSystem(inputSystem);
-	setSystem(new PhysicSystem());
-	setSystem(new GokuProcessingSystem());
+
+
+
 	world->getSystemManager()->initializeAll();
 	
 }
