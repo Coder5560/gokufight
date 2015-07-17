@@ -79,4 +79,25 @@ float BoundComponent::getCenterY(){
 
 GameStateComponent::GameStateComponent() : gameState(GameState::PREPARE) {}
 
+SkeletonComponent::SkeletonComponent(){
+	skeleton = nullptr;
+	node = nullptr;
 
+	dataFile = "";
+	atlasFile = "";
+	animation = "";
+	skin = "";
+
+	timeScale = 1;
+	isCreated = false;
+	loop_animation = false;
+	scaleX = 1;
+	changeAnimation = false;
+	changeSkin = false;
+	resetSkeletonData = false;
+	visible = true;
+}
+
+CharacterInfoComponent::CharacterInfoComponent() :state(R::CharacterState::STAND), MAX_BLOOD(-1), MAX_POWER(-1), blood(-1), power(-1), skill_a_power(-1), skill_b_power(-1), skill_x_power(-1), timeOnState(0), timeRadon(0) {
+	
+}

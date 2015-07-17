@@ -1,7 +1,7 @@
 #include "GameHud.h"
 
 
-GameHud::GameHud(Size visibleSize) : state(HudState::HIDE), knob(nullptr), labelNotify(nullptr), background(nullptr), btnA(nullptr), btnB(nullptr), btnX(nullptr), btnY(nullptr), menu(nullptr), touchPadType(TouchType::NONE), skillType(TouchType::NONE), touchType(TouchType::NONE), eventType(EventType::RELEASE), changeType(false)
+GameHud::GameHud(Size visibleSize) : state(HudState::HIDE), knob(nullptr), labelNotify(nullptr), background(nullptr), btnA(nullptr), btnB(nullptr), btnX(nullptr), menu(nullptr), touchPadType(TouchType::NONE), skillType(TouchType::NONE), touchType(TouchType::NONE), eventType(EventType::RELEASE), changeType(false)
 {
 	this->setContentSize(visibleSize);
 }
@@ -13,265 +13,112 @@ void GameHud::buildComponent(){
 	this->setSwallowsTouches(true);
 	labelNotify = MenuItemLabel::create(CCLabelTTF::create("Notify Input", "fonts/Marker Felt.ttf", 30, Size(200, 60), TextHAlignment::CENTER, TextVAlignment::CENTER), nullptr);
 	labelNotify->setColor(Color3B::BLACK);
-	btnA = MenuItemImage::create("btns/a_normal.png", "btns/a_selected.png", [](Ref* sender){
-
+	btnA = MenuItemImage::create("btns/a_normal.png", "btns/a_selected.png", [=](Ref* sender){
+		touchPadType = TouchType::NONE;
+		skillType = TouchType::A;
+		eventType = GameHud::EventType::BEGIN;
+		notifyEvent();
+		skillType = TouchType::NONE;
 	});
-	btnB = MenuItemImage::create("btns/b_normal.png", "btns/b_selected.png", [](Ref* sender){
-
+	btnB = MenuItemImage::create("btns/b_normal.png", "btns/b_selected.png", [=](Ref* sender){
+		touchPadType = TouchType::NONE;
+		skillType = TouchType::B;
+		eventType = GameHud::EventType::BEGIN;
+		notifyEvent();
+		skillType = TouchType::NONE;
 	});
-	btnX = MenuItemImage::create("btns/x_normal.png", "btns/x_selected.png", [](Ref* sender){
-
+	btnX = MenuItemImage::create("btns/x_normal.png", "btns/x_selected.png", [=](Ref* sender){
+		touchPadType = TouchType::NONE;
+		skillType = TouchType::X;
+		eventType = GameHud::EventType::BEGIN;
+		notifyEvent();
+		skillType = TouchType::NONE;
 	});
-	btnY = MenuItemImage::create("btns/y_normal.png", "btns/y_selected.png", [](Ref* sender){
-
-	});
-
-	background = MenuItemImage::create("btns/touch_pad_normal.png", "btns/touch_pad_selected.png", [=](Ref* sender){
-	});
-
-	knob = MenuItemImage::create("btns/knob.png", "btns/knob.png", [](Ref* sender){
-
-	});
-	knob->setEnabled(false);
-	btnA->setEnabled(false);
-	btnY->setEnabled(false);
-	btnB->setEnabled(false);
-	btnX->setEnabled(false);
-
-
+	
 	labelNotify->setAnchorPoint(Vec2(.5, .5));
+	labelNotify->setPosition(Size(getContentSize().width/2, getContentSize().height-60));
 
 
-	background->setAnchorPoint(Vec2(.5, .5));
-	knob->setAnchorPoint(Vec2(.5, .5));
-	background->ignoreAnchorPointForPosition(false);
-	knob->ignoreAnchorPointForPosition(false);
+	btnA->setPosition(Vec2(size.width - btnA->getContentSize().width, 80));
+	btnA->setAnchorPoint(Vec2(.5,.5));
+	btnA->ignoreAnchorPointForPosition(false);
+	btnB->setPosition(Vec2(size.width - 60 - btnB->getContentSize().width, 120));
+	btnB->setAnchorPoint(Vec2(.5, .5));
+	btnB->ignoreAnchorPointForPosition(false);
+	btnX->setPosition(Vec2(size.width - 100 - btnB->getContentSize().width, 40));
+	btnX->setAnchorPoint(Vec2(.5, .5));
+	btnX->ignoreAnchorPointForPosition(false);
 
-	background->setPosition(Vec2(120, 120));
-	knob->setPosition(background->getPosition());
-	labelNotify->setPosition(getContentSize() / 2);
-	btnA->setPosition(Vec2(size.width - 10 - btnA->getContentSize().width, 60));
-	btnB->setPosition(Vec2(size.width - 100 - btnB->getContentSize().width, 40));
-	btnX->setPosition(Vec2(size.width - 10 - btnX->getContentSize().width, 160));
-	btnY->setPosition(Vec2(size.width - 100 - btnY->getContentSize().width, 140));
-
-	menu = Menu::create(labelNotify, background, knob, btnA, btnB, btnX, btnY, NULL);
-	menu->setAnchorPoint(Vec2(.5, .5));
-	menu->setPosition(Vec2::ZERO);
-
-
+	menu = Menu::create(labelNotify,btnA, btnB, btnX, NULL);
+	menu->ignoreAnchorPointForPosition(false);
 	this->addChild(menu, 1);
 
 
-	EventListenerTouchOneByOne* listener1 = EventListenerTouchOneByOne::create();
-	listener1->onTouchBegan = [this](Touch* touch, Event* event){
-		if (touch->getLocation().distance(this->btnA->getPosition()) < this->btnA->getContentSize().width / 2){
-			btnA->selected();
-			skillType = TouchType::A;
-			eventType = GameHud::EventType::BEGIN;
-			notifyEvent();
 
-			return true;
-		}
-		return false;
+
+	EventListenerTouchOneByOne* listenerMove = EventListenerTouchOneByOne::create();
+	listenerMove->onTouchBegan = [this](Touch* touch, Event* event){
+
+		return true;
+
 	};
+	listenerMove->onTouchMoved = [this](Touch* touch, Event* event){
 
-	listener1->onTouchEnded = [this](Touch* touch, Event* event){
-		skillType = TouchType::A;
-		eventType = GameHud::EventType::END;
-		btnA->unselected();
-		notifyEvent();
-		skillType = TouchType::NONE;
-	};
-	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener1, btnA);
-
-	EventListenerTouchOneByOne* listener2 = EventListenerTouchOneByOne::create();
-	listener2->onTouchBegan = [this](Touch* touch, Event* event){
-		if (touch->getLocation().distance(this->btnY->getPosition()) < this->btnY->getContentSize().width / 2){
-			btnY->selected();
-			skillType = TouchType::Y;
-			eventType = GameHud::EventType::BEGIN;
-			notifyEvent();
-			return true;
-		}
-		return false;
-	};
-
-	listener2->onTouchEnded = [this](Touch* touch, Event* event){
-		btnY->unselected();
-		skillType = TouchType::Y;
-		eventType = GameHud::EventType::END;
-		notifyEvent();
-		skillType = TouchType::NONE;
-	};
-	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener2, btnY);
+		Vec2 delta = touch->getDelta();
+		bool horizontal = (abs(delta.x) > abs(delta.y));
+		bool left = horizontal&&delta.x<-5;
+		bool right = horizontal&&delta.x>5;
+		bool up = !horizontal&&delta.y>10;
+		bool down = !horizontal&&delta.y<-5;
 
 
-
-	EventListenerTouchOneByOne* listener3 = EventListenerTouchOneByOne::create();
-	listener3->onTouchBegan = [this](Touch* touch, Event* event){
-		if (touch->getLocation().distance(this->btnB->getPosition()) < this->btnB->getContentSize().width / 2){
-			btnB->selected();
-			skillType = TouchType::B;
-			eventType = GameHud::EventType::BEGIN;
-			notifyEvent();
-
-			return true;
-		}
-		return false;
-	};
-
-	listener3->onTouchEnded = [this](Touch* touch, Event* event){
-		btnB->unselected();
-		skillType = TouchType::B;
-		eventType = GameHud::EventType::END;
-		notifyEvent();
-		skillType = TouchType::NONE;
-	};
-	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener3, btnB);
-
-
-	EventListenerTouchOneByOne* listener4 = EventListenerTouchOneByOne::create();
-	listener4->onTouchBegan = [this](Touch* touch, Event* event){
-		if (touch->getLocation().distance(this->btnX->getPosition()) < this->btnX->getContentSize().width / 2){
-			btnX->selected();
-			skillType = TouchType::X;
-			eventType = GameHud::EventType::BEGIN;
-			notifyEvent();
-			return true;
-		}
-		return false;
-	};
-
-	listener4->onTouchEnded = [this](Touch* touch, Event* event){
-		btnX->unselected();
-		skillType = TouchType::X;
-		eventType = GameHud::EventType::END;
-		notifyEvent();
-		skillType = TouchType::NONE;
-	};
-	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener4, btnX);
-
-
-
-	EventListenerTouchOneByOne* listener = EventListenerTouchOneByOne::create();
-	listener->onTouchBegan = [this](Touch* touch, Event* event){
-		float distance = touch->getLocation().distance(this->background->getPosition());
-		float r = this->background->getContentSize().width / 2;
-		if (distance < r){
-			knob->setPosition(touch->getLocation());
-			if (distance > r / 3){
-				float angle = 180 * atan2f(touch->getLocation().y - this->background->getPosition().y, touch->getLocation().x - this->background->getPosition().x) / M_PI;
-				if (angle < 0) angle += 360;
-				if (45 <= angle && angle <= 135){
-					if (touchPadType != TouchType::UP){
-						touchPadType = TouchType::UP;
-						eventType = GameHud::EventType::BEGIN;
-						notifyEvent();
-					}
-				}
-				else if (135 <= angle && angle <= 225){
-					if (touchPadType != TouchType::LEFT){
-						touchPadType = TouchType::LEFT;
-						eventType = GameHud::EventType::BEGIN;
-						notifyEvent();
-					}
-				}
-				else if (225 <= angle && angle <= 315){
-					if (touchPadType != TouchType::DOWN){
-						touchPadType = TouchType::DOWN;
-						eventType = GameHud::EventType::BEGIN;
-						notifyEvent();
-					}
-				}
-				else{
-					if (touchPadType != TouchType::RIGHT){
-						touchPadType = TouchType::RIGHT;
-						eventType = GameHud::EventType::BEGIN;
-						notifyEvent();
-					}
-				}
+		if (up){
+			if (touchPadType != TouchType::UP){
+				touchPadType = TouchType::UP;
+				eventType = GameHud::EventType::BEGIN;
+				notifyEvent();
 			}
-			return true;
 		}
-		return false;
-	};
-	listener->onTouchMoved = [this](Touch* touch, Event* event){
-		float distance = touch->getLocation().distance(this->background->getPosition());
-		float r = background->getContentSize().width / 2;
-
-		if (distance > r / 3){
-			float angle = 180 * atan2f(touch->getLocation().y - this->background->getPosition().y, touch->getLocation().x - this->background->getPosition().x) / 3.14;
-			if (angle < 0) angle += 360;
-			if (45 <= angle && angle <= 135){
-				if (touchPadType != TouchType::UP){
-					touchPadType = TouchType::UP;
-					eventType = GameHud::EventType::BEGIN;
-					notifyEvent();
-				}
-			}
-			else if (135 <= angle && angle <= 225){
-				if (touchPadType != TouchType::LEFT){
-					touchPadType = TouchType::LEFT;
-					eventType = GameHud::EventType::BEGIN;
-					notifyEvent();
-				}
-				else{
-					touchPadType = TouchType::LEFT;
-					eventType = GameHud::EventType::HOLD;
-					notifyEvent();
-				}
-			}
-			else if (225 <= angle && angle <= 315){
-				if (touchPadType != TouchType::DOWN){
-					touchPadType = TouchType::DOWN;
-					eventType = GameHud::EventType::BEGIN;
-					notifyEvent();
-				}
+		if (left){
+			if (touchPadType != TouchType::LEFT){
+				touchPadType = TouchType::LEFT;
+				eventType = GameHud::EventType::BEGIN;
+				notifyEvent();
 			}
 			else{
-				if (touchPadType != TouchType::RIGHT){
-					touchPadType = TouchType::RIGHT;
-					eventType = GameHud::EventType::BEGIN;
-					notifyEvent();
-				}
-				else{
-					touchPadType = TouchType::RIGHT;
-					eventType = GameHud::EventType::HOLD;
-					notifyEvent();
-				}
+				touchPadType = TouchType::LEFT;
+				eventType = GameHud::EventType::HOLD;
+				notifyEvent();
 			}
 		}
-		else{
-			eventType = GameHud::EventType::END;
-			touchPadType = TouchType::NONE;
-			notifyEvent();
+		else if (down){
+			if (touchPadType != TouchType::DOWN){
+				touchPadType = TouchType::DOWN;
+				eventType = GameHud::EventType::BEGIN;
+				notifyEvent();
+			}
 		}
+		else if (right) {
+			if (touchPadType != TouchType::RIGHT){
+				touchPadType = TouchType::RIGHT;
+				eventType = GameHud::EventType::BEGIN;
+				notifyEvent();
+			}
+			else{
+				touchPadType = TouchType::RIGHT;
+				eventType = GameHud::EventType::HOLD;
+				notifyEvent();
+			}
 
-
-
-		if (distance < r){
-			knob->setPosition(touch->getLocation());
-		}
-		else {
-			float distance = touch->getLocation().getDistance(background->getPosition());
-			float x = background->getPosition().x + (touch->getLocation().x - background->getPosition().x)*(r / distance);
-			float y = background->getPosition().y + (touch->getLocation().y - background->getPosition().y)*(r / distance);
-			knob->setPosition(Vec2(x, y));
-			background->selected();
 		}
 	};
 
-	listener->onTouchEnded = [this](Touch* touch, Event* event){
-		knob->setPosition(background->getPosition());
-		background->unselected();
+	listenerMove->onTouchEnded = [this](Touch* touch, Event* event){
 		eventType = GameHud::EventType::END;
 		notifyEvent();
 		touchPadType = TouchType::NONE;
 	};
-	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, background);
-
-
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(listenerMove, this);
 
 }
 void GameHud::setCallBack(const std::function<void(GameHud::EventType, GameHud::TouchType)> &callBack){
@@ -281,7 +128,7 @@ void GameHud::notifyEvent(){
 	if (callBack){
 		std::string str = "No Input";
 		TouchType touch = TouchType::NONE;
-		 if (touchPadType == TouchType::NONE && skillType == TouchType::A){
+		if (touchPadType == TouchType::NONE && skillType == TouchType::A){
 			str = "A";
 			touch = TouchType::A;
 		}
@@ -292,10 +139,6 @@ void GameHud::notifyEvent(){
 		else if (touchPadType == TouchType::NONE && skillType == TouchType::X){
 			str = "X";
 			touch = TouchType::X;
-		}
-		else if (touchPadType == TouchType::NONE && skillType == TouchType::Y){
-			str = "Y";
-			touch = TouchType::Y;
 		}
 		else if (touchPadType == TouchType::LEFT && skillType == TouchType::A){
 			str = "A_LEFT";
@@ -309,10 +152,7 @@ void GameHud::notifyEvent(){
 			str = "X_LEFT";
 			touch = TouchType::LEFT_X;
 		}
-		else if (touchPadType == TouchType::LEFT && skillType == TouchType::Y){
-			str = "Y_LEFT";
-			touch = TouchType::LEFT_Y;
-		}
+	
 		else if (touchPadType == TouchType::LEFT && skillType == TouchType::NONE){
 			str = "LEFT";
 			touch = TouchType::LEFT;
@@ -329,10 +169,7 @@ void GameHud::notifyEvent(){
 			str = "X_RIGHT";
 			touch = TouchType::RIGHT_X;
 		}
-		else if (touchPadType == TouchType::RIGHT && skillType == TouchType::Y){
-			str = "Y_RIGHT";
-			touch = TouchType::RIGHT_Y;
-		}
+		
 		else if (touchPadType == TouchType::RIGHT && skillType == TouchType::NONE){
 			str = "RIGHT";
 			touch = TouchType::RIGHT;
@@ -349,10 +186,7 @@ void GameHud::notifyEvent(){
 			str = "X_UP";
 			touch = TouchType::UP_X;
 		}
-		else if (touchPadType == TouchType::UP && skillType == TouchType::Y){
-			str = "Y_UP";
-			touch = TouchType::UP_Y;
-		}
+	
 		else if (touchPadType == TouchType::UP && skillType == TouchType::NONE){
 			str = "UP";
 			touch = TouchType::UP;
@@ -370,19 +204,15 @@ void GameHud::notifyEvent(){
 			touch = TouchType::DOWN_X;
 
 		}
-		else if (touchPadType == TouchType::DOWN && skillType == TouchType::Y){
-			str = "Y_DOWN";
-			touch = TouchType::DOWN_Y;
-
-		}
+	
 		else if (touchPadType == TouchType::DOWN && skillType == TouchType::NONE){
 			str = "DOWN";
 			touch = TouchType::DOWN;
 		}
-			
+
 		callBack(eventType, touch);
 		labelNotify->setString(str);
-		
+
 		eventType = EventType::RELEASE;
 	}
 }

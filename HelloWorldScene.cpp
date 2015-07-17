@@ -1,4 +1,4 @@
-#include "HelloWorldScene.h"
+﻿#include "HelloWorldScene.h"
 #include "gokuartermis/ECSWorld.h"
 #include "gokuartermis/RenderLayer.h"
 
@@ -29,6 +29,7 @@ bool HelloWorld::init()
     {
         return false;
     }
+	this->setKeypadEnabled(true);
 	this->addChild(RenderLayer::getInstance()->getBackgroundLayer());
 	this->addChild(RenderLayer::getInstance()->getGameLayer());
 	this->addChild(RenderLayer::getInstance()->getHudLayer());
@@ -62,33 +63,13 @@ bool HelloWorld::init()
 	RenderLayer::getInstance()->getHudLayer()->addChild(gameHud);
 
 
+	// giả lập background
 
+	LayerColor* layerColor = LayerColor::create(Color4B::BLACK);
+	layerColor->setContentSize(Size(getContentSize().width,210));
 
-	/*skeletonNode = spine::SkeletonAnimation::createWithFile("spine/skeleton.json", "spine/skeleton.atlas", 1.5f);
-	skeletonNode->setAnimation(0, "stand", true);
-	skeletonNode->setSkin("goku");
+	RenderLayer::getInstance()->getBackgroundLayer()->addChild(layerColor,1);
 
-	skeletonNode->setScale(0.5);
-	Size windowSize = Director::getInstance()->getWinSize();
-	skeletonNode->setPosition(Vec2(windowSize.width / 2, 20));
-	addChild(skeletonNode);
-
-	scheduleUpdate();
-
-	EventListenerTouchOneByOne* listener = EventListenerTouchOneByOne::create();
-	listener->onTouchBegan = [this](Touch* touch, Event* event) -> bool {
-		if (!skeletonNode->getDebugBonesEnabled())
-			skeletonNode->setDebugBonesEnabled(true);
-		else if (skeletonNode->getTimeScale() == 1)
-			skeletonNode->setTimeScale(0.3f);
-		else
-		{
-			skeletonNode->setTimeScale(1);
-			skeletonNode->setDebugBonesEnabled(false);
-		}
-		return true;
-	};
-	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);*/
 
 
 
@@ -103,7 +84,12 @@ bool HelloWorld::init()
 }
 
 
+void HelloWorld::onKeyReleased(EventKeyboard::KeyCode keyCode, Event* event){
+	if (keyCode == EventKeyboard::KeyCode::KEY_BACK){
+		Director::getInstance()->end();
+	}
 
+}
 void HelloWorld::update(float delta){
 	ECSWorld::getInstance()->processWorld(delta);
 }

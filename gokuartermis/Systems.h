@@ -15,9 +15,12 @@ class WallSensorSystem;
 class GameStateSystem;
 class MapCollisionSystem;
 class InputSystem;
+class SkeletonSystem;
 class GokuProcessingSystem;
 class CharacterProcessingSystem;
 class YamchaCharacter;
+class CharacterCollisionSystem;
+
 class Systems
 {
 public:
@@ -137,7 +140,7 @@ public:
 	GokuProcessingSystem();
 	virtual void initialize();
 	virtual void processEntity(artemis::Entity &e);
-
+	virtual void end();
 
 	void actionStand();
 	void actionStandUp();
@@ -169,17 +172,39 @@ private :
 	artemis::Entity* goku;
 	PhysicSystem* physicSystem;
 	
-	spine::SkeletonAnimation* skeletonAnimation;
-	Node* node;
+	//spine::SkeletonAnimation* skeletonAnimation;
+	//Node* node;
 	artemis::ComponentMapper<PosComponent> posMapper;
 	artemis::ComponentMapper<PhysicComponent> physicMapper;
 };
+
+class SkeletonSystem : public artemis::EntityProcessingSystem{
+
+public:
+	SkeletonSystem();
+	virtual void initialize();
+	virtual void begin();
+	virtual void processEntity(artemis::Entity &e);
+	virtual bool checkProcessing();
+	virtual void end();
+
+private:
+
+	artemis::ComponentMapper<PhysicComponent> physicMapper;
+	artemis::ComponentMapper<BoundComponent> boundMapper;
+	artemis::ComponentMapper<SkeletonComponent> skeletonMapper;
+	artemis::ComponentMapper<PosComponent> positionMapper;
+	
+};
+
 
 
 
 class CharacterProcessingSystem : public artemis::EntityProcessingSystem{
 public:
-	CharacterProcessingSystem(std::string &tag, std::string& skeletonDataFile, const std::string& atlasFile);
+	CharacterProcessingSystem();
+	~CharacterProcessingSystem();
+
 	virtual void initialize();
 	virtual void initSystemInformation();
 	virtual void begin();
@@ -204,9 +229,10 @@ public:
 
 
 protected:
-	std::string &skeletonDatafile;
-	std::string &skeletonAtlas;
-	std::string &tag;
+	std::string skeletonDatafile;
+	std::string skeletonAtlas;
+	std::string tag;
+	
 
 
 	bool initSystem;
@@ -219,16 +245,26 @@ protected:
 	artemis::ComponentMapper<PhysicComponent> physicMapper;
 };
 
-class YamchaCharecter : public CharacterProcessingSystem{
+class YamchaCharacter : public CharacterProcessingSystem{
 
 public:
-	YamchaCharecter(std::string &tag, std::string& skeletonDataFile, const std::string& atlasFile);
+	
+	YamchaCharacter(std::string tag, std::string skeletonDataFile, std::string atlasFile);
+	
 	virtual void initialize();
 	virtual void initSystemInformation();
 	virtual void begin();
 	virtual void processEntity(artemis::Entity &e);
 	
+	virtual void actionTrungDon(R::Direction direction);
+};
+class CharacterCollisionSystem : public artemis::EntityProcessingSystem{
 
+public:
 
-
+	CharacterCollisionSystem();
+	virtual void initialize();
+	virtual void processEntity(artemis::Entity &e);
+	virtual bool isHit(artemis::Entity* e1, artemis::Entity* e2);
+	virtual void end();
 };

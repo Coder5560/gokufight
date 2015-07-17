@@ -1,6 +1,8 @@
 #pragma once
 #include "artemis/Artemis.h"
 #include "GameHud.h"
+#include "spine/spine-cocos2dx.h"
+#include "R.h"
 class PosComponent;
 class GravityComponent;
 class PhysicComponent;
@@ -107,9 +109,14 @@ public:
 	GameState gameState;
 };
 
-class PlayerInfoComponent : public artemis::Component{
+class CharacterInfoComponent : public artemis::Component{
 public :
-	PlayerInfoComponent();
+
+	CharacterInfoComponent();
+	R::CharacterState state;
+
+	float timeOnState;
+	float timeRadon;
 
 	float MAX_BLOOD;
 	float MAX_POWER;
@@ -119,20 +126,27 @@ public :
 	float skill_a_power;
 	float skill_b_power;
 	float skill_x_power;
-	float skill_y_power;
+
 };
 
 class SkeletonComponent : public artemis::Component{
 public :
-	SkeletonComponent(const std::string& skeletonDataFile, const std::string& atlasFile);
-	std::string &animation;
-	std::string &skin;
+	SkeletonComponent();
+
+	spine::SkeletonAnimation* skeleton;
+	Node* node;
+
+	std::string dataFile;
+	std::string atlasFile;
+	std::string animation;
+	std::string skin;
 	
 	float timeScale;
-	bool isAdded;
+	bool isCreated;
 	bool loop_animation;
 	bool scaleX;
 	bool changeAnimation;
 	bool changeSkin;
 	bool resetSkeletonData;
+	bool visible;
 };

@@ -22,18 +22,18 @@ public:
 		NONE, 
 
 		LEFT,
-		LEFT_A,LEFT_X,LEFT_Y,LEFT_B,
+		LEFT_A,LEFT_X,LEFT_B,
 			
 		RIGHT,
-		RIGHT_A,RIGHT_B,RIGHT_X,RIGHT_Y,
-		
+		RIGHT_A,RIGHT_B,RIGHT_X,
+
 		UP,
-		UP_A,UP_B,UP_X,UP_Y,
+		UP_A,UP_B,UP_X,
 		
 		DOWN,
-		DOWN_A,DOWN_B,DOWN_X,DOWN_Y,
+		DOWN_A,DOWN_B,DOWN_X,
 
-		A,B,X,Y
+		A,B,X
 	};
 	
 	GameHud(Size visibleSize);
@@ -54,7 +54,6 @@ protected:
 
 	MenuItemImage* btnA;
 	MenuItemImage* btnX;
-	MenuItemImage* btnY;
 	MenuItemImage* btnB;
 
 	Menu* menu;
