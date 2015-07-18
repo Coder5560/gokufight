@@ -44,7 +44,7 @@ void ECSWorld::createWorld(){
 	setSystem(new AfterPhysicSystem());
 	setSystem(new SkeletonSystem());
 	setSystem(new CharacterCollisionSystem());
-
+	setSystem(new UICharacterSystem());
 
 	world->getSystemManager()->initializeAll();
 	

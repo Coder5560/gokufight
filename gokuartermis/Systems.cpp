@@ -224,6 +224,12 @@ GameStateSystem::GameStateSystem() {
 }
 void GameStateSystem::initialize() {
 	gameStateMapper.init(*world);
+
+	artemis::Entity& entity = (world->getEntityManager()->create());
+	entity.addComponent(new GameStateComponent());
+	entity.setTag("gameStateEntity");
+	entity.refresh();
+		
 }
 void GameStateSystem::begin() {
 }
@@ -236,13 +242,15 @@ bool GameStateSystem::checkProcessing() {
 void GameStateSystem::end() {
 	time_stay_on_state += world->getDelta();
 }
-void GameStateSystem::switchToState(GameStateComponent::GameState state,
-	artemis::Entity* e) {
-	time_stay_on_state = 0;
-	GameStateComponent* gameState = (GameStateComponent*)(gameStateMapper.get(
-		*e));
-	gameState->gameState = state;
-}
+void GameStateSystem::switchToWin(){}
+void GameStateSystem::switchToLose(){}
+void GameStateSystem::switchToReady(){}
+void GameStateSystem::switchToFighting(){}
+void GameStateSystem::switchToPause(){}
+void GameStateSystem::switchToResume(){}
+
+
+
 
 MapCollisionSystem::MapCollisionSystem() {
 	mapInfo = new MapInfo();
@@ -313,87 +321,94 @@ void InputSystem::initialize() {
 }
 void InputSystem::notifyInput(GameHud::EventType event,
 	GameHud::TouchType touchType) {
-	std::string str =
-		(event == GameHud::EventType::BEGIN) ?
-		"begin" :
-		(event == GameHud::EventType::HOLD ? "Hold" : "end");
 
-	artemis::Entity& e = world->getTagManager()->getEntity("goku");
-	GokuProcessingSystem* gokuSystem =
-		(GokuProcessingSystem*)(world->getSystemManager()->getSystem<
-		GokuProcessingSystem>());
+	GameStateComponent* gameState = (GameStateComponent*)world->getTagManager()->getEntity("gameStateEntity").getComponent<GameStateComponent>();
 
-	if (event == GameHud::EventType::END
-		&& touchType == GameHud::TouchType::NONE) {
-		gokuSystem->actionStand();
-	}
 
-	// sự kiện người dùng release
-	if (event == GameHud::EventType::END
-		&& touchType == GameHud::TouchType::LEFT) {
-		gokuSystem->actionStand();
 
-	}
-	if (event == GameHud::EventType::END
-		&& touchType == GameHud::TouchType::RIGHT) {
-		gokuSystem->actionStand();
+//	if (gameState->gameState == GameStateComponent::GameState::FIGHTING){
 
-	}
-	if (event == GameHud::EventType::BEGIN
-		&& touchType == GameHud::TouchType::A) {
-		gokuSystem->actionKick1(R::AUTO);
-	}
+		std::string str =
+			(event == GameHud::EventType::BEGIN) ?
+			"begin" :
+			(event == GameHud::EventType::HOLD ? "Hold" : "end");
+		
+		artemis::Entity& e = world->getTagManager()->getEntity("goku");
+		GokuProcessingSystem* gokuSystem =
+			(GokuProcessingSystem*)(world->getSystemManager()->getSystem<
+			GokuProcessingSystem>());
 
-	if (event == GameHud::EventType::BEGIN
-		&& touchType == GameHud::TouchType::LEFT_A) {
-		gokuSystem->actionKick1(R::LEFT);
-	}
+		if (event == GameHud::EventType::END
+			&& touchType == GameHud::TouchType::NONE) {
+			gokuSystem->actionStand();
+		}
 
-	if (event == GameHud::EventType::BEGIN
-		&& touchType == GameHud::TouchType::B) {
-		gokuSystem->actionPunch1(R::AUTO);
-	}
+		// sự kiện người dùng release
+		if (event == GameHud::EventType::END
+			&& touchType == GameHud::TouchType::LEFT) {
+			gokuSystem->actionStand();
 
-	if (event == GameHud::EventType::BEGIN
-		&& touchType == GameHud::TouchType::LEFT_B) {
-		gokuSystem->actionPunch1(R::LEFT);
-	}
+		}
+		if (event == GameHud::EventType::END
+			&& touchType == GameHud::TouchType::RIGHT) {
+			gokuSystem->actionStand();
 
-	if (event == GameHud::EventType::BEGIN
-		&& touchType == GameHud::TouchType::X) {
-		gokuSystem->actionBeat1(R::AUTO);
-	}
-	if (event == GameHud::EventType::BEGIN
-		&& touchType == GameHud::TouchType::LEFT_X) {
-		gokuSystem->actionBeat1(R::LEFT);
-	}
+		}
+		if (event == GameHud::EventType::BEGIN
+			&& touchType == GameHud::TouchType::A) {
+			gokuSystem->actionKick1(R::AUTO);
+		}
 
-	if (event == GameHud::EventType::BEGIN
-		&& touchType == GameHud::TouchType::UP) {
-		gokuSystem->actionJump1(R::AUTO);
+		if (event == GameHud::EventType::BEGIN
+			&& touchType == GameHud::TouchType::LEFT_A) {
+			gokuSystem->actionKick1(R::LEFT);
+		}
 
-	}
+		if (event == GameHud::EventType::BEGIN
+			&& touchType == GameHud::TouchType::B) {
+			gokuSystem->actionPunch1(R::AUTO);
+		}
 
-	if (event == GameHud::EventType::HOLD
-		&& touchType == GameHud::TouchType::LEFT) {
-		gokuSystem->actionMoveOn(R::LEFT);
+		if (event == GameHud::EventType::BEGIN
+			&& touchType == GameHud::TouchType::LEFT_B) {
+			gokuSystem->actionPunch1(R::LEFT);
+		}
 
-	}
-	if (event == GameHud::EventType::BEGIN
-		&& touchType == GameHud::TouchType::LEFT) {
-		gokuSystem->actionMove(R::LEFT);
+		if (event == GameHud::EventType::BEGIN
+			&& touchType == GameHud::TouchType::X) {
+			gokuSystem->actionBeat1(R::AUTO);
+		}
+		if (event == GameHud::EventType::BEGIN
+			&& touchType == GameHud::TouchType::LEFT_X) {
+			gokuSystem->actionBeat1(R::LEFT);
+		}
 
-	}
-	if (event == GameHud::EventType::HOLD
-		&& touchType == GameHud::TouchType::RIGHT) {
-		gokuSystem->actionMoveOn(R::RIGHT);
+		if (event == GameHud::EventType::BEGIN
+			&& touchType == GameHud::TouchType::UP) {
+			gokuSystem->actionJump1(R::AUTO);
 
-	}
-	if (event == GameHud::EventType::BEGIN
-		&& touchType == GameHud::TouchType::RIGHT) {
-		gokuSystem->actionMove(R::RIGHT);
-	}
+		}
 
+		if (event == GameHud::EventType::HOLD
+			&& touchType == GameHud::TouchType::LEFT) {
+			gokuSystem->actionMoveOn(R::LEFT);
+
+		}
+		if (event == GameHud::EventType::BEGIN
+			&& touchType == GameHud::TouchType::LEFT) {
+			gokuSystem->actionMove(R::LEFT);
+
+		}
+		if (event == GameHud::EventType::HOLD
+			&& touchType == GameHud::TouchType::RIGHT) {
+			gokuSystem->actionMoveOn(R::RIGHT);
+
+		}
+		if (event == GameHud::EventType::BEGIN
+			&& touchType == GameHud::TouchType::RIGHT) {
+			gokuSystem->actionMove(R::RIGHT);
+		}
+	//}
 }
 void InputSystem::processEntity(artemis::Entity &e) {
 
@@ -448,15 +463,15 @@ void GokuProcessingSystem::initialize() {
 
 	// create CharacterInfoComponent
 	CharacterInfoComponent* gokuInfo = new CharacterInfoComponent();
+	gokuInfo->tag = "goku";
+	gokuInfo->isMainCharacter = true;
 	gokuInfo->MAX_BLOOD = 100;
 	gokuInfo->MAX_POWER = 60;
 	gokuInfo->blood = 100;
 	gokuInfo->power = 100;
-	gokuInfo->skill_a_power = 20;
-	gokuInfo->skill_b_power = 20;
-	gokuInfo->skill_x_power = 20;
-
-
+	gokuInfo->skill_a_power = 5;
+	gokuInfo->skill_b_power = 5;
+	gokuInfo->skill_x_power = 5;
 
 
 	//create keletoncomponent
@@ -466,6 +481,7 @@ void GokuProcessingSystem::initialize() {
 	skeletonAnimation->setAnimation(0, "Stand", true);
 	skeletonAnimation->setSkin("goku");
 	skeletonAnimation->setScale(.4);
+
 	Node* node = RenderLayer::getInstance()->createGameNode();
 	node->setAnchorPoint(Vec2(.5, .5));
 	node->setContentSize(skeletonAnimation->getContentSize());
@@ -476,28 +492,6 @@ void GokuProcessingSystem::initialize() {
 	gokuSkeleton->node = node;
 	gokuSkeleton->isCreated = true;
 
-	auto slot = skeletonAnimation->findSlot("strick");
-
-
-	spRegionAttachment* attachment = (spRegionAttachment*)slot->attachment;
-	if (attachment){
-		CCLOG("%f - %f - %f - %f ", attachment->x, attachment->y, attachment->width, attachment->rotation);
-
-	}
-
-
-
-
-
-
-
-
-
-
-	// tạo những component dùng chung cho nhiều entity
-	GameStateComponent* gameStateComponent = new GameStateComponent();
-
-	// Thêm một cái entity cho nó xôm
 	goku = &(world->getEntityManager()->create());
 
 	goku->addComponent(new PosComponent(120, 400));
@@ -506,9 +500,8 @@ void GokuProcessingSystem::initialize() {
 	goku->addComponent(new GravityComponent());
 	goku->addComponent(new PhysicComponent());
 	goku->addComponent(gokuSkeleton);
-	goku->addComponent(gameStateComponent);
 	goku->addComponent(gokuInfo);
-	goku->setTag("goku");
+	goku->setTag(gokuInfo->tag);
 	goku->refresh();
 
 	((PhysicComponent*)(goku->getComponent<PhysicComponent>()))->bounce = 0;
@@ -990,7 +983,7 @@ void YamchaCharacter::initSystemInformation() {
 		spine::SkeletonAnimation::createWithFile("spine/skeleton.json",
 		"spine/skeleton.atlas");
 	skeletonAnimation->setAnimation(0, "Stand", true);
-	skeletonAnimation->setSkin("yamcha");
+	skeletonAnimation->setSkin("goku");
 	skeletonAnimation->setScale(.4);
 	Node* node = RenderLayer::getInstance()->createGameNode();
 	node->setAnchorPoint(Vec2(.5, .5));
@@ -1004,6 +997,19 @@ void YamchaCharacter::initSystemInformation() {
 	yamchaSkeleton->isCreated = true;
 
 
+	// create CharacterInfoComponent
+	CharacterInfoComponent* characterInfo = new CharacterInfoComponent();
+	characterInfo->tag = tag;
+	characterInfo->isMainCharacter = false;
+	characterInfo->MAX_BLOOD = 100;
+	characterInfo->MAX_POWER = 60;
+	characterInfo->blood = 100;
+	characterInfo->power = 100;
+	characterInfo->skill_a_power = 5;
+	characterInfo->skill_b_power = 5;
+	characterInfo->skill_x_power = 5;
+
+
 	physicSystem = (PhysicSystem*)(world->getSystemManager()->getSystem<
 		PhysicSystem>());
 	character = &(world->getEntityManager()->create());
@@ -1014,6 +1020,7 @@ void YamchaCharacter::initSystemInformation() {
 	character->addComponent(new BoundComponent(0, 0, 60, 60));
 	character->addComponent(new WallSensorComponent());
 	character->addComponent(yamchaSkeleton);
+	character->addComponent(characterInfo);
 
 	character->refresh();
 
@@ -1039,10 +1046,12 @@ void YamchaCharacter::actionTrungDon(R::Direction direction){
 		return;
 	}
 	else {
-		SkeletonComponent* skeleton = (SkeletonComponent*)character->getComponent<
-			SkeletonComponent>();
+		SkeletonComponent* skeleton = (SkeletonComponent*)character->getComponent<SkeletonComponent>();
 		spine::SkeletonAnimation* skeletonAnimation = skeleton->skeleton;
 		Node* node = skeleton->node;
+
+
+
 		if (direction == R::Direction::LEFT) {
 			physicSystem->push(*character, 180, 160);
 			physicSystem->clampVelocity(*character, 0, 160);
@@ -1054,7 +1063,6 @@ void YamchaCharacter::actionTrungDon(R::Direction direction){
 				PosComponent* pos = (PosComponent*)(character->getComponent<PosComponent>());
 				pos->x -= 20;
 				actionStand();
-
 			});
 			node->setScaleX(1);
 		}
@@ -1108,28 +1116,28 @@ void CharacterCollisionSystem::processEntity(artemis::Entity &e){
 void CharacterCollisionSystem::end(){
 	artemis::Entity& goku = world->getTagManager()->getEntity("goku");
 	artemis::Entity& yamcha = world->getTagManager()->getEntity("yamcha");
-	
+
 	CharacterInfoComponent* gokuInfo = (CharacterInfoComponent*)(goku.getComponent<CharacterInfoComponent>());
 	CharacterInfoComponent* yamchaInfo = (CharacterInfoComponent*)(yamcha.getComponent<CharacterInfoComponent>());
 
 
 	if (gokuInfo->state == R::CharacterState::PUNCH1 || gokuInfo->state == R::CharacterState::KICK1 || gokuInfo->state == R::CharacterState::BEAT1){
-		CCLOG("CheckDon %f %f", gokuInfo->timeOnState , gokuInfo->timeRadon);
+		CCLOG("CheckDon %f %f", gokuInfo->timeOnState, gokuInfo->timeRadon);
 		if (gokuInfo->timeOnState > gokuInfo->timeRadon){
 			if (isHit(&goku, &yamcha)){
-				CCLOG("Trung Don ");
+				CCLOG("Trung Don %f", yamchaInfo->blood);
 				PosComponent* position1 = (PosComponent*)goku.getComponent<PosComponent>();
 				PosComponent* position2 = (PosComponent*)yamcha.getComponent<PosComponent>();
-				
+
 				YamchaCharacter* yamchaCharacter = (YamchaCharacter*)world->getSystemManager()->getSystem<YamchaCharacter>();
-				yamchaCharacter->actionTrungDon(position1->x<position2->x ? R::Direction::RIGHT : R::Direction::LEFT);
+				yamchaCharacter->actionTrungDon(position1->x < position2->x ? R::Direction::RIGHT : R::Direction::LEFT);
 				gokuInfo->state = R::CharacterState::STAND;
+				gokuInfo->timeOnState = 0;
+				yamchaInfo->blood -= gokuInfo->skill_a_power;
+				CCLOG("Trung Don %f", yamchaInfo->blood);
 			}
 		}
 	}
-
-
-
 }
 
 bool CharacterCollisionSystem::isHit(artemis::Entity* e1, artemis::Entity* e2){
@@ -1152,16 +1160,43 @@ bool CharacterCollisionSystem::isHit(artemis::Entity* e1, artemis::Entity* e2){
 	float distance = centerE1.distance(centerE2);
 
 
-
-
-
 	if (canHit&& distance < bound1->getWidth() / 2 + bound2->getWidth() / 2){
 		return true;
 	}
 	else{
 		return false;
 	}
-	
+
 	return false;
 
+}
+
+
+UICharacterSystem::UICharacterSystem() {
+	addComponentType<CharacterInfoComponent>();
+}
+void UICharacterSystem::initialize(){
+	characterInfoMapper.init(*world);
+}
+void UICharacterSystem::createNodeForCharacter(CharacterInfoComponent* characterInfo){
+	NodeInfo* node = new NodeInfo();
+	node->createNode(characterInfo);
+	renderObjects.insert(std::pair<std::string, NodeInfo*>(characterInfo->tag, node));
+}
+void UICharacterSystem::processNodeForCharacter(CharacterInfoComponent* characterInfo){
+	if (renderObjects.count(characterInfo->tag) != 0){
+		renderObjects[characterInfo->tag]->process(characterInfo);
+	}
+
+
+}
+
+void UICharacterSystem::processEntity(artemis::Entity &e){
+	CharacterInfoComponent* characterInfo = (CharacterInfoComponent*)characterInfoMapper.get(e);
+	if (renderObjects.count(characterInfo->tag) == 0){
+		createNodeForCharacter(characterInfo);
+	}
+	else{
+		processNodeForCharacter(characterInfo);
+	}
 }

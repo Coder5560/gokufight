@@ -49,7 +49,7 @@ void GameHud::buildComponent(){
 	btnX->setAnchorPoint(Vec2(.5, .5));
 	btnX->ignoreAnchorPointForPosition(false);
 
-	menu = Menu::create(labelNotify,btnA, btnB, btnX, NULL);
+	menu = Menu::create(btnA, btnB, btnX, NULL);
 	menu->ignoreAnchorPointForPosition(false);
 	this->addChild(menu, 1);
 
@@ -211,7 +211,7 @@ void GameHud::notifyEvent(){
 		}
 
 		callBack(eventType, touch);
-		labelNotify->setString(str);
+	//	labelNotify->setString(str);
 
 		eventType = EventType::RELEASE;
 	}

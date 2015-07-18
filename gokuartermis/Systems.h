@@ -6,6 +6,7 @@
 #include "GameHud.h"
 #include "spine/SkeletonAnimation.h"
 #include "R.h"
+#include "NodeInfo.h"
 USING_NS_CC;
 
 class GravitySystem;
@@ -20,6 +21,8 @@ class GokuProcessingSystem;
 class CharacterProcessingSystem;
 class YamchaCharacter;
 class CharacterCollisionSystem;
+class UICharacterSystem;
+
 
 class Systems
 {
@@ -101,6 +104,16 @@ public:
 	virtual void processEntity(artemis::Entity &e);
 	virtual bool checkProcessing();
 	virtual void end();
+
+	virtual void switchToWin();
+	virtual void switchToLose();
+	virtual void switchToReady();
+	virtual void switchToFighting();
+	virtual void switchToPause();
+	virtual void switchToResume();
+
+
+
 	void switchToState(GameStateComponent::GameState state, artemis::Entity* e);
 private:
 
@@ -267,4 +280,17 @@ public:
 	virtual void processEntity(artemis::Entity &e);
 	virtual bool isHit(artemis::Entity* e1, artemis::Entity* e2);
 	virtual void end();
+};
+
+class UICharacterSystem : public artemis::EntityProcessingSystem{
+
+public :
+	UICharacterSystem();
+	virtual void initialize();
+	virtual void processEntity(artemis::Entity &e);
+	virtual void createNodeForCharacter(CharacterInfoComponent* characterInfo);
+	virtual void processNodeForCharacter(CharacterInfoComponent* characterInfo);
+protected :
+	std::map<std::string, NodeInfo*> renderObjects;
+	artemis::ComponentMapper<CharacterInfoComponent> characterInfoMapper;
 };

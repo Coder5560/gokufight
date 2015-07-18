@@ -69,15 +69,7 @@ bool HelloWorld::init()
 	layerColor->setContentSize(Size(getContentSize().width,210));
 
 	RenderLayer::getInstance()->getBackgroundLayer()->addChild(layerColor,1);
-
-
-
-
-
-
-
-
-	
+			
 
 
     return true;

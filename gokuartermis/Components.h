@@ -9,7 +9,7 @@ class PhysicComponent;
 class BoundComponent;
 class WallSensorComponent;
 class GameStateComponent;
-class PlayerInfoComponent;
+class CharacterInfoComponent;
 class SkeletonComponent;
 
 
@@ -114,7 +114,8 @@ public :
 
 	CharacterInfoComponent();
 	R::CharacterState state;
-
+	std::string tag;
+	bool isMainCharacter;
 	float timeOnState;
 	float timeRadon;
 
@@ -140,6 +141,8 @@ public :
 	std::string atlasFile;
 	std::string animation;
 	std::string skin;
+	
+
 	
 	float timeScale;
 	bool isCreated;

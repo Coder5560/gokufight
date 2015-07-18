@@ -98,6 +98,6 @@ SkeletonComponent::SkeletonComponent(){
 	visible = true;
 }
 
-CharacterInfoComponent::CharacterInfoComponent() :state(R::CharacterState::STAND), MAX_BLOOD(-1), MAX_POWER(-1), blood(-1), power(-1), skill_a_power(-1), skill_b_power(-1), skill_x_power(-1), timeOnState(0), timeRadon(0) {
+CharacterInfoComponent::CharacterInfoComponent() :state(R::CharacterState::STAND), MAX_BLOOD(-1), MAX_POWER(-1), blood(-1), power(-1), skill_a_power(-1), skill_b_power(-1), skill_x_power(-1), timeOnState(0), timeRadon(0), isMainCharacter(false) , tag(""){
 	
 }
