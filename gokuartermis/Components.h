@@ -11,7 +11,8 @@ class WallSensorComponent;
 class GameStateComponent;
 class CharacterInfoComponent;
 class SkeletonComponent;
-
+class DecisionComponent;
+class AttackComponent;
 
 
 
@@ -152,4 +153,36 @@ public :
 	bool changeSkin;
 	bool resetSkeletonData;
 	bool visible;
+};
+class DecisionComponent : public artemis::Component{
+public :
+	DecisionComponent();
+	//thời gian mà entity đã suy nghĩ.
+	float thinkingTime;
+	// thời gian ra quyết định.
+	float DECISION_TIME;
+
+};
+class StateComponent : public artemis::Component{
+public:
+	
+	StateComponent();
+
+	void setState(R::CharacterState newState);
+	R::Direction direction;
+	R::CharacterState state;
+	float time_on_state;
+
+	bool customAnimation;
+	std::vector<std::string> animations;
+
+};
+class AttackComponent : public artemis::Entity{
+public :
+	R::CharacterType whoAttack;
+	bool expire;
+	float powerOfAttack;
+	float timeAttack;
+	float collisionPointX;
+	float collisionPointY;
 };

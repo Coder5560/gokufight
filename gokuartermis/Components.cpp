@@ -101,3 +101,13 @@ SkeletonComponent::SkeletonComponent(){
 CharacterInfoComponent::CharacterInfoComponent() :state(R::CharacterState::STAND), MAX_BLOOD(-1), MAX_POWER(-1), blood(-1), power(-1), skill_a_power(-1), skill_b_power(-1), skill_x_power(-1), timeOnState(0), timeRadon(0), isMainCharacter(false) , tag(""){
 	
 }
+
+DecisionComponent::DecisionComponent():thinkingTime(0),DECISION_TIME(2){}
+
+StateComponent::StateComponent() : state(R::CharacterState::STAND), time_on_state(0), customAnimation(false), direction(R::Direction::AUTO){ animations.push_back("Stand");}
+
+void StateComponent::setState(R::CharacterState newState){
+	this->state = newState;
+	time_on_state = 0;
+	
+}

@@ -12,7 +12,7 @@ NodeInfo::~NodeInfo()
 void NodeInfo::createNode(CharacterInfoComponent* characterInfo){
 	isCreated = true;
 	characterTag = characterInfo->tag;
-	Size visibleSize = Director::getInstance()->getVisibleSize();
+	Size visibleSize = Director::getInstance()->getWinSize();
 	Size size(200, 100);
 	bool isLeft = characterInfo->isMainCharacter;
 
@@ -20,6 +20,7 @@ void NodeInfo::createNode(CharacterInfoComponent* characterInfo){
 	this->setContentSize(size);
 	this->setPosition(Vec2(isLeft ? 10 : visibleSize.width - this->getContentSize().width - 10, visibleSize.height - this->getContentSize().height - 20));
 	RenderLayer::getInstance()->getHudLayer()->addChild(this);
+	RenderLayer::getInstance()->getHudLayer()->setCameraMask((unsigned short)CameraFlag::USER1);
 
 	CCLOG("%s", characterInfo->tag);
 	std::string directory = "textures/" + characterInfo->tag + ".png";
@@ -61,7 +62,6 @@ void NodeInfo::createNode(CharacterInfoComponent* characterInfo){
 }
 void NodeInfo::process(CharacterInfoComponent* characterInfo){
 	if (!isCreated) return;
-	CCLOG("Blood %f", characterInfo->blood);
 	float percent = (characterInfo->blood / 100);
 	blood->setContentSize(Size(100 * (percent < 0 ? 0 : percent), blood->getContentSize().height));
 	blood->setPosition(Vec2(characterInfo->isMainCharacter ? (avatar->getPositionX() + avatar->getContentSize().width + 10) : (avatar->getPositionX() - blood->getContentSize().width - 10), getContentSize().height - 10));

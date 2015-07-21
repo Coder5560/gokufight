@@ -28,21 +28,18 @@ RenderLayer* RenderLayer::getInstance(){
 }
 Node* RenderLayer::createHudNode(){
 	Node* node = Node::create();
-	node->setContentSize(visibleSize);
 	hudLayer->addChild(node);
 	return node;
 }
 
 Node* RenderLayer::createGameNode(){
 	Node* node = Node::create();
-	node->setContentSize(visibleSize);
 	gameLayer->addChild(node);
 	return node;
 }
 
 Node* RenderLayer::createBackgroundNode(){
 	Node* node = Node::create();
-	node->setContentSize(visibleSize);
 	backgroundLayer->addChild(node);
 	return node;
 }

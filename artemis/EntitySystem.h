@@ -25,7 +25,6 @@ namespace artemis {
    */
 
 	enum SystemType{
-
 	PASSIVE,NONE_PASSIVE
 	};
 

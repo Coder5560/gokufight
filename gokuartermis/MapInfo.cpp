@@ -5,7 +5,7 @@ MapInfo::MapInfo()
 {
 	GROUND = 220;
 	WALL_LEFT = 20;
-	WALL_RIGHT = Director::getInstance()->getVisibleSize().width +20;
+	WALL_RIGHT = 800;
 	WALL_UP = Director::getInstance()->getVisibleSize().height - 20;
 }
 

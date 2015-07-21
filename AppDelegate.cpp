@@ -33,15 +33,16 @@ bool AppDelegate::applicationDidFinishLaunching() {
     // initialize director
     auto director = Director::getInstance();
     auto glview = director->getOpenGLView();
+    float scale = 1;
     if(!glview) {
         glview = GLViewImpl::create("Goku Fight");
         director->setOpenGLView(glview);
-		glview->setFrameSize(480,600);
+		glview->setFrameSize((int)(800 * scale), (int)(1280 * scale));
     }
 
     // turn on display FPS
     director->setDisplayStats(false);
-	director->getOpenGLView()->setDesignResolutionSize(480, 600, ResolutionPolicy::FIXED_HEIGHT);
+	director->getOpenGLView()->setDesignResolutionSize((int)(800 * scale), (int)(1280 * scale), ResolutionPolicy::FIXED_HEIGHT);
   
     director->setAnimationInterval(1.0 / 60);
 
