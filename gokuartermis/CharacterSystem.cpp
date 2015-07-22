@@ -277,9 +277,9 @@ void GokuCharacter::initialize() {
 	gokuSkeleton->isCreated = true;
 
 	character = &(world->getEntityManager()->create());
-
+	character->addComponent(new CharacterTypeComponent(R::CharacterType::GOKU));
 	character->addComponent(new PosComponent(120, 400));
-	character->addComponent(new BoundComponent(0, 0, 60, 60));
+	character->addComponent(new BoundComponent(-30, -20, 30, 60));
 	character->addComponent(new WallSensorComponent());
 	character->addComponent(new GravityComponent());
 	character->addComponent(new PhysicComponent());
@@ -661,16 +661,18 @@ void YamchaCharacter::initSystemInformation() {
 		PhysicSystem>());
 	character = &(world->getEntityManager()->create());
 	character->setTag(tag);
+	character->addComponent(new CharacterTypeComponent(R::CharacterType::YAMCHA));
 	character->addComponent(new PosComponent(240, 420));
 	character->addComponent(new PhysicComponent());
 	character->addComponent(new GravityComponent());
-	character->addComponent(new BoundComponent(0, 0, 60, 60));
+	character->addComponent(new BoundComponent(-30, -20, 30, 60));
 	character->addComponent(new WallSensorComponent());
 	character->addComponent(yamchaSkeleton);
 	character->addComponent(characterInfo);
 	character->addComponent(decisionComponent);
 	character->refresh();
 
+	character->setGroup("enemy");
 }
 
 void YamchaCharacter::processEntity(artemis::Entity &e) {
@@ -694,30 +696,30 @@ void CharacterCollisionSystem::processEntity(artemis::Entity &e){
 
 }
 void CharacterCollisionSystem::end(){
-	artemis::Entity& goku = world->getTagManager()->getEntity("goku");
-	artemis::Entity& yamcha = world->getTagManager()->getEntity("yamcha");
+	//	artemis::Entity& goku = world->getTagManager()->getEntity("goku");
+	//	artemis::Entity& yamcha = world->getTagManager()->getEntity("yamcha");
 
-	CharacterInfoComponent* gokuInfo = (CharacterInfoComponent*)(goku.getComponent<CharacterInfoComponent>());
-	CharacterInfoComponent* yamchaInfo = (CharacterInfoComponent*)(yamcha.getComponent<CharacterInfoComponent>());
+	//	CharacterInfoComponent* gokuInfo = (CharacterInfoComponent*)(goku.getComponent<CharacterInfoComponent>());
+	//	CharacterInfoComponent* yamchaInfo = (CharacterInfoComponent*)(yamcha.getComponent<CharacterInfoComponent>());
 
 
-	if (gokuInfo->state == R::CharacterState::PUNCH || gokuInfo->state == R::CharacterState::KICK || gokuInfo->state == R::CharacterState::BEAT){
+	//if (gokuInfo->state == R::CharacterState::PUNCH || gokuInfo->state == R::CharacterState::KICK || gokuInfo->state == R::CharacterState::BEAT){
 
-		if (gokuInfo->timeOnState > gokuInfo->timeRadon){
-			if (isHit(&goku, &yamcha)){
+	//	if (gokuInfo->timeOnState > gokuInfo->timeRadon){
+	//		if (isHit(&goku, &yamcha)){
 
-				PosComponent* position1 = (PosComponent*)goku.getComponent<PosComponent>();
-				PosComponent* position2 = (PosComponent*)yamcha.getComponent<PosComponent>();
+	//			PosComponent* position1 = (PosComponent*)goku.getComponent<PosComponent>();
+	//			PosComponent* position2 = (PosComponent*)yamcha.getComponent<PosComponent>();
 
-				YamchaCharacter* yamchaCharacter = (YamchaCharacter*)world->getSystemManager()->getSystem<YamchaCharacter>();
-				yamchaCharacter->actionTrungDon(position1->x < position2->x ? R::Direction::RIGHT : R::Direction::LEFT);
-				gokuInfo->state = R::CharacterState::STAND;
-				gokuInfo->timeOnState = 0;
-				yamchaInfo->blood -= gokuInfo->skill_a_power;
-				CCLOG("Trung Don %f", yamchaInfo->blood);
-			}
-		}
-	}
+	//			YamchaCharacter* yamchaCharacter = (YamchaCharacter*)world->getSystemManager()->getSystem<YamchaCharacter>();
+	//			yamchaCharacter->actionTrungDon(position1->x < position2->x ? R::Direction::RIGHT : R::Direction::LEFT);
+	//			gokuInfo->state = R::CharacterState::STAND;
+	//			gokuInfo->timeOnState = 0;
+	//			yamchaInfo->blood -= gokuInfo->skill_a_power;
+	//			CCLOG("Trung Don %f", yamchaInfo->blood);
+	//		}
+	//	}
+	//}
 }
 
 bool CharacterCollisionSystem::isHit(artemis::Entity* e1, artemis::Entity* e2){
@@ -760,41 +762,80 @@ void DecisionSystem::initialize(){
 }
 void DecisionSystem::processEntity(artemis::Entity& e){
 	artemis::Entity& goku = world->getTagManager()->getEntity("goku");
+
 	DecisionComponent* decision = (DecisionComponent*)e.getComponent<DecisionComponent>();
-	PosComponent* gokuPosition =(PosComponent*) goku.getComponent<PosComponent>();
+	PosComponent* gokuPosition = (PosComponent*)goku.getComponent<PosComponent>();
 	PosComponent* characterPosition = (PosComponent*)e.getComponent<PosComponent>();
 	CharacterInfoComponent* gokuInfo = (CharacterInfoComponent*)goku.getComponent<CharacterInfoComponent>();
 	CharacterInfoComponent* characterInfo = (CharacterInfoComponent*)e.getComponent<CharacterInfoComponent>();
 
+	StateComponent* stateComponent = (StateComponent*)e.getComponent<StateComponent>();
+
+
 	decision->thinkingTime += world->getDelta();
 	bool isLeftToGoku = characterPosition->x < gokuPosition->x;
 	float distance = abs(gokuPosition->x - characterPosition->x);
-	float rangeAttact = 100;
+	float rangeAttact = 200;
 	if (distance > rangeAttact){
-		
+
 
 
 		// tung chuong tam xa.
 		// tien lai gan.
 		if (decision->thinkingTime > decision->DECISION_TIME){
+			CCLOG("Time To determine how to deal with goku");
 			if (isLeftToGoku){
-			//CharacterSystem* characterSystem = 	(CharacterSystem*) world->getSystemManager()->getSystem<CharacterSystem>();
-			
+				CCLOG("XXXXXXXXXXXXXXXXXX");
+				if (stateComponent->state == R::CharacterState::STAND){
+					// move to tartget
+					isLeftToGoku ? stateComponent->setState(R::CharacterState::LEFT) : stateComponent->setState(R::CharacterState::RIGHT);
+				}
+				else if (stateComponent->state == R::CharacterState::WALK_LEFT || stateComponent->state == R::CharacterState::WALK_LEFT){
+					// move on to tartget == dont change The state
+				}
+				else if (stateComponent->state == R::CharacterState::LEFT){
+					stateComponent->setState(R::CharacterState::WALK_LEFT);
+				}
+				else if (stateComponent->state == R::CharacterState::RIGHT){
+					stateComponent->setState(R::CharacterState::WALK_RIGHT);
+				}
+				else {
+					stateComponent->setState(R::CharacterState::STAND);
+					CCLOG("another state");
+				}
 			}
 			decision->thinkingTime = 0;
 		}
 
 		// khieu khich
-		
+
 	}
+	else{
+		float timeRaDon = decision->DECISION_TIME<1 ? decision->DECISION_TIME : 1;
+		if (decision->thinkingTime > timeRaDon){
 
+			if (stateComponent->state == R::CharacterState::STAND){
+				std::string animation = "Punch1";
+				srand(time(NULL));
+				int rad = rand() % 10 + 1;
+				if (rad <= 3)
+				{
+					animation = "Punch1";
+				}
+				else if (rad <= 6){
+					animation = "Punch2";
+				}
+				else {
+					animation = "Punch3";
+				}
 
-
-
-
-
-
-
-
-
+				stateComponent->customAnimation = true;
+				stateComponent->animations.clear();
+				stateComponent->animations.push_back(animation);
+				stateComponent->setState(R::CharacterState::PUNCH);
+			}
+			decision->thinkingTime = 0;
+		}
+	}
+	
 }

@@ -20,7 +20,12 @@ void CharacterStateSystem::initialize(){
 void CharacterStateSystem::processEntity(artemis::Entity& e){
 	StateComponent* state = (StateComponent*)e.getComponent<StateComponent>();
 	if (state->time_on_state == 0){
-		changeState(e);
+		if (state->characterBase != nullptr){
+			state->characterBase->changeState(e);
+		}
+		else{ changeState(e); 
+		}
+		
 		state->customAnimation = false;
 	}
 	else{
@@ -38,6 +43,7 @@ void CharacterStateSystem::processEntity(artemis::Entity& e){
 	state->time_on_state += world->getDelta();
 }
 void CharacterStateSystem::changeState(artemis::Entity &e){
+	return;
 	StateComponent* state = (StateComponent*)e.getComponent<StateComponent>();
 	SkeletonComponent* skeleton = skeletonMapper.get(e);
 	PhysicSystem* physicSystem = (PhysicSystem*)world->getSystemManager()->getSystem<PhysicSystem>();
@@ -81,6 +87,9 @@ void CharacterStateSystem::changeState(artemis::Entity &e){
 	case R::CharacterState::PUNCH:
 		actionPunch(e);
 		break;
+	case R::CharacterState::TRUNG_DON:
+		actionTrungDon(e);
+		break;
 	default:
 		break;
 	}
@@ -105,14 +114,16 @@ void CharacterStateSystem::actionMove(artemis::Entity &e){
 		skeletonAnimation->setAnimation(0, animation, true);
 		skeletonAnimation->setCompleteListener(nullptr);
 		node->setScaleX(1);
-	}else if (state->direction == R::Direction::LEFT) {
+	}
+	else if (state->direction == R::Direction::LEFT) {
 		physicSystem->push(e, 180, 160);
 		physicSystem->clampVelocity(e, 0, 160);
 		skeletonAnimation->clearTracks();
 		skeletonAnimation->setAnimation(0, animation, true);
 		skeletonAnimation->setCompleteListener(nullptr);
 		node->setScaleX(-1);
-	}else if (state->direction == R::Direction::AUTO){
+	}
+	else if (state->direction == R::Direction::AUTO){
 		physicSystem->push(e, node->getScaleX() > 0 ? 0 : 180, 160);
 		physicSystem->clampVelocity(e, 0, 160);
 		skeletonAnimation->clearTracks();
@@ -129,10 +140,10 @@ void CharacterStateSystem::actionMoveOn(artemis::Entity &e){
 		SkeletonComponent>();
 	spine::SkeletonAnimation* skeletonAnimation = skeleton->skeleton;
 	Node* node = skeleton->node;
-	
+
 	// xử lý action
 	if (state->direction == R::Direction::RIGHT) {
-	
+
 		physicSystem->push(e, 0, 160);
 		physicSystem->clampVelocity(e, 0, 160);
 		node->setScaleX(1);
@@ -174,6 +185,14 @@ void CharacterStateSystem::actionKick(artemis::Entity& e){
 		state->animations.push_back("Stand");
 		state->setState(R::CharacterState::STAND);
 	});
+
+
+	AttackComponent* attackComponent = new AttackComponent();
+	attackComponent->whoAttack = ((CharacterTypeComponent*)e.getComponent<CharacterTypeComponent>())->type;
+	attackComponent->powerOfAttack = 10;
+
+	EntityUtils::getInstance()->createAttackEntity(e, attackComponent);
+
 }
 
 
@@ -202,7 +221,91 @@ void CharacterStateSystem::actionPunch(artemis::Entity &e){
 		state->animations.push_back("Stand");
 		state->setState(R::CharacterState::STAND);
 	});
+	AttackComponent* attackComponent = new AttackComponent();
+	attackComponent->whoAttack = ((CharacterTypeComponent*)e.getComponent<CharacterTypeComponent>())->type;
+	attackComponent->powerOfAttack = 10;
+
+	EntityUtils::getInstance()->createAttackEntity(e,attackComponent);
 }
+
+
+void CharacterStateSystem::actionTrungDon(artemis::Entity &e){
+	StateComponent* state = (StateComponent*)e.getComponent<StateComponent>();
+	PhysicSystem* physicSystem = (PhysicSystem*)world->getSystemManager()->getSystem<PhysicSystem>();
+	PosComponent* pos = (PosComponent*)(e.getComponent<PosComponent>());
+	SkeletonComponent* skeleton = (SkeletonComponent*)e.getComponent<
+		SkeletonComponent>();
+	spine::SkeletonAnimation* skeletonAnimation = skeleton->skeleton;
+	Node* node = skeleton->node;
+	std::string animation = state->customAnimation ? state->animations.at(0) : "Trungdon";
+
+	// xử lý action
+	skeletonAnimation->clearTracks();
+	skeletonAnimation->setAnimation(0, animation, false);
+	skeletonAnimation->setTimeScale(1.5f);
+	skeletonAnimation->setCompleteListener([=](int trackID, int loopCount) {
+		state->customAnimation = true;
+		state->animations.clear();
+		state->animations.push_back("Stand");
+		state->setState(R::CharacterState::STAND);
+	});
+
+
+	if (state->direction == R::Direction::LEFT) {
+		physicSystem->push(e, 180, 160);
+		physicSystem->clampVelocity(e, 0, 160);
+		skeletonAnimation->clearTracks();
+		skeletonAnimation->setAnimation(0, animation, false);
+		skeletonAnimation->setTimeScale(1.5f);
+		skeletonAnimation->setCompleteListener(
+			[=](int trackIndex, int loopCount) {
+			pos->x -= 20;
+			state->customAnimation = true;
+			state->animations.clear();
+			state->animations.push_back("Stand");
+			state->setState(R::CharacterState::STAND);
+
+		});
+		node->setScaleX(1);
+	}
+	else if (state->direction == R::Direction::RIGHT) {
+		physicSystem->push(e, 0, 160);
+		physicSystem->clampVelocity(e, 0, 160);
+		skeletonAnimation->clearTracks();
+		skeletonAnimation->setAnimation(0, animation, false);
+		skeletonAnimation->setTimeScale(1.5f);
+		skeletonAnimation->setCompleteListener(
+			[=](int trackIndex, int loopCount) {
+			pos->x += 20;
+			state->customAnimation = true;
+			state->animations.clear();
+			state->animations.push_back("Stand");
+			state->setState(R::CharacterState::STAND);
+
+		});
+		node->setScaleX(-1);
+	}
+	else if (state->direction == R::Direction::AUTO) {
+		skeletonAnimation->clearTracks();
+		skeletonAnimation->setAnimation(0, animation, false);
+		skeletonAnimation->setTimeScale(1.5f);
+		skeletonAnimation->setCompleteListener(
+			[=](int trackIndex, int loopCount) {
+			pos->x -= node->getScaleX() == 1 ? 20 : -20;
+			state->customAnimation = true;
+			state->animations.clear();
+			state->animations.push_back("Stand");
+			state->setState(R::CharacterState::STAND);
+		});
+	}
+
+
+
+
+
+
+}
+
 void CharacterStateSystem::actionJump(artemis::Entity &e){
 	StateComponent* state = (StateComponent*)e.getComponent<StateComponent>();
 	PhysicSystem* physicSystem = (PhysicSystem*)world->getSystemManager()->getSystem<PhysicSystem>();
@@ -241,4 +344,10 @@ void CharacterStateSystem::actionBeat(artemis::Entity &e){
 		state->animations.push_back("Stand");
 		state->setState(R::CharacterState::STAND);
 	});
+
+	AttackComponent* attackComponent = new AttackComponent();
+	attackComponent->whoAttack = ((CharacterTypeComponent*)e.getComponent<CharacterTypeComponent>())->type;
+	attackComponent->powerOfAttack = 10;
+
+	EntityUtils::getInstance()->createAttackEntity(e, attackComponent);
 }

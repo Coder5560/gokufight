@@ -25,11 +25,20 @@ bool HelloWorld::init() {
 	if (!LayerColor::initWithColor(Color4B::WHITE)) {
 		return false;
 	}
+	auto layer = LayerColor::create(Color4B::WHITE);
+	layer->setContentSize(Size(1600,1000));
+	layer->setPositionY(220);
+
+
+
+
+
 	auto cameraHud = Camera::create();
 	cameraHud->setCameraFlag(CameraFlag::USER1);
 	this->addChild(cameraHud);
 	this->setKeypadEnabled(true);
 	this->addChild(RenderLayer::getInstance()->getBackgroundLayer());
+	this->addChild(layer);
 	this->addChild(RenderLayer::getInstance()->getGameLayer());
 	this->addChild(RenderLayer::getInstance()->getHudLayer());
 
@@ -58,10 +67,9 @@ bool HelloWorld::init() {
 	// giả lập background
 
 	LayerColor* layerColor = LayerColor::create(Color4B::BLACK);
-	layerColor->setContentSize(Size(getContentSize().width, 210));
+	layerColor->setContentSize(Size(getContentSize().width, 220));
 
 	RenderLayer::getInstance()->getBackgroundLayer()->addChild(layerColor, 1);
-
 	return true;
 }
 

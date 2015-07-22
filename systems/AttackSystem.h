@@ -11,6 +11,8 @@ public:
 	virtual void processEntity(artemis::Entity &e);
 	virtual void end();
 
+	virtual bool attackToEntity(artemis::Entity& attackEntity, artemis::Entity &entity);
+
 protected :
 	artemis::ComponentMapper<AttackComponent> attackMapper;
 	artemis::ComponentMapper<PosComponent> posMapper;

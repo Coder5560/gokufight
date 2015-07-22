@@ -3,6 +3,7 @@
 #include "GameHud.h"
 #include "spine/spine-cocos2dx.h"
 #include "R.h"
+#include "characters/CharacterBase.h"
 class PosComponent;
 class GravityComponent;
 class PhysicComponent;
@@ -27,6 +28,7 @@ public:
 
 class PosComponent : public artemis::Component{
 public:
+	PosComponent();
 	PosComponent(float posX, float posY);
 	float x;
 	float y;
@@ -169,6 +171,8 @@ public:
 	StateComponent();
 
 	void setState(R::CharacterState newState);
+
+	CharacterBase* characterBase;
 	R::Direction direction;
 	R::CharacterState state;
 	float time_on_state;
@@ -177,8 +181,17 @@ public:
 	std::vector<std::string> animations;
 
 };
-class AttackComponent : public artemis::Entity{
+
+class CharacterTypeComponent : public artemis::Component{
 public :
+	CharacterTypeComponent();
+	CharacterTypeComponent(R::CharacterType name);
+	R::CharacterType type;
+
+};
+class AttackComponent : public artemis::Component{
+public :
+	AttackComponent();
 	R::CharacterType whoAttack;
 	bool expire;
 	float powerOfAttack;

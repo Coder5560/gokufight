@@ -1,6 +1,7 @@
 #pragma once
 #include "artemis/Artemis.h"
 #include "gokuartermis/Systems.h"
+#include "systems/EntityUtils.h"
 
 
 class CharacterStateSystem : public artemis::EntityProcessingSystem
@@ -23,6 +24,7 @@ public:
 	virtual void actionBeat(artemis::Entity &e);
 	virtual void actionPunch(artemis::Entity &e);
 	virtual void actionAttact(artemis::Entity &e);
+	virtual void actionTrungDon(artemis::Entity &e);
 	virtual void actionDie(artemis::Entity &e);
 
 protected:

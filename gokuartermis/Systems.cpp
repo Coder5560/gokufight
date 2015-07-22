@@ -2,6 +2,7 @@
 #include "gokuartermis/Components.h"
 #include "RenderLayer.h"
 #include "gokuartermis/CharacterSystem.h"
+#include "RenderLayer.h"
 Systems::Systems() {
 }
 
@@ -140,38 +141,6 @@ void WallSensorSystem::processEntity(artemis::Entity &e) {
 	wallSensor->wallAngle = onFloor ? 90 : onCelling ? -90 : onWallRight ? 0 :
 		onWallLeft ? 180 : 90;
 
-}
-
-bool WallSensorSystem::checkProcessing() {
-	return true;
-}
-
-void WallSensorSystem::end() {
-
-}
-
-AfterPhysicSystem::AfterPhysicSystem() {
-	addComponentType<PosComponent>();
-	addComponentType<PhysicComponent>();
-	addComponentType<WallSensorComponent>();
-
-}
-void AfterPhysicSystem::initialize() {
-	psm.init(*world);
-	pym.init(*world);
-	wm.init(*world);
-}
-void AfterPhysicSystem::begin() {
-
-}
-
-void AfterPhysicSystem::processEntity(artemis::Entity &e) {
-	PhysicComponent* physic = (PhysicComponent*)(pym.get(e));
-	PosComponent* position = (PosComponent*)(psm.get(e));
-	WallSensorComponent* wallSensor = (WallSensorComponent*)(wm.get(e));
-
-	position->x += physic->vx * world->getDelta();
-	position->y += physic->vy * world->getDelta();
 
 	if (physic->vr != 0) {
 		//entityrotation = physic->vr*world->getDelta();
@@ -209,15 +178,42 @@ void AfterPhysicSystem::processEntity(artemis::Entity &e) {
 		//	CCLOG("On Floor");
 		physic->vy = 0;
 	}
+	
 }
 
-bool AfterPhysicSystem::checkProcessing() {
+bool WallSensorSystem::checkProcessing() {
 	return true;
 }
 
-void AfterPhysicSystem::end() {
+void WallSensorSystem::end() {
 
 }
+
+MotionSystem::MotionSystem() {
+	addComponentType<PosComponent>();
+	addComponentType<PhysicComponent>();
+
+
+}
+void MotionSystem::initialize() {
+	psm.init(*world);
+	pym.init(*world);
+}
+void MotionSystem::begin() {
+
+}
+
+void MotionSystem::processEntity(artemis::Entity &e) {
+	PhysicComponent* physic = (PhysicComponent*)(pym.get(e));
+	PosComponent* position = (PosComponent*)(psm.get(e));
+	position->x += physic->vx * world->getDelta();
+	position->y += physic->vy * world->getDelta();
+	
+}
+
+bool MotionSystem::checkProcessing() {	return true;}
+
+void MotionSystem::end() {}
 
 GameStateSystem::GameStateSystem() {
 	time_stay_on_state = 0;
@@ -323,30 +319,30 @@ void InputSystem::initialize() {
 void InputSystem::notifyInput(GameHud::EventType event,
 	GameHud::TouchType touchType) {
 	GameStateComponent* gameState = (GameStateComponent*)world->getTagManager()->getEntity("gameStateEntity").getComponent<GameStateComponent>();
-	artemis::Entity &testCharacter = world->getTagManager()->getEntity("goku1");
-	StateComponent* stateComponent = (StateComponent*)testCharacter.getComponent<StateComponent>();
+	artemis::Entity &goku = world->getTagManager()->getEntity("goku");
+	StateComponent* stateComponent = (StateComponent*)goku.getComponent<StateComponent>();
 	//	if (gameState->gameState == GameStateComponent::GameState::FIGHTING){
 
-	artemis::Entity& e = world->getTagManager()->getEntity("goku");
-	CharacterInfoComponent* characterInfo = (CharacterInfoComponent*)e.getComponent<CharacterInfoComponent>();
-	GokuCharacter* gokuSystem =
-		(GokuCharacter*)(world->getSystemManager()->getSystem<
-		GokuCharacter>());
+	CharacterInfoComponent* characterInfo = (CharacterInfoComponent*)goku.getComponent<CharacterInfoComponent>();
+	
 
 
 	switch (event){
 	case GameHud::EventType::BEGIN:
 		if (touchType == GameHud::TouchType::TAP){
 			CCLOG("Beat");
-			gokuSystem->actionBeat1(R::Direction::AUTO);
-			stateComponent->customAnimation = true;
-			stateComponent->animations.clear();
-			stateComponent->animations.push_back("Beat1");
+		//	gokuSystem->actionBeat1(R::Direction::AUTO);
+			
+			//stateComponent->customAnimation = true;
+			//stateComponent->animations.clear();
+			//stateComponent->animations.push_back("Beat1");
 			stateComponent->setState(R::CharacterState::BEAT);
+			stateComponent->characterBase->changeState(goku);
+
 		}
 		else if (touchType == GameHud::TouchType::LONG_PRESS){
 			CCLOG("Punch");
-			gokuSystem->actionPunch1(R::Direction::AUTO);
+//gokuSystem->actionPunch1(R::Direction::AUTO);
 			stateComponent->customAnimation = true;
 			stateComponent->animations.clear();
 			stateComponent->animations.push_back("Punch1");
@@ -354,7 +350,7 @@ void InputSystem::notifyInput(GameHud::EventType event,
 		}
 		else if (touchType == GameHud::TouchType::LEFT){
 			CCLOG("LEFT");
-			gokuSystem->actionMove(R::Direction::LEFT);
+		//	gokuSystem->actionMove(R::Direction::LEFT);
 
 			stateComponent->customAnimation = true;
 			stateComponent->animations.clear();
@@ -373,7 +369,7 @@ void InputSystem::notifyInput(GameHud::EventType event,
 			stateComponent->setState(R::CharacterState::RIGHT);
 			stateComponent->direction = R::Direction::RIGHT;
 
-			gokuSystem->actionMove(R::Direction::RIGHT);
+//gokuSystem->actionMove(R::Direction::RIGHT);
 
 		}
 		else if (touchType == GameHud::TouchType::TOP){
@@ -382,11 +378,11 @@ void InputSystem::notifyInput(GameHud::EventType event,
 			stateComponent->animations.clear();
 			stateComponent->animations.push_back("Jump1");
 			stateComponent->setState(R::CharacterState::JUMP);
-			gokuSystem->actionJump1(R::Direction::AUTO);
+		//	gokuSystem->actionJump1(R::Direction::AUTO);
 		}
 		else if (touchType == GameHud::TouchType::TOP_LEFT){
 			CCLOG("JUMP_LEFT");
-			gokuSystem->actionJump1(R::Direction::TOP_LEFT);
+		//	gokuSystem->actionJump1(R::Direction::TOP_LEFT);
 			stateComponent->customAnimation = true;
 			stateComponent->animations.clear();
 			stateComponent->animations.push_back("Jump1");
@@ -397,7 +393,7 @@ void InputSystem::notifyInput(GameHud::EventType event,
 		}
 		else if (touchType == GameHud::TouchType::TOP_RIGHT){
 			CCLOG("JUMP_RIGHT");
-			gokuSystem->actionJump1(R::Direction::TOP_RIGHT);
+		//	gokuSystem->actionJump1(R::Direction::TOP_RIGHT);
 			stateComponent->customAnimation = true;
 			stateComponent->animations.clear();
 			stateComponent->animations.push_back("Jump1");
@@ -406,15 +402,15 @@ void InputSystem::notifyInput(GameHud::EventType event,
 
 		}
 		else if (touchType == GameHud::TouchType::BOTTOM_LEFT){
-			gokuSystem->actionKick1(R::Direction::LEFT);
+		//	gokuSystem->actionKick1(R::Direction::LEFT);
 			CCLOG("KICK_LEFT");
 		}
 		else if (touchType == GameHud::TouchType::BOTTOM_RIGHT){
-			gokuSystem->actionKick1(R::Direction::RIGHT);
+		//	gokuSystem->actionKick1(R::Direction::RIGHT);
 			CCLOG("KICK_RIGHT");
 		}
 		else if (touchType == GameHud::TouchType::BOTTOM){
-			gokuSystem->actionKick1(R::Direction::AUTO);
+		//	gokuSystem->actionKick1(R::Direction::AUTO);
 			stateComponent->customAnimation = true;
 			stateComponent->animations.clear();
 			stateComponent->animations.push_back("Kick1");
@@ -428,7 +424,7 @@ void InputSystem::notifyInput(GameHud::EventType event,
 	case GameHud::EventType::HOLD:
 
 		if (touchType == GameHud::TouchType::LEFT){
-			gokuSystem->actionMoveOn(R::Direction::LEFT);
+		//	gokuSystem->actionMoveOn(R::Direction::LEFT);
 			stateComponent->customAnimation = true;
 			stateComponent->animations.clear();
 			stateComponent->animations.push_back("Move");
@@ -438,7 +434,7 @@ void InputSystem::notifyInput(GameHud::EventType event,
 		}
 		else if (touchType == GameHud::TouchType::RIGHT){
 			CCLOG("MOVE on RIGHT");
-			gokuSystem->actionMoveOn(R::Direction::RIGHT);
+		//	gokuSystem->actionMoveOn(R::Direction::RIGHT);
 			stateComponent->customAnimation = true;
 			stateComponent->animations.clear();
 			stateComponent->animations.push_back("Move");
@@ -451,14 +447,14 @@ void InputSystem::notifyInput(GameHud::EventType event,
 
 		if (characterInfo->state != R::CharacterState::JUMP){
 			if (touchType == GameHud::TouchType::LEFT){
-				gokuSystem->actionStand();
+		//		gokuSystem->actionStand();
 				stateComponent->customAnimation = true;
 				stateComponent->animations.clear();
 				stateComponent->animations.push_back("Stand");
 				stateComponent->setState(R::CharacterState::STAND);
 			}
 			else if (touchType == GameHud::TouchType::RIGHT){
-				gokuSystem->actionStand();
+		//		gokuSystem->actionStand();
 				stateComponent->customAnimation = true;
 				stateComponent->animations.clear();
 				stateComponent->animations.push_back("Stand");
@@ -521,6 +517,8 @@ void UICharacterSystem::initialize(){
 	characterInfoMapper.init(*world);
 }
 void UICharacterSystem::createNodeForCharacter(CharacterInfoComponent* characterInfo){
+	std::string str = "Character :" + characterInfo->tag;
+	CCLOG(str.c_str());
 	NodeInfo* node = new NodeInfo();
 	node->createNode(characterInfo);
 	renderObjects.insert(std::pair<std::string, NodeInfo*>(characterInfo->tag, node));
@@ -544,3 +542,40 @@ void UICharacterSystem::processEntity(artemis::Entity &e){
 }
 
 
+DebugSystem::DebugSystem(){
+	addComponentType<PosComponent>();
+	addComponentType<BoundComponent>();
+
+	
+	
+}
+void DebugSystem::initialize(){
+	posMapper.init(*world);
+	boundMapper.init(*world);
+	Node* node = RenderLayer::getInstance()->createHudNode();
+	node->setTag(100);
+}
+void DebugSystem::begin(){
+	Node* node = RenderLayer::getInstance()->getHudLayer()->getChildByTag(100);
+	node->removeAllChildrenWithCleanup(true);
+}
+void DebugSystem::processEntity(artemis::Entity &e){
+	PosComponent* position = posMapper.get(e);
+	BoundComponent* bound = boundMapper.get(e);
+
+	auto rectNode = DrawNode::create();
+
+	Vec2 rectangle[4];
+	rectangle[0] = Vec2(position->x + bound->x1, position->y + bound->y1);
+	rectangle[1] = Vec2(position->x + bound->x2, position->y + bound->y1);
+	rectangle[2] = Vec2(position->x + bound->x2, position->y + bound->y2);
+	rectangle[3] = Vec2(position->x + bound->x1, position->y + bound->y2);
+
+	Color4F white(1, 0, 0, 1);
+	rectNode->drawLine(rectangle[0],rectangle[1],white);
+	rectNode->drawLine(rectangle[1], rectangle[2], white);
+	rectNode->drawLine(rectangle[2], rectangle[3], white);
+	rectNode->drawLine(rectangle[3], rectangle[0], white);
+	
+	RenderLayer::getInstance()->getHudLayer()->getChildByTag(100)->addChild(rectNode);
+}

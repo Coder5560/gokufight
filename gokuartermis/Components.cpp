@@ -8,6 +8,7 @@ Components::Components(){}
 
 Components::~Components(){}
 
+PosComponent::PosComponent():x(0),y(0){}
 PosComponent::PosComponent(float posX, float posY){
 	this->x = posX;
 	this->y = posY;
@@ -104,10 +105,15 @@ CharacterInfoComponent::CharacterInfoComponent() :state(R::CharacterState::STAND
 
 DecisionComponent::DecisionComponent():thinkingTime(0),DECISION_TIME(2){}
 
-StateComponent::StateComponent() : state(R::CharacterState::STAND), time_on_state(0), customAnimation(false), direction(R::Direction::AUTO){ animations.push_back("Stand");}
+StateComponent::StateComponent() : characterBase(nullptr),state(R::CharacterState::STAND), time_on_state(1), customAnimation(false), direction(R::Direction::AUTO){ animations.push_back("Stand");}
 
 void StateComponent::setState(R::CharacterState newState){
 	this->state = newState;
-	time_on_state = 0;
-	
+	time_on_state = 0;	
 }
+
+AttackComponent::AttackComponent():whoAttack(R::CharacterType::NONAME), expire(false), powerOfAttack(0),timeAttack(-1), collisionPointX(-1), collisionPointY(-1){}
+
+CharacterTypeComponent::CharacterTypeComponent() : type(R::CharacterType::NONAME){}
+
+CharacterTypeComponent::CharacterTypeComponent(R::CharacterType name) : type(name){}

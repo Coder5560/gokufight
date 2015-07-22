@@ -11,13 +11,13 @@ USING_NS_CC;
 
 class GravitySystem;
 class PhysicSystem;
-class AfterPhysicSystem;
+class MotionSystem;
 class WallSensorSystem;
 class GameStateSystem;
 class MapCollisionSystem;
 class InputSystem;
 class SkeletonSystem;
-
+class DebugSystem;
 class UICharacterSystem;
 
 class Systems {
@@ -26,7 +26,7 @@ public:
 	~Systems();
 };
 
-class GravitySystem: public artemis::EntityProcessingSystem {
+class GravitySystem : public artemis::EntityProcessingSystem {
 
 public:
 	GravitySystem();
@@ -42,7 +42,7 @@ private:
 	artemis::ComponentMapper<GravityComponent> gm;
 };
 
-class PhysicSystem: public artemis::EntityProcessingSystem {
+class PhysicSystem : public artemis::EntityProcessingSystem {
 public:
 	PhysicSystem();
 	virtual void initialize();
@@ -57,9 +57,9 @@ private:
 
 };
 
-class AfterPhysicSystem: public artemis::EntityProcessingSystem {
+class MotionSystem : public artemis::EntityProcessingSystem {
 public:
-	AfterPhysicSystem();
+	MotionSystem();
 	virtual void initialize();
 	virtual void begin();
 	virtual void processEntity(artemis::Entity &e);
@@ -68,10 +68,9 @@ public:
 private:
 	artemis::ComponentMapper<PosComponent> psm;
 	artemis::ComponentMapper<PhysicComponent> pym;
-	artemis::ComponentMapper<WallSensorComponent> wm;
 };
 
-class WallSensorSystem: public artemis::EntityProcessingSystem {
+class WallSensorSystem : public artemis::EntityProcessingSystem {
 public:
 
 	WallSensorSystem();
@@ -89,7 +88,7 @@ private:
 	artemis::ComponentMapper<PhysicComponent> physicMapper;
 };
 
-class GameStateSystem: public artemis::EntityProcessingSystem {
+class GameStateSystem : public artemis::EntityProcessingSystem {
 public:
 	GameStateSystem();
 	virtual void initialize();
@@ -114,7 +113,7 @@ private:
 
 };
 
-class MapCollisionSystem: public artemis::EntityProcessingSystem {
+class MapCollisionSystem : public artemis::EntityProcessingSystem {
 public:
 	MapCollisionSystem();
 	virtual void initialize();
@@ -130,7 +129,7 @@ private:
 	artemis::ComponentMapper<BoundComponent> boundMapper;
 };
 
-class InputSystem: public artemis::EntityProcessingSystem {
+class InputSystem : public artemis::EntityProcessingSystem {
 public:
 	InputSystem();
 	virtual void initialize();
@@ -139,7 +138,7 @@ public:
 
 };
 
-class SkeletonSystem: public artemis::EntityProcessingSystem {
+class SkeletonSystem : public artemis::EntityProcessingSystem {
 
 public:
 	SkeletonSystem();
@@ -158,7 +157,7 @@ private:
 
 };
 
-class UICharacterSystem: public artemis::EntityProcessingSystem {
+class UICharacterSystem : public artemis::EntityProcessingSystem {
 
 public:
 	UICharacterSystem();
@@ -171,3 +170,17 @@ protected:
 	artemis::ComponentMapper<CharacterInfoComponent> characterInfoMapper;
 };
 
+
+class DebugSystem : public artemis::EntityProcessingSystem {
+
+public:
+	DebugSystem();
+	virtual void initialize();
+	virtual void begin();
+	virtual void processEntity(artemis::Entity &e);
+protected:
+
+	artemis::ComponentMapper<PosComponent> posMapper;
+	artemis::ComponentMapper<BoundComponent> boundMapper;
+
+};

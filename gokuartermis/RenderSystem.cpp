@@ -6,6 +6,7 @@ RenderSystem::RenderSystem()
 	addComponentType<RenderComponent>();
 	addComponentType<PosComponent>();
 
+
 }
 
 
@@ -18,9 +19,12 @@ void RenderSystem::initialize(){
 void RenderSystem::processEntity(artemis::Entity &e){
 	RenderComponent* renderComponent = renderMapper.get(e);
 	PosComponent* posComponent = posMapper.get(e);
+
+	if (renderComponent->renderType == R::RenderType::DYNAMIC){ renderComponent->node->setPosition(Vec2(posComponent->x, posComponent->y)); }
 	if (renderComponent->renderType == R::RenderType::BLOOD){
 		renderBlood(e, (BloodComponent*)renderComponent, posComponent);
 	}
+
 
 }
 

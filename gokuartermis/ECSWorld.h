@@ -3,6 +3,7 @@
 #include "artemis/Artemis.h"
 #include "gokuartermis/Systems.h"
 #include "gokuartermis/Components.h"
+#include "systems/EntityUtils.h"
 USING_NS_CC;
 class ECSWorld
 {
@@ -18,7 +19,8 @@ public:
 
 	InputSystem* inputSystem;
 private:
-
+	void createMainCharacter();
+	void createEnemyCharacter();
 	ECSWorld();
 	~ECSWorld();
 	

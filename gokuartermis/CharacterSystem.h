@@ -72,8 +72,7 @@ public:
 	virtual void initialize();
 	virtual void processEntity(artemis::Entity &e);
 	virtual void end();
-
-	
+		
 	void actionStandUp();
 	void actionDie(R::Direction direction);
 	void actionMove(R::Direction direction);
