@@ -78,7 +78,8 @@ float BoundComponent::getCenterY(){
 }
 
 
-GameStateComponent::GameStateComponent() : gameState(GameState::PREPARE) {}
+GameStateComponent::GameStateComponent() : gameState(R::GameState::PREPARE),time_on_state(1) {}
+void GameStateComponent::setGameState(R::GameState gameState){ this->gameState = gameState; }
 
 SkeletonComponent::SkeletonComponent(){
 	skeleton = nullptr;
@@ -99,20 +100,18 @@ SkeletonComponent::SkeletonComponent(){
 	visible = true;
 }
 
-CharacterInfoComponent::CharacterInfoComponent() :state(R::CharacterState::STAND), MAX_BLOOD(-1), MAX_POWER(-1), blood(-1), power(-1), skill_a_power(-1), skill_b_power(-1), skill_x_power(-1), timeOnState(0), timeRadon(0), isMainCharacter(false) , tag(""){
-	
-}
+CharacterInfoComponent::CharacterInfoComponent() :isMainCharacter(false), MAX_BLOOD(-1), MAX_POWER(-1), blood(-1), power(-1), avatar("") {}
 
-DecisionComponent::DecisionComponent():thinkingTime(0),DECISION_TIME(2){}
+DecisionComponent::DecisionComponent():thinkingTime(0),DECISION_TIME(2),decisionBase(nullptr){}
 
-StateComponent::StateComponent() : characterBase(nullptr),state(R::CharacterState::STAND), time_on_state(1), customAnimation(false), direction(R::Direction::AUTO){ animations.push_back("Stand");}
+StateComponent::StateComponent() : attack(R::Attack::NONE),defense(R::Defense::NONE),characterBase(nullptr),state(R::CharacterState::STAND), time_on_state(1), direction(R::Direction::AUTO){}
 
 void StateComponent::setState(R::CharacterState newState){
 	this->state = newState;
 	time_on_state = 0;	
 }
 
-AttackComponent::AttackComponent():whoAttack(R::CharacterType::NONAME), expire(false), powerOfAttack(0),timeAttack(-1), collisionPointX(-1), collisionPointY(-1){}
+AttackComponent::AttackComponent():whoAttack(R::CharacterType::NONAME), expire(false), powerOfAttack(0),timeAttack(-1),timeAlive(0),maxTimeAlive(10), collisionPointX(-1), collisionPointY(-1){}
 
 CharacterTypeComponent::CharacterTypeComponent() : type(R::CharacterType::NONAME){}
 

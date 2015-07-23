@@ -27,6 +27,7 @@ bool HelloWorld::init() {
 	}
 	auto layer = LayerColor::create(Color4B::WHITE);
 	layer->setContentSize(Size(1600,1000));
+	layer->setPositionX(-200);
 	layer->setPositionY(220);
 
 
@@ -77,7 +78,6 @@ void HelloWorld::onKeyReleased(EventKeyboard::KeyCode keyCode, Event* event) {
 	if (keyCode == EventKeyboard::KeyCode::KEY_BACK) {
 		Director::getInstance()->end();
 	}
-
 }
 void HelloWorld::update(float delta) {
 	ECSWorld::getInstance()->processWorld(delta);

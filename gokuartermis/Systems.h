@@ -52,9 +52,7 @@ public:
 	void clampVelocity(artemis::Entity &entity, float minSpeed, float maxSpeed);
 
 private:
-
 	artemis::ComponentMapper<PhysicComponent> physicMapper;
-
 };
 
 class MotionSystem : public artemis::EntityProcessingSystem {
@@ -104,7 +102,7 @@ public:
 	virtual void switchToPause();
 	virtual void switchToResume();
 
-	void switchToState(GameStateComponent::GameState state, artemis::Entity* e);
+	void switchToState(R::GameState state, artemis::Entity* e);
 private:
 
 	artemis::ComponentMapper<GameStateComponent> gameStateMapper;

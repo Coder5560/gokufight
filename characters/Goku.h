@@ -1,6 +1,10 @@
 #pragma once
 #include "characters/CharacterBase.h"
 #include "R.h"
+#include "cocos2d.h"
+#include "gokuartermis/Components.h"
+#include "systems/EntityUtils.h"
+
 class Goku :public CharacterBase
 {
 public:
@@ -10,7 +14,7 @@ public:
 	virtual void changeState(artemis::Entity &e);
 
 
-	virtual void actionStand(artemis::Entity &e);
+	void actionStand(artemis::Entity &e);
 	void actionStandUp(artemis::Entity &e );
 	void actionDie(artemis::Entity &e, R::Direction direction);
 	void actionMove(artemis::Entity &e, R::Direction direction);

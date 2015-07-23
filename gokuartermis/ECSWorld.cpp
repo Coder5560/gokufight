@@ -1,11 +1,12 @@
 #include "gokuartermis/ECSWorld.h"
 #include "gokuartermis/Components.h"
 #include "gokuartermis/Systems.h"
-#include "gokuartermis/CharacterSystem.h"
+#include "gokuartermis/DecisionSystem.h"
 #include "systems/CharacterStateSystem.h"
 #include "systems/AttackSystem.h"
 #include "RenderSystem.h"
 #include "Characters/Goku.h"
+#include "Characters/Giran.h"
 ECSWorld* ECSWorld::instance = NULL;
 ECSWorld::ECSWorld() : goku(nullptr), world(nullptr)
 {
@@ -29,9 +30,12 @@ void ECSWorld::createWorld(){
 	world = new artemis::World();
 	EntityUtils::getInstance()->setWorld(world);
 
-	createMainCharacter();
-	createEnemyCharacter();
 
+	artemis::Entity &e = world->createEntity();
+	e.addComponent(new GameStateComponent());
+	e.refresh();
+	createEnemyCharacter();
+	createMainCharacter();
 
 
 
@@ -53,12 +57,11 @@ void ECSWorld::createWorld(){
 	setSystem(new WallSensorSystem());
 	setSystem(new MotionSystem());
 	setSystem(new SkeletonSystem());
-	setSystem(new CharacterCollisionSystem());
 	setSystem(new UICharacterSystem());
 	setSystem(new CharacterStateSystem());
 	setSystem(new RenderSystem());
 	setSystem(new AttackSystem());
-	setSystem(new DebugSystem());
+	//setSystem(new DebugSystem());
 	setSystem(new DecisionSystem());
 
 	world->getSystemManager()->initializeAll();
@@ -67,16 +70,14 @@ void ECSWorld::createWorld(){
 
 void ECSWorld::createMainCharacter(){	// create main Character
 	CharacterInfoComponent* characterInfo = new CharacterInfoComponent();
-	characterInfo->state = R::CharacterState::STAND;
-	characterInfo->tag = "goku";
+	characterInfo->avatar = "textures/goku.png";
 	characterInfo->isMainCharacter = true;
 	characterInfo->MAX_BLOOD = 100;
 	characterInfo->MAX_POWER = 60;
 	characterInfo->blood = 100;
 	characterInfo->power = 100;
-	characterInfo->skill_a_power = 5;
-	characterInfo->skill_b_power = 5;
-	characterInfo->skill_x_power = 5;
+
+	
 
 	//create keletoncomponent
 	spine::SkeletonAnimation* skeletonAnimation =
@@ -98,6 +99,12 @@ void ECSWorld::createMainCharacter(){	// create main Character
 
 	StateComponent* stateComponent = new StateComponent();
 	stateComponent->characterBase = new Goku();
+	stateComponent->setState(R::CharacterState::START);
+
+	DecisionComponent* decisionComponent = new DecisionComponent();
+	decisionComponent->decisionBase = new GokuDecision();
+	decisionComponent->decisionBase->setWorld(world);
+
 
 	artemis::Entity &character = (world->getEntityManager()->create());
 	character.addComponent(new CharacterTypeComponent(R::CharacterType::GOKU));
@@ -109,7 +116,8 @@ void ECSWorld::createMainCharacter(){	// create main Character
 	character.addComponent(stateComponent);
 	character.addComponent(characterSkeleton);
 	character.addComponent(characterInfo);
-	character.setTag(characterInfo->tag);
+	character.addComponent(decisionComponent);
+	character.setTag("goku");
 	character.refresh();
 
 	((PhysicComponent*)(character.getComponent<PhysicComponent>()))->bounce = 0;
@@ -117,16 +125,12 @@ void ECSWorld::createMainCharacter(){	// create main Character
 void ECSWorld::createEnemyCharacter(){
 
 	CharacterInfoComponent* characterInfo = new CharacterInfoComponent();
-	characterInfo->state = R::CharacterState::STAND;
-	characterInfo->tag = "giran";
-	characterInfo->isMainCharacter = false;
+	characterInfo->avatar = "textures/giran.png";
 	characterInfo->MAX_BLOOD = 100;
 	characterInfo->MAX_POWER = 60;
 	characterInfo->blood = 100;
 	characterInfo->power = 100;
-	characterInfo->skill_a_power = 5;
-	characterInfo->skill_b_power = 5;
-	characterInfo->skill_x_power = 5;
+
 
 	//create keletoncomponent
 	spine::SkeletonAnimation* skeletonAnimation =
@@ -134,7 +138,7 @@ void ECSWorld::createEnemyCharacter(){
 		"spine/Giran.atlas");
 	skeletonAnimation->setAnimation(0, "Stand", true);
 	skeletonAnimation->setSkin("giran");
-	skeletonAnimation->setScale(.5);
+	skeletonAnimation->setScale(.6);
 
 	Node* node = RenderLayer::getInstance()->createGameNode();
 	node->setAnchorPoint(Vec2(.5, .5));
@@ -146,6 +150,15 @@ void ECSWorld::createEnemyCharacter(){
 	characterSkeleton->node = node;
 	characterSkeleton->isCreated = true;
 
+	DecisionComponent* decisionComponent = new DecisionComponent();
+	decisionComponent->DECISION_TIME = .4;
+	decisionComponent->decisionBase = new GiranDecision();
+	decisionComponent->decisionBase->setWorld(world);
+
+	StateComponent* stateComponent = new StateComponent();
+	stateComponent->characterBase = new Giran();
+
+
 	artemis::Entity &character = (world->getEntityManager()->create());
 	character.addComponent(new CharacterTypeComponent(R::CharacterType::GIRAN));
 	character.addComponent(new PosComponent(3 * Director::getInstance()->getVisibleSize().width / 4, Director::getInstance()->getVisibleSize().height / 2));
@@ -153,11 +166,11 @@ void ECSWorld::createEnemyCharacter(){
 	character.addComponent(new WallSensorComponent());
 	character.addComponent(new GravityComponent());
 	character.addComponent(new PhysicComponent());
-	character.addComponent(new DecisionComponent());
-	character.addComponent(new StateComponent());
+	character.addComponent(decisionComponent);
+	character.addComponent(stateComponent);
 	character.addComponent(characterSkeleton);
 	character.addComponent(characterInfo);
-	character.setTag(characterInfo->tag);
+	character.setTag("giran");
 	character.setGroup("enemy");
 	character.refresh();
 	

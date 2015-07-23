@@ -4,6 +4,8 @@
 #include "spine/spine-cocos2dx.h"
 #include "R.h"
 #include "characters/CharacterBase.h"
+#include "characters/DecisionBase.h"
+
 class PosComponent;
 class GravityComponent;
 class PhysicComponent;
@@ -14,8 +16,7 @@ class CharacterInfoComponent;
 class SkeletonComponent;
 class DecisionComponent;
 class AttackComponent;
-
-
+class DecisionBase;
 
 class Components
 {
@@ -95,42 +96,22 @@ class GameStateComponent: public artemis::Component{
 
 public:
 	GameStateComponent();
-	enum GameState{
-		// đây là bước chuẩn bị vào game, mọi thao tác trong game chưa hoạt động, các sự kiện diễn ra trên nền UI.
-		PREPARE,
-		// Chuẩn bị vào trận đấu
-		ANIMATING_TO_FIGHT,
-		// Hoạt cảnh thắng
-		WIN_EFFECT,
-		// Hoạt cảnh thua
-		LOSE_EFFECT,
-		// Hoạt cảnh chọn người chơi
-		CHOSE_PLAYER,
-		// Hoạt cảnh lúc chiến đấu.
-		FIGHTING,
-	};
-	GameState gameState;
+	void setGameState(R::GameState gameState);
+	R::GameState gameState;
+	float time_on_state;
+
 };
 
 class CharacterInfoComponent : public artemis::Component{
 public :
 
 	CharacterInfoComponent();
-	R::CharacterState state;
-	std::string tag;
 	bool isMainCharacter;
-	float timeOnState;
-	float timeRadon;
-
+	std::string avatar;
 	float MAX_BLOOD;
 	float MAX_POWER;
 	float blood;
 	float power;
-	
-	float skill_a_power;
-	float skill_b_power;
-	float skill_x_power;
-
 };
 
 class SkeletonComponent : public artemis::Component{
@@ -159,11 +140,12 @@ public :
 class DecisionComponent : public artemis::Component{
 public :
 	DecisionComponent();
+
+	DecisionBase* decisionBase;
 	//thời gian mà entity đã suy nghĩ.
 	float thinkingTime;
 	// thời gian ra quyết định.
 	float DECISION_TIME;
-
 };
 class StateComponent : public artemis::Component{
 public:
@@ -175,11 +157,11 @@ public:
 	CharacterBase* characterBase;
 	R::Direction direction;
 	R::CharacterState state;
+	R::Attack attack;
+	R::Defense defense;
+
+
 	float time_on_state;
-
-	bool customAnimation;
-	std::vector<std::string> animations;
-
 };
 
 class CharacterTypeComponent : public artemis::Component{
@@ -195,6 +177,8 @@ public :
 	R::CharacterType whoAttack;
 	bool expire;
 	float powerOfAttack;
+	float maxTimeAlive;
+	float timeAlive;
 	float timeAttack;
 	float collisionPointX;
 	float collisionPointY;

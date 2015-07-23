@@ -4,6 +4,7 @@
 #include "gokuartermis/Systems.h"
 #include "gokuartermis/Components.h"
 #include "systems/EntityUtils.h"
+#include "characters/DecisionBase.h"
 USING_NS_CC;
 class ECSWorld
 {

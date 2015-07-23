@@ -1,5 +1,6 @@
 #pragma once
 #include "artemis/Artemis.h"
+
 class CharacterBase
 {
 public:
