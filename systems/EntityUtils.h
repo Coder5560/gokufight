@@ -15,16 +15,16 @@ public:
 	void clampVelocity(artemis::Entity &entity, float minSpeed, float maxSpeed);
 
 
-	void createAttackEntity(artemis::Entity &attackEntity, artemis::Component* attackComponent);
-	virtual void createGokuPunchAttack(artemis::Entity &attackEntity, artemis::Component* attackComponent);
-	virtual void createGokuBeatAttack(artemis::Entity &attackEntity, artemis::Component* attackComponent);
-	virtual void createGokuKickAttack(artemis::Entity &attackEntity, artemis::Component* attackComponent);
+	void createAttackEntity(artemis::Entity &attackEntity, AttackComponent* attackComponent);
+	virtual void createGokuPunchAttack(artemis::Entity &attackEntity,AttackComponent* attackComponent);
+	virtual void createGokuBeatAttack(artemis::Entity &attackEntity, AttackComponent* attackComponent);
+	virtual void createGokuKickAttack(artemis::Entity &attackEntity, AttackComponent* attackComponent);
 
-	virtual void createGiranAttack1(artemis::Entity &attackEntity, artemis::Component* attackComponent);
-	virtual void createGiranAttack2(artemis::Entity &attackEntity, artemis::Component* attackComponent);
-	virtual void createGiranAttack3(artemis::Entity &attackEntity, artemis::Component* attackComponent);
+	virtual void createGiranAttack1(artemis::Entity &attackEntity, AttackComponent* attackComponent);
+	virtual void createGiranAttack2(artemis::Entity &attackEntity, AttackComponent* attackComponent);
+	virtual void createGiranAttack3(artemis::Entity &attackEntity, AttackComponent* attackComponent);
 
-
+	virtual void removeEntity(artemis::Entity &e);
 private :
 	static EntityUtils* instance;
 	artemis::World* world;

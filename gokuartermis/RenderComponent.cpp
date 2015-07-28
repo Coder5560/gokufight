@@ -1,14 +1,16 @@
 #include "RenderComponent.h"
 
 
-RenderComponent::RenderComponent()
+RenderComponent::RenderComponent() : renderTime(0), timeToApper(0), removeFromWorld(false)
 {
 	renderType = R::RenderType::NONE;
 	node = RenderLayer::getInstance()->createGameNode();
 }
 
 
-RenderComponent::~RenderComponent(){}
+RenderComponent::~RenderComponent(){ 
+	
+}
 
 BloodComponent::BloodComponent(){
 	BloodComponent::RenderComponent();

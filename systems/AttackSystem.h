@@ -1,6 +1,8 @@
 #pragma once
 #include "gokuartermis/Systems.h"
 #include "gokuartermis/Components.h"
+#include "renders/Effects.h"
+#include "systems/EntityUtils.h"
 
 class AttackSystem : public artemis::EntityProcessingSystem
 {
@@ -13,9 +15,13 @@ public:
 
 	virtual bool attackToEntity(artemis::Entity& attackEntity, artemis::Entity &entity);
 
-protected :
+protected:
 	artemis::ComponentMapper<AttackComponent> attackMapper;
 	artemis::ComponentMapper<PosComponent> posMapper;
 	artemis::ComponentMapper<BoundComponent> boundMapper;
+	artemis::ComponentMapper<PhysicComponent> physicMapper;
+	artemis::ComponentMapper<GravityComponent> gravityMapper;
+	artemis::ComponentMapper<WallSensorComponent> wallSensorMapper;
+
 };
 

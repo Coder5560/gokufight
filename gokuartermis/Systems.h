@@ -6,7 +6,9 @@
 #include "GameHud.h"
 #include "spine/SkeletonAnimation.h"
 #include "R.h"
-#include "NodeInfo.h"
+#include "renders/NodeInfo.h"
+#include "renders/Effects.h"
+
 USING_NS_CC;
 
 class GravitySystem;
@@ -19,6 +21,8 @@ class InputSystem;
 class SkeletonSystem;
 class DebugSystem;
 class UICharacterSystem;
+class RemoveEntitySystem;
+class DelaySystem;
 
 class Systems {
 public:
@@ -97,6 +101,7 @@ public:
 
 	virtual void switchToWin();
 	virtual void switchToLose();
+	virtual void switchToAppear();
 	virtual void switchToReady();
 	virtual void switchToFighting();
 	virtual void switchToPause();
@@ -181,4 +186,22 @@ protected:
 	artemis::ComponentMapper<PosComponent> posMapper;
 	artemis::ComponentMapper<BoundComponent> boundMapper;
 
+};
+class RemoveEntitySystem : public artemis::EntityProcessingSystem {
+
+public:
+	RemoveEntitySystem();
+	virtual void initialize();
+	virtual void processEntity(artemis::Entity &e);
+protected:
+	artemis::ComponentMapper<RemoveableComponent> removeEntityMapper;
+};
+class DelaySystem : public artemis::EntityProcessingSystem {
+
+public:
+	DelaySystem();
+	virtual void initialize();
+	virtual void processEntity(artemis::Entity &e);
+protected:
+	artemis::ComponentMapper<DelayComponent> delayMapper;
 };

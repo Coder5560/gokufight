@@ -14,6 +14,11 @@ public:
 
 	R::RenderType renderType;
 	Node* node;
+	
+	float renderTime;
+	float timeToApper;
+	bool removeFromWorld;
+
 };
 
 class BloodComponent : public RenderComponent

@@ -1,6 +1,7 @@
 ﻿#include "HelloWorldScene.h"
 #include "gokuartermis/ECSWorld.h"
 #include "gokuartermis/RenderLayer.h"
+#include "renders/Effects.h"
 
 USING_NS_CC;
 
@@ -10,7 +11,8 @@ Scene* HelloWorld::createScene() {
 
 	// 'layer' is an autorelease object
 	auto layer = HelloWorld::create();
-
+	layer->setContentSize(Size(R::Constants::MAX_SCREEN_WIDTH,R::Constants::HEIGHT_SCREEN));
+	layer->setSwallowsTouches(false);
 	// add layer as a child to scene
 	scene->addChild(layer);
 
@@ -25,52 +27,23 @@ bool HelloWorld::init() {
 	if (!LayerColor::initWithColor(Color4B::WHITE)) {
 		return false;
 	}
-	auto layer = LayerColor::create(Color4B::WHITE);
-	layer->setContentSize(Size(1600,1000));
-	layer->setPositionX(-200);
-	layer->setPositionY(220);
-
-
-
-
-
+	this->setKeypadEnabled(true);
+	this->addChild(RenderLayer::getInstance()->getBackgroundLayer());
+	this->addChild(RenderLayer::getInstance()->getGameLayer());
+	this->addChild(RenderLayer::getInstance()->getHudLayer());
 	auto cameraHud = Camera::create();
 	cameraHud->setCameraFlag(CameraFlag::USER1);
 	this->addChild(cameraHud);
-	this->setKeypadEnabled(true);
-	this->addChild(RenderLayer::getInstance()->getBackgroundLayer());
-	this->addChild(layer);
-	this->addChild(RenderLayer::getInstance()->getGameLayer());
-	this->addChild(RenderLayer::getInstance()->getHudLayer());
 
-	ECSWorld::getInstance()->createWorld();
-
-	Size visibleSize = Director::getInstance()->getWinSize();
-
+	ECSWorld::getInstance()->createWorld(R::Match_Type::GOKU_GIRAN);	
 	this->scheduleUpdate();
 
-//	Sprite* bg = Sprite::create("map1.jpg");
-//	bg->setAnchorPoint(Vec2(0, 0));
-//	bg->setPosition(Vec2(0,210));
-//	RenderLayer::getInstance()->getBackgroundLayer()->addChild(bg);
+	Sprite* bg = Sprite::create("bg1.png");
+	bg->setAnchorPoint(Vec2(0, 0));
+	bg->setPosition(Vec2(0,0));
+	RenderLayer::getInstance()->getBackgroundLayer()->addChild(bg);
 
-	gameHud = new GameHud(visibleSize);
-	gameHud->setAnchorPoint(Vec2(.5, .5));
-	gameHud->buildComponent();
-	gameHud->setCallBack(
-			[=](GameHud::EventType event, GameHud::TouchType type) {
-				ECSWorld::getInstance()->inputSystem->notifyInput(event,type);
-			});
-	RenderLayer::getInstance()->getHudLayer()->addChild(gameHud);
-	RenderLayer::getInstance()->getHudLayer()->setCameraMask(
-			(unsigned short) CameraFlag::USER1);
 
-	// giả lập background
-
-	LayerColor* layerColor = LayerColor::create(Color4B::BLACK);
-	layerColor->setContentSize(Size(getContentSize().width, 220));
-
-	RenderLayer::getInstance()->getBackgroundLayer()->addChild(layerColor, 1);
 	return true;
 }
 

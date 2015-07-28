@@ -1,7 +1,7 @@
 #include "NodeInfo.h"
 
 
-NodeInfo::NodeInfo() : characterTag(""), isCreated(false), avatar(nullptr), blood(nullptr), power(nullptr), name(nullptr)
+NodeInfo::NodeInfo() : characterTag(""), isCreated(false), avatar(nullptr), blood(nullptr), power(nullptr), name(nullptr), timeNotify(0)
 {
 }
 
@@ -12,13 +12,13 @@ NodeInfo::~NodeInfo()
 void NodeInfo::createNode(CharacterInfoComponent* characterInfo){
 	isCreated = true;
 	
-	Size visibleSize = Director::getInstance()->getVisibleSize();
+	Size visibleSize = Director::getInstance()->getOpenGLView()->getVisibleSize();
 	Size size(200, 100);
 	bool isLeft = characterInfo->isMainCharacter;
 
 	this->setLayoutType(ui::Layout::Type::ABSOLUTE);
 	this->setContentSize(size);
-	this->setPosition(Vec2(isLeft ? 10: visibleSize.width - this->getContentSize().width , visibleSize.height - this->getContentSize().height - 20));
+	this->setPosition(Vec2(isLeft ? 10: visibleSize.width - this->getContentSize().width , visibleSize.height - this->getContentSize().height - 50));
 	RenderLayer::getInstance()->getHudLayer()->addChild(this);
 	
 	
@@ -65,10 +65,24 @@ void NodeInfo::createNode(CharacterInfoComponent* characterInfo){
 }
 void NodeInfo::process(CharacterInfoComponent* characterInfo){
 	if (!isCreated) return;
-	float percent = (characterInfo->blood / 100);
-	blood->setContentSize(Size(100 * (percent < 0 ? 0 : percent), blood->getContentSize().height));
+	float percentBlood = (characterInfo->blood / 100);
+	float percentPower = (characterInfo->power / 100);
+	blood->setContentSize(Size(100 * (percentBlood < 0 ? 0 : percentBlood), blood->getContentSize().height));
+	power->setContentSize(Size(100 * (percentPower < 0 ? 0 : percentPower), power->getContentSize().height));
 	blood->setPosition(Vec2(characterInfo->isMainCharacter ? (avatar->getPositionX() + avatar->getContentSize().width / 2 + 10) : (avatar->getPositionX() - avatar->getContentSize().width / 2 - blood->getContentSize().width - 10), avatar->getPositionY() - 10));
 	power->setPosition(Vec2(characterInfo->isMainCharacter ? (avatar->getPositionX() + avatar->getContentSize().width / 2 + 10) : (avatar->getPositionX() - avatar->getContentSize().width / 2 - power->getContentSize().width - 10), blood->getPositionY() + blood->getContentSize().height + 2));
+	characterInfo->power += .05;
+	characterInfo->power = (characterInfo->power < characterInfo->MAX_POWER) ? characterInfo->power : characterInfo->MAX_POWER;
+
+	if (characterInfo->notifyMana){
+		timeNotify++;
+		power->setVisible(timeNotify%4 < 2);
+		if (timeNotify > 20){
+			timeNotify = 0;
+			characterInfo->notifyMana = false;
+			power->setVisible(true);
+		}
+	}
 }
 
 

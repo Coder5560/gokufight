@@ -1,8 +1,5 @@
 #include "CharacterStateSystem.h"
 
-
-
-
 CharacterStateSystem::~CharacterStateSystem()
 {
 }
@@ -28,7 +25,8 @@ void CharacterStateSystem::processEntity(artemis::Entity& e){
 		WallSensorComponent* wallSensor = (WallSensorComponent*)e.getComponent<WallSensorComponent>();
 		PhysicComponent* physic = (PhysicComponent*)e.getComponent<PhysicComponent>();
 		if (wallSensor->onFloor && state->state == R::CharacterState::JUMP){
-			state->setState(R::CharacterState::STAND);		
+			state->setState(R::CharacterState::STAND);
+			return;
 		}
 	}
 	state->time_on_state += world->getDelta();

@@ -2,26 +2,43 @@
 
 
 namespace R{
+
+	class Constants{
+	public :
+		static const float SCALE;
+		static const int WIDTH_SCREEN;
+		static const int HEIGHT_SCREEN;
+		static const int MAX_SCREEN_WIDTH;
+	};
+	enum class Match_Type{
+		NONE,GOKU_GIRAN,
+
+	};
+
 	enum class GameState{
+		NONE,
 		// đây là bước chuẩn bị vào game, mọi thao tác trong game chưa hoạt động, các sự kiện diễn ra trên nền UI.
 		PREPARE,
 		// Chuẩn bị vào trận đấu
 		ANIMATING_TO_FIGHT,
 		// Hoạt cảnh thắng
-		WIN_EFFECT,
+		WIN,
 		// Hoạt cảnh thua
-		LOSE_EFFECT,
+		LOSE,
 		// Hoạt cảnh chọn người chơi
 		CHOSE_PLAYER,
 		// Hoạt cảnh lúc chiến đấu.
 		FIGHTING,
+
+
+
 	};
 	enum class Direction{
 		AUTO, LEFT, RIGHT, TOP, BOTTOM, CENTER, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT
 
 	};
 	enum class CharacterState {
-		START,STAND, WALK_LEFT, WALK_RIGHT, JUMP, KICK, PUNCH, BEAT, ATTACK, DEFENSE, DIE, LEFT, RIGHT, TRUNG_DON
+		WIN,START,STAND, WALK_LEFT, WALK_RIGHT, JUMP, KICK, PUNCH, BEAT, ATTACK, DEFENSE, DIE, LEFT, RIGHT, TRUNG_DON
 	};
 	enum class Attack{
 		NONE,
@@ -30,7 +47,6 @@ namespace R{
 
 		//for giran
 		GIRAN_PUNCH1,GIRAN_PUNCH2,GIRAN_PUNCH3,
-
 	};
 
 	enum class Defense{

@@ -17,6 +17,8 @@ class SkeletonComponent;
 class DecisionComponent;
 class AttackComponent;
 class DecisionBase;
+class CallBackComponent;
+class DelayComponent;
 
 class Components
 {
@@ -52,12 +54,14 @@ class PhysicComponent : public artemis::Component{
 public:
 	PhysicComponent(float vX, float vY);
 	PhysicComponent();
+	PhysicComponent(bool dismis);
 	float vx;
 	float vy;
 	float vr;
 	float friction;
 	float bounce;
 	bool isMoving;
+	bool dismissWhenCollideWithWall;
 
 };
 
@@ -65,11 +69,13 @@ class WallSensorComponent : public artemis::Component{
 
 public:
 	WallSensorComponent();
-	bool onFloor = false;
-	bool onHorizontalSurface = false;
-	bool onVerticalSurface = false;
+
+
+	bool onFloor ;
+	bool onHorizontalSurface ;
+	bool onVerticalSurface ;
 	
-	float wallAngle = 0;
+	float wallAngle ;
 
 	bool onAnysurface();
 };
@@ -112,6 +118,11 @@ public :
 	float MAX_POWER;
 	float blood;
 	float power;
+	// kiểm tra xem còn đủ mana để ra chưởng hay không
+	bool notifyMana;
+	void notifyNotEnoughMana();
+	bool hasManaForSkill(float skillPower);
+
 };
 
 class SkeletonComponent : public artemis::Component{
@@ -175,11 +186,28 @@ class AttackComponent : public artemis::Component{
 public :
 	AttackComponent();
 	R::CharacterType whoAttack;
-	bool expire;
 	float powerOfAttack;
-	float maxTimeAlive;
+	float manaOfAttack;
+	// còn hiệu lực hay ko
+	bool expire;
+	// for range attack
+	float minX;
+	float maxX;
+	float minY;
+	float maxY;
+};
+
+class RemoveableComponent : public artemis::Component{
+public:
+	RemoveableComponent();
+	bool haveToRemove;
+};
+
+class DelayComponent : public artemis::Component{
+public :
+	DelayComponent();
 	float timeAlive;
-	float timeAttack;
-	float collisionPointX;
-	float collisionPointY;
+	float timeDelay;
+	std::function<void()> callBack;
+	void setCallBack(const std::function<void()> &callBack);
 };

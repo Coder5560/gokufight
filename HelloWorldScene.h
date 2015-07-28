@@ -1,7 +1,6 @@
 #ifndef __HELLOWORLD_SCENE_H__
 #define __HELLOWORLD_SCENE_H__
 #include "artemis/Artemis.h"
-#include "TestECS.h"
 #include "cocos2d.h"
 #include "GameHud.h"
 #include "spine/spine.h"
@@ -24,9 +23,8 @@ public:
 	
 protected:
 	spine::SkeletonAnimation* skeletonNode;
-	GameHud* gameHud;
+
 	artemis::World* world;
-	TestECS* testEcs;
 	Sprite* sprite;
 };
 

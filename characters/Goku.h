@@ -36,5 +36,6 @@ public:
 	void actionPunch2(artemis::Entity &e, R::Direction direction);
 	void actionPunch3(artemis::Entity &e, R::Direction direction);
 
+	float timeHoldInput;
 };
 

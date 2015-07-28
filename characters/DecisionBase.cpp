@@ -10,9 +10,11 @@ DecisionBase::~DecisionBase()
 {
 }
 void DecisionBase::setWorld(artemis::World* world){
+
 	this->world = world;
 }
 void DecisionBase::obsever(artemis::Entity &e){
+
 }
 void DecisionBase::decision(artemis::Entity &e){
 }
@@ -21,6 +23,7 @@ void GokuDecision::decision(artemis::Entity &e){
 
 }
 void GokuDecision::obsever(artemis::Entity &e){
+	super.obsever(e);
 	StateComponent* stateComponent = (StateComponent*)e.getComponent<StateComponent>();
 	if (stateComponent->state == R::CharacterState::STAND && stateComponent->time_on_state > 2){
 		stateComponent->setState(R::CharacterState::START);
@@ -37,7 +40,9 @@ void GiranDecision::decision(artemis::Entity &e){
 	CharacterInfoComponent* characterInfo = (CharacterInfoComponent*)e.getComponent<CharacterInfoComponent>();
 	StateComponent* stateComponent = (StateComponent*)e.getComponent<StateComponent>();
 
-
+	if (stateComponent->state == R::CharacterState::JUMP){
+		return;
+	}
 
 	float distance = abs(gokuPosition->x - characterPosition->x);
 	bool gokuOnTheLeft = gokuPosition->x < characterPosition->x;
@@ -65,7 +70,11 @@ void GiranDecision::decision(artemis::Entity &e){
 			}
 		}
 	}
-	
+	else if (distance < gokuBound->getWidth()/2){
+	//	R::Direction direction = gokuOnTheLeft ? R::Direction::LEFT : R::Direction::RIGHT;
+	//	stateComponent->setState(gokuOnTheLeft ? R::CharacterState::WALK_LEFT : R::CharacterState::WALK_RIGHT);
+	}
+
 	else{
 		srand(time(NULL));
 		int rad = rand() % 10 + 1;
@@ -91,14 +100,28 @@ void GiranDecision::obsever(artemis::Entity &e){
 	if (stateComponent->state == R::CharacterState::ATTACK){
 		return;
 	}
+	if (stateComponent->state == R::CharacterState::JUMP){
+		return;
+	}
+
 	float distance = abs(gokuPosition->x - characterPosition->x);
 	bool gokuOnTheLeft = gokuPosition->x < characterPosition->x;
 
 	if (distance > gokuBound->getWidth()){
+	
+		srand(time(NULL));
+		int rad = rand() % 10 + 1;
+
 		if (gokuOnTheLeft){
 			if (stateComponent->state != R::CharacterState::WALK_LEFT && stateComponent->state != R::CharacterState::LEFT){
 				stateComponent->direction = R::Direction::LEFT;
-				stateComponent->setState(R::CharacterState::LEFT);
+				if (rad < 9){
+					stateComponent->setState(R::CharacterState::LEFT);
+				}
+				else{
+					stateComponent->setState(R::CharacterState::JUMP);
+					EntityUtils::getInstance()->push(e, 0, -200);
+				}
 			}
 			else{
 				stateComponent->direction = R::Direction::LEFT;
@@ -113,9 +136,14 @@ void GiranDecision::obsever(artemis::Entity &e){
 			else{
 				stateComponent->direction = R::Direction::RIGHT;
 				stateComponent->setState(R::CharacterState::WALK_RIGHT);
+				
 			}
 		}
 	}
+	else if (distance < gokuBound->getWidth()-30){
+		stateComponent->setState(gokuOnTheLeft ? R::CharacterState::LEFT : R::CharacterState::RIGHT);
+	}
+	
 	else{
 		if (stateComponent->state == R::CharacterState::WALK_LEFT || stateComponent->state == R::CharacterState::WALK_RIGHT || stateComponent->state == R::CharacterState::WALK_LEFT || stateComponent->state == R::CharacterState::RIGHT){
 			stateComponent->setState(R::CharacterState::STAND);

@@ -17,12 +17,16 @@ class GokuDecision : public DecisionBase{
 public : 
 	void decision(artemis::Entity &e);
 	void obsever(artemis::Entity &e);
+private:
+	DecisionBase super;
 };
 
 class GiranDecision : public DecisionBase{
 public: 
 	void decision(artemis::Entity &e);
 	void obsever(artemis::Entity &e);
+private :
+	DecisionBase super;
 };
 
 

@@ -1,24 +1,21 @@
 #include "RenderLayer.h"
-
+#include "R.h"
 
 RenderLayer* instance = nullptr;
 
 RenderLayer::RenderLayer()
 {
-	visibleSize = Director::getInstance()->getVisibleSize();
+	visibleSize = Director::getInstance()->getOpenGLView()->getFrameSize();
 	backgroundLayer = Layer::create();
 	backgroundLayer->setContentSize(visibleSize);
 	gameLayer = Layer::create();
-	gameLayer->setContentSize(visibleSize);
+	gameLayer->setContentSize(Size(R::Constants::MAX_SCREEN_WIDTH,R::Constants::HEIGHT_SCREEN));
 	hudLayer = Layer::create();
 	hudLayer->setContentSize(visibleSize);
-
 }
 
 
-RenderLayer::~RenderLayer()
-{
-}
+RenderLayer::~RenderLayer(){}
 
 RenderLayer* RenderLayer::getInstance(){
 	if (instance == nullptr){

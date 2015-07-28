@@ -4,43 +4,55 @@
 AttackSystem::AttackSystem()
 {
 	addComponentType<PosComponent>();
+	addComponentType<WallSensorComponent>();
+	addComponentType<PhysicComponent>();
 	addComponentType<BoundComponent>();
+	addComponentType<PhysicComponent>();
 	addComponentType<AttackComponent>();
+
 
 }
 void AttackSystem::initialize(){
 	attackMapper.init(*world);
 	posMapper.init(*world);
 	boundMapper.init(*world);
+	physicMapper.init(*world);
+	gravityMapper.init(*world);
+	wallSensorMapper.init(*world);
 }
 
 void AttackSystem::begin(){}
 
 void AttackSystem::processEntity(artemis::Entity &e){
 	AttackComponent* attack = attackMapper.get(e);
-	attack->timeAlive += world->getDelta();
-	if (attack->whoAttack == R::CharacterType::NONAME){ return; }
-	if (attack->timeAlive > attack->maxTimeAlive) { world->getEntityManager()->remove(e);   return; }
-	if (attack->powerOfAttack < 0 || attack->expire){ world->getEntityManager()->remove(e);  return; }
-	if (attack->timeAlive < attack->timeAttack) return;
+	PosComponent* position = (PosComponent*)e.getComponent<PosComponent>();
+	WallSensorComponent* wallSensor = wallSensorMapper.get(e);
+
+	// nếu chạm vào thành
+	if (wallSensor->onAnysurface()){
+		EntityUtils::getInstance()->removeEntity(e);
+		return;
+	}
+	// nếu vượt qua phạm vi tấn công.
+	if (position->x < attack->minX || position->y < attack->minY || position->x > attack->maxX || position->y > attack->maxY){
+		EntityUtils::getInstance()->removeEntity(e);
+		return;
+	}
+
+	
 	if (attack->whoAttack == R::CharacterType::GOKU){
-		// Lấy ra danh sách entity khác rồi xử lý chúng.
-		artemis::ImmutableBag<artemis::Entity*> *bag = world->getGroupManager()->getEntities("enemy");
-		if (bag->isEmpty()) { world->getEntityManager()->remove(e);   return; }
-		for (int i = 0; i < bag->getCount(); i++){
-			artemis::Entity* entity = bag->get(i);
-			if (attackToEntity(e, *entity)) {
-				RenderComponent* render = (RenderComponent*)e.getComponent<RenderComponent>();
-				if (render)
-					render->node->removeFromParentAndCleanup(true);
-			}
+		artemis::Entity &entity = world->getTagManager()->getEntity("enemy");
+		if (attackToEntity(e, entity)) {
+			EntityUtils::getInstance()->removeEntity(e);
 		}
 	}
 	else{
 		artemis::Entity &goku = world->getTagManager()->getEntity("goku");
-		attackToEntity(e, goku);
+		if (attackToEntity(e, goku)){
+			EntityUtils::getInstance()->removeEntity(e);
+		}
 	}
-	world->getEntityManager()->remove(e);
+	
 }
 void AttackSystem::end(){}
 
@@ -61,14 +73,33 @@ bool AttackSystem::attackToEntity(artemis::Entity& attackEntity, artemis::Entity
 	if (attackRect.intersectsRect(defenseRect)){
 		StateComponent* defenseState = (StateComponent*)entity.getComponent<StateComponent>();
 		bool isLeft = defensePosition->x < attackPosition->x;
-		defenseState->setState(R::CharacterState::DEFENSE);
-		defenseState->defense = R::Defense::TRUNG_DON;
-		defenseState->direction = isLeft ? R::Direction::LEFT : R::Direction::RIGHT;
 		defenseInfo->blood -= attack->powerOfAttack;
+		defenseState->direction = isLeft ? R::Direction::LEFT : R::Direction::RIGHT;
+		if (defenseInfo->blood <= 0){
+			defenseState->setState(R::CharacterState::DIE);
+		}
+		else{
+			defenseState->setState(R::CharacterState::DEFENSE);
+			defenseState->defense = R::Defense::TRUNG_DON;
+		}
+				
+		Node* node = RenderLayer::getInstance()->createGameNode();
+		node->setPosition(Vec2(attackRect.getMidX()/2 + defenseRect.getMidX()/2,defenseRect.getMidY()/2 + attackRect.getMidY()/2));
+		HitEffect* hitEffect = new HitEffect(node);
+		hitEffect->setHitStyle(attack->whoAttack);
+		hitEffect->start();
 		attack->expire = true;
+
+		// remove all attack component
+		artemis::ImmutableBag<artemis::Entity*> *entities = world->getGroupManager()->getEntities((attack->whoAttack == R::CharacterType::GOKU) ? "enemies" : "gokus");
+		for (int i = 0; i < entities->getCount(); i++){
+			EntityUtils::getInstance()->removeEntity(*entities->get(i));
+		}
+
+
+
 		return true;
 	}
-
 
 	return false;
 }

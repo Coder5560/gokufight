@@ -1,11 +1,11 @@
 #include "MapInfo.h"
-
+#include "R.h"
 
 MapInfo::MapInfo()
 {
 	GROUND = 220;
 	WALL_LEFT = 20;
-	WALL_RIGHT = 1280;
+	WALL_RIGHT = R::Constants::MAX_SCREEN_WIDTH-20;
 	WALL_UP = Director::getInstance()->getVisibleSize().height - 20;
 }
 

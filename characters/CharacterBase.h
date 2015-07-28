@@ -1,6 +1,6 @@
 #pragma once
 #include "artemis/Artemis.h"
-
+#include "gokuartermis/RenderLayer.h"
 class CharacterBase
 {
 public:

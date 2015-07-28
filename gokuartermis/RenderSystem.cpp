@@ -24,8 +24,6 @@ void RenderSystem::processEntity(artemis::Entity &e){
 	if (renderComponent->renderType == R::RenderType::BLOOD){
 		renderBlood(e, (BloodComponent*)renderComponent, posComponent);
 	}
-
-
 }
 
 void RenderSystem::renderBlood(artemis::Entity &e, BloodComponent* bloodComponent, PosComponent* posCompoent){

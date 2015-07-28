@@ -14,16 +14,37 @@ Giran::~Giran()
 void Giran::changeState(artemis::Entity &e){
 
 	StateComponent* state = (StateComponent*)e.getComponent<StateComponent>();
+	PosComponent* position = (PosComponent*)e.getComponent<PosComponent>();
 	if (state->state == R::CharacterState::ATTACK){
 		AttackComponent* attackComponent = new AttackComponent();
 		attackComponent->whoAttack = ((CharacterTypeComponent*)e.getComponent<CharacterTypeComponent>())->type;
-		attackComponent->powerOfAttack = 5;
-		if (state->attack == R::Attack::GIRAN_PUNCH1){ CCLOG("Attack giran"); actionPunch1(e, state->direction);  attackComponent->maxTimeAlive = 4; attackComponent->timeAttack = .4; }
-		else if (state->attack == R::Attack::GIRAN_PUNCH2){ actionPunch2(e, state->direction);  attackComponent->maxTimeAlive = 4; attackComponent->timeAttack = .2; }
-		else if (state->attack == R::Attack::GIRAN_PUNCH3){ actionPunch3(e, state->direction);  attackComponent->maxTimeAlive = 4; attackComponent->timeAttack = .2; }
+		attackComponent->powerOfAttack = 10;
+
+		if (state->attack == R::Attack::GIRAN_PUNCH1){
+			CCLOG("Attack giran"); actionPunch1(e, state->direction); 
+			attackComponent->minX = position->x - 450;
+			attackComponent->maxX = position->x + 450;
+			attackComponent->minY = position->y - 450;
+			attackComponent->maxY = position->y + 450;
+		}
+		else if (state->attack == R::Attack::GIRAN_PUNCH2){
+			actionPunch2(e, state->direction);  
+			attackComponent->minX = position->x - 450;
+			attackComponent->maxX = position->x + 450;
+			attackComponent->minY = position->y - 450;
+			attackComponent->maxY = position->y + 450;
+		}
+		else if (state->attack == R::Attack::GIRAN_PUNCH3){
+			actionPunch3(e, state->direction);  
+			attackComponent->minX = position->x - 450;
+			attackComponent->maxX = position->x + 450;
+			attackComponent->minY = position->y - 450;
+			attackComponent->maxY = position->y + 450;
+		}
 		EntityUtils::getInstance()->createAttackEntity(e, attackComponent);
 		state->state == R::CharacterState::STAND;
 	}
+	else if (state->state == R::CharacterState::DIE){ actionDie(e, state->direction); }
 	else if (state->state == R::CharacterState::DEFENSE){ actionTrungDon(e, state->direction); }
 	else if (state->state == R::CharacterState::STAND){ actionStand(e); }
 	else if (state->state == R::CharacterState::LEFT){ actionMove(e, R::Direction::LEFT); }
@@ -31,20 +52,16 @@ void Giran::changeState(artemis::Entity &e){
 	else if (state->state == R::CharacterState::WALK_RIGHT){ actionMoveOn(e, R::Direction::RIGHT); }
 	else if (state->state == R::CharacterState::WALK_LEFT){ actionMoveOn(e, R::Direction::LEFT); }
 	else if (state->state == R::CharacterState::JUMP){ actionJump(e, R::Direction::AUTO); }
-
 }
 void Giran::actionTrungDon(artemis::Entity &e, R::Direction direction){
-
 	SkeletonComponent* skeleton = (SkeletonComponent*)e.getComponent<SkeletonComponent>();
-
 	skeleton->skeleton->clearTracks();
 	skeleton->skeleton->setAnimation(0, "Stand", true);
 	skeleton->skeleton->setToSetupPose();
 	skeleton->skeleton->setCompleteListener(nullptr);
 	skeleton->skeleton->setTimeScale(1);
-//	if (direction == R::Direction::LEFT){ skeleton->node->setScaleX(1); }
-//	if (direction == R::Direction::RIGHT){ skeleton->node->setScaleX(-1); }
-
+	//	if (direction == R::Direction::LEFT){ skeleton->node->setScaleX(1); }
+	//	if (direction == R::Direction::RIGHT){ skeleton->node->setScaleX(-1);}
 	if (direction == R::Direction::LEFT){
 		EntityUtils::getInstance()->push(e, 180, 240);
 	}
@@ -63,7 +80,26 @@ void Giran::actionStand(artemis::Entity &e){
 	skeleton->skeleton->setTimeScale(1);
 	EntityUtils::getInstance()->stopPhysic(e);
 }
-void Giran::actionDie(artemis::Entity &e, R::Direction direction){	}
+void Giran::actionDie(artemis::Entity &e, R::Direction direction){
+	bool dudieukien = true;
+	if (!dudieukien) {
+		return;
+	}
+	else {
+		// xử lý action
+		StateComponent* state = (StateComponent*)e.getComponent<StateComponent>();
+		SkeletonComponent* skeleton = (SkeletonComponent*)e.getComponent<
+			SkeletonComponent>();
+		spine::SkeletonAnimation* skeletonAnimation = skeleton->skeleton;
+		Node* node = skeleton->node;
+		// xử lý action
+		skeletonAnimation->clearTracks();
+		skeletonAnimation->setAnimation(0, "Die", false);
+		skeletonAnimation->setTimeScale(1.5f);
+		skeletonAnimation->setCompleteListener(nullptr);
+	}
+
+}
 void Giran::actionMove(artemis::Entity &e, R::Direction direction){
 	bool dudieukien = true;
 	if (!dudieukien) {

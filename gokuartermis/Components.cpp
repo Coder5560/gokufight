@@ -8,7 +8,7 @@ Components::Components(){}
 
 Components::~Components(){}
 
-PosComponent::PosComponent():x(0),y(0){}
+PosComponent::PosComponent() :x(0), y(0){}
 PosComponent::PosComponent(float posX, float posY){
 	this->x = posX;
 	this->y = posY;
@@ -28,6 +28,16 @@ GravityComponent::GravityComponent(float gravityY){
 	this->gravityY = gravityY;
 
 }
+PhysicComponent::PhysicComponent(bool dismis){
+	this->dismissWhenCollideWithWall = dismis;
+	vx = 0;
+	vy = 0;
+	vr = 0;
+	friction = 6;
+	bounce = .5;
+	isMoving = false;
+}
+
 PhysicComponent::PhysicComponent(){
 	vx = 0;
 	vy = 0;
@@ -35,6 +45,7 @@ PhysicComponent::PhysicComponent(){
 	friction = 6;
 	bounce = .5;
 	isMoving = false;
+	this->dismissWhenCollideWithWall = false;
 }
 PhysicComponent::PhysicComponent(float vX, float vY){
 	this->vx = vX;
@@ -43,10 +54,11 @@ PhysicComponent::PhysicComponent(float vX, float vY){
 	friction = 6;
 	bounce = .5;
 	isMoving = false;
+	this->dismissWhenCollideWithWall = false;
 }
-WallSensorComponent::WallSensorComponent(){
-	onFloor = false;
-}
+WallSensorComponent::WallSensorComponent() : onFloor(false), onVerticalSurface(false), onHorizontalSurface(false), wallAngle(0){}
+
+
 bool WallSensorComponent::onAnysurface(){
 	return onHorizontalSurface || onVerticalSurface;
 }
@@ -78,8 +90,8 @@ float BoundComponent::getCenterY(){
 }
 
 
-GameStateComponent::GameStateComponent() : gameState(R::GameState::PREPARE),time_on_state(1) {}
-void GameStateComponent::setGameState(R::GameState gameState){ this->gameState = gameState; }
+GameStateComponent::GameStateComponent() : gameState(R::GameState::NONE), time_on_state(0) {}
+void GameStateComponent::setGameState(R::GameState gameState){ this->gameState = gameState; time_on_state = 0; }
 
 SkeletonComponent::SkeletonComponent(){
 	skeleton = nullptr;
@@ -100,19 +112,28 @@ SkeletonComponent::SkeletonComponent(){
 	visible = true;
 }
 
-CharacterInfoComponent::CharacterInfoComponent() :isMainCharacter(false), MAX_BLOOD(-1), MAX_POWER(-1), blood(-1), power(-1), avatar("") {}
+CharacterInfoComponent::CharacterInfoComponent() :notifyMana(false), isMainCharacter(false), MAX_BLOOD(-1), MAX_POWER(-1), blood(-1), power(-1), avatar("") {}
+bool CharacterInfoComponent::hasManaForSkill(float skillMana){ return (power - skillMana) >= 0; }
+void CharacterInfoComponent::notifyNotEnoughMana(){ notifyMana = true; }
 
-DecisionComponent::DecisionComponent():thinkingTime(0),DECISION_TIME(2),decisionBase(nullptr){}
+DecisionComponent::DecisionComponent() : thinkingTime(0), DECISION_TIME(2), decisionBase(nullptr){}
 
-StateComponent::StateComponent() : attack(R::Attack::NONE),defense(R::Defense::NONE),characterBase(nullptr),state(R::CharacterState::STAND), time_on_state(1), direction(R::Direction::AUTO){}
+StateComponent::StateComponent() : attack(R::Attack::NONE), defense(R::Defense::NONE), characterBase(nullptr), state(R::CharacterState::STAND), time_on_state(1), direction(R::Direction::AUTO){}
 
 void StateComponent::setState(R::CharacterState newState){
 	this->state = newState;
-	time_on_state = 0;	
+	time_on_state = 0;
 }
 
-AttackComponent::AttackComponent():whoAttack(R::CharacterType::NONAME), expire(false), powerOfAttack(0),timeAttack(-1),timeAlive(0),maxTimeAlive(10), collisionPointX(-1), collisionPointY(-1){}
+AttackComponent::AttackComponent() :whoAttack(R::CharacterType::NONAME), expire(false), manaOfAttack(0), powerOfAttack(0), minX(0), maxX(0), minY(0){}
 
 CharacterTypeComponent::CharacterTypeComponent() : type(R::CharacterType::NONAME){}
 
 CharacterTypeComponent::CharacterTypeComponent(R::CharacterType name) : type(name){}
+
+RemoveableComponent::RemoveableComponent() : haveToRemove(false){}
+
+DelayComponent::DelayComponent() : timeAlive(0), timeDelay(10),callBack(nullptr){ }
+void DelayComponent::setCallBack(const std::function<void()> &callBack){
+	this->callBack = callBack;
+}

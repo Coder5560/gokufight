@@ -22,5 +22,6 @@ protected:
 	ui::Layout* blood;
 	ui::Layout* power;
 	ui::Text* name;
+	int timeNotify;
 };
 

@@ -1,8 +1,9 @@
 #include "AppDelegate.h"
 #include "HelloWorldScene.h"
-
+#include "R.h"
 USING_NS_CC;
 
+class R::Constants;
 AppDelegate::AppDelegate() {
 
 }
@@ -33,16 +34,16 @@ bool AppDelegate::applicationDidFinishLaunching() {
     // initialize director
     auto director = Director::getInstance();
     auto glview = director->getOpenGLView();
-    float scale = .6;
+
     if(!glview) {
         glview = GLViewImpl::create("Goku Fight");
         director->setOpenGLView(glview);
-		glview->setFrameSize((int)(800 * scale), (int)(1280 * scale));
+		glview->setFrameSize(R::Constants::WIDTH_SCREEN,R::Constants::HEIGHT_SCREEN);
     }
 
     // turn on display FPS
     director->setDisplayStats(false);
-	director->getOpenGLView()->setDesignResolutionSize((int)(800 * scale), (int)(1280 * scale), ResolutionPolicy::FIXED_HEIGHT);
+	director->getOpenGLView()->setDesignResolutionSize(R::Constants::WIDTH_SCREEN, R::Constants::HEIGHT_SCREEN, ResolutionPolicy::FIXED_WIDTH);
   
     director->setAnimationInterval(1.0 / 60);
 
