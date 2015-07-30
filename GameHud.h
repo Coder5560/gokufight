@@ -62,8 +62,10 @@ protected:
 	
 	float timeCatchEvent;
 	float timeTouch;
-	bool isTouchMove;
 	bool ignoreInput;
+
+	bool isPan;
+	bool isFling;
 private :
 	TouchType touchType;
 	EventType  eventType;

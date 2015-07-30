@@ -1,7 +1,7 @@
 #pragma once
 #include "cocos2d.h"
 #include "artemis/Artemis.h"
-#include "gokuartermis/Components.h"
+#include "gokuartemis/Components.h"
 
 class DecisionBase
 {

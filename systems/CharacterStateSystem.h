@@ -1,6 +1,6 @@
 #pragma once
 #include "artemis/Artemis.h"
-#include "gokuartermis/Systems.h"
+#include "gokuartemis/Systems.h"
 #include "systems/EntityUtils.h"
 
 

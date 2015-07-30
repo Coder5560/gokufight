@@ -1,6 +1,6 @@
 #pragma once
-#include "gokuartermis/Systems.h"
-#include "gokuartermis/Components.h"
+#include "gokuartemis/Systems.h"
+#include "gokuartemis/Components.h"
 #include "renders/Effects.h"
 #include "systems/EntityUtils.h"
 

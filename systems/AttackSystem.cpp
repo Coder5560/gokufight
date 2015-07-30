@@ -1,5 +1,5 @@
 #include "AttackSystem.h"
-#include "gokuartermis/RenderComponent.h"
+#include "gokuartemis/RenderComponent.h"
 
 AttackSystem::AttackSystem()
 {

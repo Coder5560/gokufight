@@ -1,4 +1,4 @@
-#include "gokuartermis/ECSWorld.h"
+#include "gokuartemis/ECSWorld.h"
 
 ECSWorld* ECSWorld::instance = NULL;
 ECSWorld::ECSWorld() : goku(nullptr), world(nullptr){	}
@@ -62,8 +62,8 @@ void ECSWorld::createWorld(R::Match_Type matchType){
 	setSystem(new RenderSystem());
 	setSystem(new RemoveEntitySystem());
 
-	//setSystem(new DebugSystem());
-	setSystem(new DecisionSystem());
+	setSystem(new DebugSystem());
+	//setSystem(new DecisionSystem());
 	
 
 	world->getSystemManager()->initializeAll();
@@ -90,7 +90,6 @@ void ECSWorld::createWorld(R::Match_Type matchType){
 	node->addChild(text);
 	node->setTag(200);
 	node->setCameraMask((unsigned short)CameraFlag::USER1);
-
 }
 
 void ECSWorld::createMainCharacter(){	// create main Character
@@ -101,9 +100,7 @@ void ECSWorld::createMainCharacter(){	// create main Character
 	characterInfo->MAX_POWER = 100;
 	characterInfo->blood = 100;
 	characterInfo->power = 100;
-
-
-
+		
 	//create keletoncomponent
 	spine::SkeletonAnimation* skeletonAnimation =
 		spine::SkeletonAnimation::createWithFile("spine/Goku.json",

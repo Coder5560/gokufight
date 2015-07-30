@@ -21,16 +21,15 @@ void Goku::changeState(artemis::Entity &e){
 			attackComponent->minY = position->y - 40;
 			attackComponent->maxY = position->y + 60;
 
+		
 		}
 		else if (state->attack == R::Attack::GOKU_BEAT2){ actionBeat2(e, state->direction); }
 		else if (state->attack == R::Attack::GOKU_BEAT3){ actionBeat3(e, state->direction); }
 		else if (state->attack == R::Attack::GOKU_PUNCH1){
 			actionPunch1(e, state->direction);
-			attackComponent->minX = position->x - R::Constants::WIDTH_SCREEN;
-			attackComponent->maxX = position->x + R::Constants::WIDTH_SCREEN;
-			attackComponent->minY = position->y - R::Constants::WIDTH_SCREEN;
-			attackComponent->maxY = position->y + R::Constants::WIDTH_SCREEN;
-			attackComponent->manaOfAttack = 40;
+			
+			//createAttack by Change State System.
+			return;
 		}
 		else if (state->attack == R::Attack::GOKU_PUNCH2){ actionPunch2(e, state->direction); }
 		else if (state->attack == R::Attack::GOKU_PUNCH3){ actionPunch3(e, state->direction); }
@@ -62,7 +61,7 @@ void Goku::changeState(artemis::Entity &e){
 	}
 }
 void Goku::actionStand(artemis::Entity &e){
-	CCLOG("On Goku Stand");
+	
 	StateComponent* state = (StateComponent*)e.getComponent<StateComponent>();
 	SkeletonComponent* skeleton = (SkeletonComponent*)e.getComponent<SkeletonComponent>();
 	PhysicComponent* physic = (PhysicComponent*)e.getComponent<PhysicComponent>();

@@ -1,6 +1,6 @@
 ﻿#include "HelloWorldScene.h"
-#include "gokuartermis/ECSWorld.h"
-#include "gokuartermis/RenderLayer.h"
+#include "gokuartemis/ECSWorld.h"
+#include "gokuartemis/RenderLayer.h"
 #include "renders/Effects.h"
 
 USING_NS_CC;
@@ -43,6 +43,11 @@ bool HelloWorld::init() {
 	bg->setPosition(Vec2(0,0));
 	RenderLayer::getInstance()->getBackgroundLayer()->addChild(bg);
 
+	// test particle
+
+	
+	//smokeParticle->setAutoRemoveOnFinish(true);
+
 
 	return true;
 }
@@ -50,6 +55,15 @@ bool HelloWorld::init() {
 void HelloWorld::onKeyReleased(EventKeyboard::KeyCode keyCode, Event* event) {
 	if (keyCode == EventKeyboard::KeyCode::KEY_BACK) {
 		Director::getInstance()->end();
+	}
+	if (keyCode == EventKeyboard::KeyCode::KEY_SPACE){
+		CCLOG("Particel");
+		CCParticleSystemQuad * smokeParticle = CCParticleSystemQuad::create("textures/particle_texture.plist");
+		
+		Node* node = RenderLayer::getInstance()->createHudNode();
+		node->setContentSize(Size(R::Constants::WIDTH_SCREEN, R::Constants::HEIGHT_SCREEN));
+		smokeParticle->setAnchorPoint(Vec2(.5, .5));
+		smokeParticle->setPosition(node->getContentSize() / 2);
 	}
 }
 void HelloWorld::update(float delta) {

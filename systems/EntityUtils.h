@@ -1,7 +1,7 @@
 #pragma once
 #include "artemis/Artemis.h"
-#include "gokuartermis/Components.h"
-#include "gokuartermis/Systems.h"
+#include "gokuartemis/Components.h"
+#include "gokuartemis/Systems.h"
 class EntityUtils
 {
 public:
@@ -17,6 +17,7 @@ public:
 
 	void createAttackEntity(artemis::Entity &attackEntity, AttackComponent* attackComponent);
 	virtual void createGokuPunchAttack(artemis::Entity &attackEntity,AttackComponent* attackComponent);
+	virtual void createGokuPunch1Attack(artemis::Entity &attackEntity, AttackComponent* attackComponent);
 	virtual void createGokuBeatAttack(artemis::Entity &attackEntity, AttackComponent* attackComponent);
 	virtual void createGokuKickAttack(artemis::Entity &attackEntity, AttackComponent* attackComponent);
 

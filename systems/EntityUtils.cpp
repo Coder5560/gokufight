@@ -1,6 +1,6 @@
 #include "EntityUtils.h"
-#include "gokuartermis/Components.h"
-#include "gokuartermis/RenderComponent.h"
+#include "gokuartemis/Components.h"
+#include "gokuartemis/RenderComponent.h"
 #include "R.h"
 
 EntityUtils* EntityUtils::instance = nullptr;
@@ -156,8 +156,7 @@ void EntityUtils::createGiranAttack3(artemis::Entity &attacker, AttackComponent*
 	dan.refresh();
 
 }
-
-void EntityUtils::createGokuPunchAttack(artemis::Entity &attacker, AttackComponent* attackComponent){
+void EntityUtils::createGokuPunch1Attack(artemis::Entity &attacker, AttackComponent* attackComponent){
 	RenderComponent* renderNode = new RenderComponent();
 	renderNode->renderType = R::RenderType::DYNAMIC;
 	PosComponent* attackPosition = (PosComponent*)attacker.getComponent<PosComponent>();
@@ -179,7 +178,7 @@ void EntityUtils::createGokuPunchAttack(artemis::Entity &attacker, AttackCompone
 
 	GravityComponent* gravity = new GravityComponent();
 	gravity->enable = false;
-	dan.addComponent(new PosComponent(attackPosition->x + attackBound->getWidth() / 2 + 5, attackPosition->y + attackBound->getHeight() / 2 - 15));
+	dan.addComponent(new PosComponent(attackPosition->x + attackBound->x2+5, attackPosition->y + attackBound->getHeight() / 2 -15));
 	dan.addComponent(new BoundComponent(-15, -15, 15, 15));
 	dan.addComponent(attackComponent);
 	dan.addComponent(gravity);
@@ -187,7 +186,39 @@ void EntityUtils::createGokuPunchAttack(artemis::Entity &attacker, AttackCompone
 	dan.addComponent(renderNode);
 	dan.addComponent(new WallSensorComponent());
 	dan.setGroup("gokus");
+	dan.refresh();
+}
+void EntityUtils::createGokuPunchAttack(artemis::Entity &attacker, AttackComponent* attackComponent){
+	RenderComponent* renderNode = new RenderComponent();
+	renderNode->renderType = R::RenderType::DYNAMIC;
+	PosComponent* attackPosition = (PosComponent*)attacker.getComponent<PosComponent>();
+	BoundComponent* attackBound = (BoundComponent*)attacker.getComponent<BoundComponent>();
+	SkeletonComponent* skeleton = (SkeletonComponent*)attacker.getComponent<SkeletonComponent>();
 
+	Sprite* sprite = Sprite::create("effect_chuong.png");
+	sprite->setAnchorPoint(Vec2(.5, .5));
+	sprite->ignoreAnchorPointForPosition(false);
+	sprite->setScale(.4);
+	renderNode->node->addChild(sprite);
+
+	artemis::Entity &dan = (world->getEntityManager()->create());
+
+	PhysicComponent* physicComponent = new PhysicComponent(true);
+	physicComponent->vx = 600 * (skeleton->node->getScaleX() > 0 ? 1 : -1);
+	physicComponent->friction = 0;
+	renderNode->node->setScaleX((skeleton->node->getScaleX() >	0 ? 1 : -1));
+
+
+	GravityComponent* gravity = new GravityComponent();
+	gravity->enable = false;
+	dan.addComponent(new PosComponent(attackPosition->x , attackPosition->y + attackBound->getHeight() / 2 - 30));
+	dan.addComponent(new BoundComponent(-15, -15, 15, 15));
+	dan.addComponent(attackComponent);
+	dan.addComponent(gravity);
+	dan.addComponent(physicComponent);
+	dan.addComponent(renderNode);
+	dan.addComponent(new WallSensorComponent());
+	dan.setGroup("gokus");
 	dan.refresh();
 }
 void EntityUtils::createGokuBeatAttack(artemis::Entity &attacker, AttackComponent* attackComponent){
@@ -229,13 +260,13 @@ void EntityUtils::createGokuKickAttack(artemis::Entity &attacker, AttackComponen
 	artemis::Entity &dan = (world->getEntityManager()->create());
 
 	PhysicComponent* physicComponent = new PhysicComponent(true);
-	physicComponent->vx = 100 * (isLeftDirection ? -1 : 1);
+	physicComponent->vx = 80 * (isLeftDirection ? -1 : 1);
 	physicComponent->vy = 30;
 	physicComponent->friction = 0;
 
 
 	PosComponent* position = new PosComponent();
-	position->x = attackPosition->x - 10;
+	position->x = attackPosition->x ;
 	position->y = attackPosition->y + attackBound->y1 + 30;
 
 	GravityComponent* gravity = new GravityComponent();

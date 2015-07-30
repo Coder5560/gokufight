@@ -1,7 +1,7 @@
 #pragma once
 #include "cocos2d.h"
 #include "ui/UIText.h"
-#include "gokuartermis/RenderLayer.h"
+#include "gokuartemis/RenderLayer.h"
 #include "R.h"
 
 

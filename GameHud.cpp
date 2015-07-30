@@ -2,7 +2,7 @@
 
 GameHud::GameHud(Size visibleSize) :
 state(HudState::HIDE), touchType(TouchType::NONE), eventType(
-EventType::RELEASE), timeTouch(0), isTouchMove(false), ignoreInput(
+EventType::RELEASE), timeTouch(0), isPan(false), ignoreInput(
 false), timeCatchEvent(0) {
 	this->setContentSize(visibleSize);
 	this->scheduleUpdate();
@@ -16,7 +16,8 @@ void GameHud::buildComponent() {
 	listenerMove->onTouchBegan = [this](Touch* touch, Event* event) {
 		timeTouch = 0;
 		timeCatchEvent = -1;
-		isTouchMove = false;
+		isFling = false;
+		isPan = false;
 		ignoreInput = false;
 		eventType = EventType::BEGIN;
 		touchType = TouchType::NONE;
@@ -26,11 +27,25 @@ void GameHud::buildComponent() {
 	listenerMove->onTouchMoved =
 		[this](Touch* touch, Event* event) {
 		if (ignoreInput) return;
+		
+
 		Vec2 delta = touch->getDelta();
 		float length = touch->getDelta().getLength();
 		float angle = 180 * atan2f(touch->getDelta().y, touch->getDelta().x) / M_PI;
+		if (timeTouch<.2 && length >30){
+			if (!isFling){
+				CCLOG("Fling");
+				isFling = true;
+
+			}
+		}
+		if (isFling){
+			return;
+		}
+
+		
 		if (angle < 0) angle += 360;
-		if (isTouchMove && length>4) {
+		if (isPan && length>4) {
 			if (157 <= angle && angle <= 202) {
 				if (touchType == TouchType::RIGHT) {
 					touchType = TouchType::LEFT;
@@ -54,7 +69,7 @@ void GameHud::buildComponent() {
 			}
 		}
 
-		if (!isTouchMove && length > 6) {
+		if (!isPan && length > 6) {
 			if (22 <= angle && angle <= 77) {
 				if (length > 20) {
 					touchType = TOP_RIGHT;
@@ -91,7 +106,7 @@ void GameHud::buildComponent() {
 				touchType = TouchType::RIGHT;
 			}
 
-			isTouchMove = true;
+			isPan = true;
 			timeCatchEvent = timeTouch;
 			eventType = GameHud::EventType::BEGIN;
 			notifyEvent();
@@ -100,11 +115,9 @@ void GameHud::buildComponent() {
 
 	listenerMove->onTouchEnded = [this](Touch* touch, Event* event) {
 		if (ignoreInput) return;
-
-		if (!isTouchMove) {
+		if (!isPan) {
 
 			if (timeTouch < .2) {
-
 				//notify tap
 				eventType = GameHud::EventType::BEGIN;
 				touchType = TouchType::TAP;
@@ -134,14 +147,14 @@ void GameHud::buildComponent() {
 void GameHud::update(float delta) {
 	timeTouch += delta;
 	if (eventType != EventType::END) {
-		if (isTouchMove && timeTouch != timeCatchEvent) {
+		if (isPan && timeTouch != timeCatchEvent) {
 			if (touchType == TouchType::LEFT || touchType == TouchType::RIGHT) {
 				eventType = EventType::HOLD;
 				notifyEvent();
 			}
 		}
 
-		if (!isTouchMove && timeTouch >= .2) {
+		if (!isPan && timeTouch >= .2) {
 			//catch Long press
 			eventType = EventType::BEGIN;
 			touchType = TouchType::LONG_PRESS;

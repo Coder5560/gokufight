@@ -1,6 +1,6 @@
 #pragma once
 #include "cocos2d.h"
-#include "gokuartermis/Components.h"
+#include "gokuartemis/Components.h"
 #include "ui/UIImageView.h"
 #include "ui/UILayout.h"
 #include "ui/UIText.h"

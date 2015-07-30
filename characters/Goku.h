@@ -2,7 +2,7 @@
 #include "characters/CharacterBase.h"
 #include "R.h"
 #include "cocos2d.h"
-#include "gokuartermis/Components.h"
+#include "gokuartemis/Components.h"
 #include "systems/EntityUtils.h"
 
 class Goku :public CharacterBase

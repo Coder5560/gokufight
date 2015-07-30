@@ -2,9 +2,9 @@
 
 #include "cocos2d.h"
 #include "artemis/artemis.h"
-#include "gokuartermis/Systems.h"
-#include "gokuartermis/Components.h"
-#include "gokuartermis/RenderComponent.h"
+#include "gokuartemis/Systems.h"
+#include "gokuartemis/Components.h"
+#include "gokuartemis/RenderComponent.h"
 #include "R.h"
 USING_NS_CC;
 
