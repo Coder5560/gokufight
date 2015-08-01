@@ -19,6 +19,9 @@ class AttackComponent;
 class DecisionBase;
 class CallBackComponent;
 class DelayComponent;
+class CollisionComponent;
+class SkeletonBound;
+
 
 class Components
 {
@@ -210,4 +213,20 @@ public :
 	float timeDelay;
 	std::function<void()> callBack;
 	void setCallBack(const std::function<void()> &callBack);
+};
+
+class CollisionComponent : public artemis::Component{
+public :
+	CollisionComponent();
+
+
+
+};
+class SkeletonBound{
+public :
+	SkeletonBound(std::string boundingName, std::string boneName, std::string slotName);
+	std::string boundingbox;
+	std::string boneName;
+	std::string slotName;
+
 };

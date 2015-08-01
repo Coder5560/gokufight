@@ -23,6 +23,7 @@ class DebugSystem;
 class UICharacterSystem;
 class RemoveEntitySystem;
 class DelaySystem;
+class SkeletonCollisonSystem;
 
 class Systems {
 public:
@@ -138,7 +139,7 @@ public:
 	virtual void initialize();
 	virtual void processEntity(artemis::Entity &e);
 	void notifyInput(GameHud::EventType event, GameHud::TouchType touchType);
-
+	int match = 0;
 };
 
 class SkeletonSystem : public artemis::EntityProcessingSystem {
@@ -204,4 +205,16 @@ public:
 	virtual void processEntity(artemis::Entity &e);
 protected:
 	artemis::ComponentMapper<DelayComponent> delayMapper;
+};
+
+class SkeletonCollisonSystem : public artemis::EntityProcessingSystem{
+
+public:
+	SkeletonCollisonSystem();
+	virtual void initialize();
+	virtual void processEntity(artemis::Entity &e);
+	virtual bool checkCollision(artemis::Entity &attacker,artemis::Entity &denfeser);
+protected :
+	artemis::ComponentMapper<CollisionComponent> collisionMapper; 
+	Vec2 collisionPoint;
 };

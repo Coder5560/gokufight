@@ -137,3 +137,6 @@ DelayComponent::DelayComponent() : timeAlive(0), timeDelay(10),callBack(nullptr)
 void DelayComponent::setCallBack(const std::function<void()> &callBack){
 	this->callBack = callBack;
 }
+
+
+SkeletonBound::SkeletonBound(std::string boundName, std::string boneName,std::string slotName) : boundingbox(boundName), boneName(boneName), slotName(slotName){}

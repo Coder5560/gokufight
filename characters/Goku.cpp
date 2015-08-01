@@ -12,7 +12,7 @@ void Goku::changeState(artemis::Entity &e){
 		PosComponent* position = (PosComponent*)e.getComponent<PosComponent>();
 		AttackComponent* attackComponent = new AttackComponent();
 		attackComponent->whoAttack = ((CharacterTypeComponent*)e.getComponent<CharacterTypeComponent>())->type;
-		attackComponent->powerOfAttack = 10;
+		attackComponent->powerOfAttack = 5;
 
 		if (state->attack == R::Attack::GOKU_BEAT1){
 			actionBeat1(e, state->direction);
@@ -55,8 +55,6 @@ void Goku::changeState(artemis::Entity &e){
 	else if (state->state == R::CharacterState::WALK_RIGHT){ actionMoveOn(e, R::Direction::RIGHT); timeHoldInput += .017; }
 	else if (state->state == R::CharacterState::WALK_LEFT){ actionMoveOn(e, R::Direction::LEFT); timeHoldInput += .017; }
 	else if (state->state == R::CharacterState::JUMP){
-
-
 		actionJump1(e, R::Direction::AUTO);
 	}
 }
@@ -380,8 +378,8 @@ void Goku::actionTrungDon(artemis::Entity &e, R::Direction direction) {
 }
 void Goku::actionVictory(artemis::Entity &e) {
 
-	CCLOG("Victory aaaaaaaaaaaaaaaa");
 
+	
 	WallSensorComponent* wallSensor = (WallSensorComponent*)(e.getComponent<WallSensorComponent>());
 	bool dudieukien = wallSensor->onFloor;
 	if (!dudieukien) {
@@ -416,7 +414,7 @@ void Goku::actionBeat1(artemis::Entity &e, R::Direction direction) {
 		// xử lý action
 		skeletonAnimation->clearTracks();
 		skeletonAnimation->setAnimation(0, "Beat1", false);
-		skeletonAnimation->setTimeScale(1.5f);
+		skeletonAnimation->setTimeScale(2.5f);
 		skeletonAnimation->setCompleteListener([=](int trackID, int loopCount) {
 			state->setState(R::CharacterState::STAND);
 		});

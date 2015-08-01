@@ -24,7 +24,6 @@ void CharacterStateSystem::processEntity(artemis::Entity& e){
 	else{
 		if (state->state == R::CharacterState::ATTACK && state->attack == R::Attack::GOKU_PUNCH1){
 			if (state->time_on_state >= .5){
-
 				PosComponent* position = (PosComponent*)e.getComponent<PosComponent>();
 				AttackComponent* attackComponent = new AttackComponent();
 				attackComponent->whoAttack = ((CharacterTypeComponent*)e.getComponent<CharacterTypeComponent>())->type;

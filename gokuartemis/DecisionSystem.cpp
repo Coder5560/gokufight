@@ -23,6 +23,4 @@ void DecisionSystem::processEntity(artemis::Entity& e){
 	else{
 		decision->decisionBase->obsever(e);
 	}
-
-
 }

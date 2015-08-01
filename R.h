@@ -11,7 +11,7 @@ namespace R{
 		static const int MAX_SCREEN_WIDTH;
 	};
 	enum class Match_Type{
-		NONE,GOKU_GIRAN,
+		NONE, GOKU_GIRAN, GOKU_BEAR,GOKU_JACKIECHUN
 
 	};
 
@@ -38,7 +38,7 @@ namespace R{
 
 	};
 	enum class CharacterState {
-		WIN,START,STAND, WALK_LEFT, WALK_RIGHT, JUMP, KICK, PUNCH, BEAT, ATTACK, DEFENSE, DIE, LEFT, RIGHT, TRUNG_DON
+		WIN,START,STAND,STAND_UP, WALK_LEFT, WALK_RIGHT, JUMP, KICK, PUNCH, BEAT, ATTACK, DEFENSE, DIE, LEFT, RIGHT, TRUNG_DON
 	};
 	enum class Attack{
 		NONE,
@@ -47,6 +47,15 @@ namespace R{
 
 		//for giran
 		GIRAN_PUNCH1,GIRAN_PUNCH2,GIRAN_PUNCH3,
+
+
+		//for bear
+		BEAR_ATTACK1, BEAR_ATTACK2,
+
+		//for jackiechun 
+
+		JACK_PUNCH_AIR,JACK_PUNCH_1,JACK_PUNCH_2,JACK_KICK2,JACK_BEAT3,JACK_KICK3
+
 	};
 
 	enum class Defense{
@@ -64,7 +73,7 @@ namespace R{
 
 	enum class CharacterType {
 
-		NONAME, GOKU, YAMCHA, KRILLIN, GIRAN
+		NONAME, GOKU, YAMCHA, KRILLIN, GIRAN,BEAR,JACKIECHUN
 
 	};
 };

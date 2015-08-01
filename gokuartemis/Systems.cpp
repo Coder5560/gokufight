@@ -23,7 +23,7 @@ void GravitySystem::begin() {
 }
 
 void GravitySystem::processEntity(artemis::Entity &e) {
-	PhysicComponent* physic =pm.get(e);
+	PhysicComponent* physic = pm.get(e);
 	GravityComponent* gravity = gm.get(e);
 	if (gravity->enable) {
 		physic->vx += gravity->gravityX * GRAVITY_FACTOR * world->getDelta();
@@ -195,15 +195,15 @@ void MotionSystem::initialize() {
 	pym.init(*world);
 }
 void MotionSystem::begin() {
-
 }
 
 void MotionSystem::processEntity(artemis::Entity &e) {
 	PhysicComponent* physic = (PhysicComponent*)(pym.get(e));
 	PosComponent* position = (PosComponent*)(psm.get(e));
-	position->x += physic->vx * world->getDelta();
-	position->y += physic->vy * world->getDelta();
-
+	if (physic && position){
+		position->x += physic->vx * world->getDelta();
+		position->y += physic->vy * world->getDelta();
+	}
 }
 
 bool MotionSystem::checkProcessing() { return true; }
@@ -322,9 +322,9 @@ void GameStateSystem::switchToAppear(){
 	float worldWidth = R::Constants::MAX_SCREEN_WIDTH;
 	float worldHeight = R::Constants::HEIGHT_SCREEN;
 
-	gokuPosition->x = R::Constants::MAX_SCREEN_WIDTH / 2 - worldWidth / 8-40;
+	gokuPosition->x = R::Constants::MAX_SCREEN_WIDTH / 2 - worldWidth / 8 - 40;
 	gokuPosition->y = 3 * worldHeight / 4;
-	enemyPosition->x = R::Constants::MAX_SCREEN_WIDTH / 2 + worldWidth / 8-40;
+	enemyPosition->x = R::Constants::MAX_SCREEN_WIDTH / 2 + worldWidth / 8 - 100;
 	enemyPosition->y = 3 * worldHeight / 4;
 
 
@@ -356,6 +356,12 @@ void GameStateSystem::switchToFighting(){
 	StateComponent* stateComponent = (StateComponent*)goku.getComponent<StateComponent>();
 	stateComponent->direction = R::Direction::RIGHT;
 	stateComponent->setState(R::CharacterState::START);
+
+
+	artemis::Entity &character = world->getTagManager()->getEntity("enemy");
+	StateComponent* characterstateComponent = (StateComponent*)character.getComponent<StateComponent>();
+	characterstateComponent->direction = R::Direction::LEFT;
+	characterstateComponent->setState(R::CharacterState::START);
 
 }
 void GameStateSystem::switchToPause(){}
@@ -405,14 +411,14 @@ void MapCollisionSystem::processEntity(artemis::Entity &e) {
 		bool collideCenterDown = mapInfo->checkCollide(px + bound->getCenterX(),
 			py + bound->y1);
 
-		if ((physic->vx > 0 && collideCenterRight)|| (physic->vx < 0 && collideCenterLeft)) {
+		if ((physic->vx > 0 && collideCenterRight) || (physic->vx < 0 && collideCenterLeft)) {
 			if (physic->dismissWhenCollideWithWall){ EntityUtils::getInstance()->removeEntity(e); return; }
-			physic->vx =(physic->bounce > 0) ? -physic->vx * physic->bounce : 0;
+			physic->vx = (physic->bounce > 0) ? -physic->vx * physic->bounce : 0;
 		}
 
 		if (physic->vy < 0 && collideCenterDown) {
 			if (physic->dismissWhenCollideWithWall){ EntityUtils::getInstance()->removeEntity(e); return; }
-			physic->vy =(physic->bounce > 0) ? -physic->vy * physic->bounce : 0;
+			physic->vy = (physic->bounce > 0) ? -physic->vy * physic->bounce : 0;
 
 		}
 	}
@@ -444,7 +450,16 @@ void InputSystem::notifyInput(GameHud::EventType event,
 		if (event == GameHud::EventType::BEGIN && touchType == GameHud::TouchType::TAP){
 			RenderLayer::getInstance()->getHudLayer()->removeAllChildren();
 			RenderLayer::getInstance()->getGameLayer()->removeAllChildren();
-			ECSWorld::getInstance()->createWorld(R::Match_Type::GOKU_GIRAN);
+			match++;
+			if (match % 3 == 0){
+				ECSWorld::getInstance()->createWorld(R::Match_Type::GOKU_JACKIECHUN);	
+			}else
+			if (match % 3 == 1){
+				ECSWorld::getInstance()->createWorld(R::Match_Type::GOKU_BEAR);
+			}else
+			if (match % 3 == 1){
+				ECSWorld::getInstance()->createWorld(R::Match_Type::GOKU_GIRAN);
+			}
 		}
 		return;
 	}
@@ -597,7 +612,6 @@ void UICharacterSystem::initialize(){
 	characterInfoMapper.init(*world);
 }
 void UICharacterSystem::createNodeForCharacter(CharacterInfoComponent* characterInfo){
-
 	NodeInfo* node = new NodeInfo();
 	node->createNode(characterInfo);
 	renderObjects.insert(std::pair<std::string, NodeInfo*>(characterInfo->avatar, node));
@@ -606,8 +620,6 @@ void UICharacterSystem::processNodeForCharacter(CharacterInfoComponent* characte
 	if (renderObjects.count(characterInfo->avatar) != 0){
 		renderObjects[characterInfo->avatar]->process(characterInfo);
 	}
-
-
 }
 
 void UICharacterSystem::processEntity(artemis::Entity &e){
@@ -662,7 +674,7 @@ RemoveEntitySystem::RemoveEntitySystem(){
 }
 void RemoveEntitySystem::initialize(){
 	removeEntityMapper.init(*world);
-	
+
 }
 
 void RemoveEntitySystem::processEntity(artemis::Entity &e){
@@ -688,4 +700,30 @@ void DelaySystem::processEntity(artemis::Entity &e){
 		delayComponent->callBack();
 		world->getEntityManager()->remove(e);
 	}
+}
+
+
+
+SkeletonCollisonSystem::SkeletonCollisonSystem() :collisionPoint(Vec2::ZERO){}
+
+void SkeletonCollisonSystem::initialize(){
+}
+
+void SkeletonCollisonSystem::processEntity(artemis::Entity &e){
+	if (((CharacterTypeComponent*)e.getComponent<CharacterTypeComponent>())->type == R::CharacterType::GOKU){
+	
+	}
+	else{
+	
+	}
+}
+
+bool SkeletonCollisonSystem::checkCollision(artemis::Entity &attacker, artemis::Entity &defenser){
+	bool isCollision = false;
+
+
+
+
+
+	return isCollision;
 }

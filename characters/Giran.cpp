@@ -18,10 +18,10 @@ void Giran::changeState(artemis::Entity &e){
 	if (state->state == R::CharacterState::ATTACK){
 		AttackComponent* attackComponent = new AttackComponent();
 		attackComponent->whoAttack = ((CharacterTypeComponent*)e.getComponent<CharacterTypeComponent>())->type;
-		attackComponent->powerOfAttack = 10;
+		attackComponent->powerOfAttack = 5;
 
 		if (state->attack == R::Attack::GIRAN_PUNCH1){
-			CCLOG("Attack giran"); actionPunch1(e, state->direction); 
+			actionPunch1(e, state->direction); 
 			attackComponent->minX = position->x - 450;
 			attackComponent->maxX = position->x + 450;
 			attackComponent->minY = position->y - 450;
@@ -42,7 +42,7 @@ void Giran::changeState(artemis::Entity &e){
 			attackComponent->maxY = position->y + 450;
 		}
 		EntityUtils::getInstance()->createAttackEntity(e, attackComponent);
-		state->state == R::CharacterState::STAND;
+		state->state = R::CharacterState::STAND;
 	}
 	else if (state->state == R::CharacterState::DIE){ actionDie(e, state->direction); }
 	else if (state->state == R::CharacterState::DEFENSE){ actionTrungDon(e, state->direction); }
@@ -153,18 +153,18 @@ void Giran::actionMoveOn(artemis::Entity &e, R::Direction direction){
 		Node* node = skeleton->node;
 		// xử lý action
 		if (state->direction == R::Direction::RIGHT) {
-			EntityUtils::getInstance()->push(e, 0, 100);
-			EntityUtils::getInstance()->clampVelocity(e, 0, 100);
+			EntityUtils::getInstance()->push(e, 0, 160);
+			EntityUtils::getInstance()->clampVelocity(e, 0, 160);
 			node->setScaleX(1);
 		}
 		else if (state->direction == R::Direction::LEFT) {
-			EntityUtils::getInstance()->push(e, 180, 100);
-			EntityUtils::getInstance()->clampVelocity(e, 0, 100);
+			EntityUtils::getInstance()->push(e, 180, 160);
+			EntityUtils::getInstance()->clampVelocity(e, 0, 160);
 			node->setScaleX(-1);
 		}
 		else if (state->direction == R::Direction::AUTO) {
-			EntityUtils::getInstance()->push(e, node->getScaleX() > 0 ? 0 : 180, 100);
-			EntityUtils::getInstance()->clampVelocity(e, 0, 100);
+			EntityUtils::getInstance()->push(e, node->getScaleX() > 0 ? 0 : 180, 160);
+			EntityUtils::getInstance()->clampVelocity(e, 0, 160);
 		}
 	}
 }

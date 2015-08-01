@@ -11,6 +11,8 @@
 #include "RenderSystem.h"
 #include "Characters/Goku.h"
 #include "Characters/Giran.h"
+#include "Characters/Bear.h"
+#include "Characters/Jackiechun.h"
 #include "R.h"
 USING_NS_CC;
 
@@ -20,19 +22,20 @@ public:
 	static ECSWorld* getInstance();
 	static ECSWorld* instance;
 	virtual void createWorld(R::Match_Type matchType);
-	
+	artemis::World* getWorld();
+
 	void processWorld(float delta);
 	artemis::EntitySystem* setSystem(artemis::EntitySystem* system);
 	InputSystem* inputSystem;
 	void createMainCharacter();
 	void createEnemyCharacter();
-
-
 	
 
 	R::Match_Type matchType;
 private:
 	void createGiranCharacter();
+	void createBearCharacter();
+	void createJackiechunCharacter();
 	ECSWorld();
 	~ECSWorld();
 	GameHud* gameHud;

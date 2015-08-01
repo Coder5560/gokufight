@@ -25,6 +25,16 @@ public:
 	virtual void createGiranAttack2(artemis::Entity &attackEntity, AttackComponent* attackComponent);
 	virtual void createGiranAttack3(artemis::Entity &attackEntity, AttackComponent* attackComponent);
 
+	virtual void createBearAttack1(artemis::Entity &attacker, AttackComponent* attackComponent);
+	virtual void createBearAttack2(artemis::Entity &attacker, AttackComponent* attackComponent);
+
+	virtual void createJackiechunBeat3(artemis::Entity &attacker, AttackComponent* attackComponent);
+	virtual void createJackiechunKick2(artemis::Entity &attacker, AttackComponent* attackComponent);
+	virtual void createJackiechunKick3(artemis::Entity &attacker, AttackComponent* attackComponent);
+	virtual void createJackiechunPunch1(artemis::Entity &attacker, AttackComponent* attackComponent);
+	virtual void createJackiechunPunch2(artemis::Entity &attacker, AttackComponent* attackComponent);
+	virtual void createJackiechunPunchAir(artemis::Entity &attacker, AttackComponent* attackComponent);
+
 	virtual void removeEntity(artemis::Entity &e);
 private :
 	static EntityUtils* instance;

@@ -31,6 +31,14 @@ public :
 	void start();
 	void dismiss();
 };
+
+class Message : public Effects {
+public:
+	Message(Node* node);
+	void start(std::string message);
+	void dismiss();
+};
+
 class KameKameHa : public Effects{
 public :
 	KameKameHa(Node* node);
