@@ -5,11 +5,15 @@ RenderLayer* instance = nullptr;
 
 RenderLayer::RenderLayer()
 {
-	visibleSize = Director::getInstance()->getOpenGLView()->getFrameSize();
+	visibleSize = Director::getInstance()->getWinSize();
 	backgroundLayer = Layer::create();
 	backgroundLayer->setContentSize(visibleSize);
 	gameLayer = Layer::create();
 	gameLayer->setContentSize(Size(R::Constants::MAX_SCREEN_WIDTH,R::Constants::HEIGHT_SCREEN));
+	gameLayer->ignoreAnchorPointForPosition(false);
+	gameLayer->setScale(2);
+	gameLayer->setPositionX(R::Constants::MAX_SCREEN_WIDTH);
+	gameLayer->setPositionY(R::Constants::HEIGHT_SCREEN);
 	hudLayer = Layer::create();
 	hudLayer->setContentSize(visibleSize);
 }

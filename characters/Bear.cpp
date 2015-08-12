@@ -17,11 +17,12 @@ void Bear::changeState(artemis::Entity &e){
 
 	StateComponent* state = (StateComponent*)e.getComponent<StateComponent>();
 	PosComponent* position = (PosComponent*)e.getComponent<PosComponent>();
+	CharacterInfoComponent* characterInfo = (CharacterInfoComponent*)e.getComponent<CharacterInfoComponent>();
 	if (state->state == R::CharacterState::ATTACK){
 		AttackComponent* attackComponent = new AttackComponent();
 		attackComponent->whoAttack = ((CharacterTypeComponent*)e.getComponent<CharacterTypeComponent>())->type;
-		attackComponent->powerOfAttack = 5;
-
+		attackComponent->powerOfAttack = characterInfo->NORMAL_SKILL_POWER;
+		attackComponent->type = state->attack;
 		if (state->attack == R::Attack::BEAR_ATTACK1){
 			actionAttack1(e, state->direction);
 			attackComponent->minX = position->x - 140;
@@ -49,12 +50,15 @@ void Bear::changeState(artemis::Entity &e){
 
 }
 void Bear::actionTrungDon(artemis::Entity &e, R::Direction direction){
+	StateComponent* state = (StateComponent*)e.getComponent<StateComponent>();
 	SkeletonComponent* skeleton = (SkeletonComponent*)e.getComponent<SkeletonComponent>();
 	skeleton->skeleton->clearTracks();
 	skeleton->skeleton->setAnimation(0, "hitting", true);
 	skeleton->skeleton->setToSetupPose();
-	skeleton->skeleton->setCompleteListener(nullptr);
-	skeleton->skeleton->setTimeScale(1);
+	skeleton->skeleton->setCompleteListener([=](int trackID, int loopCount) {
+		state->setState(R::CharacterState::STAND);
+	});
+	skeleton->skeleton->setTimeScale(1.5f);
 
 	if (direction == R::Direction::LEFT){
 		EntityUtils::getInstance()->push(e, 180, 240);

@@ -1,9 +1,6 @@
 #include "GameHud.h"
 
-GameHud::GameHud(Size visibleSize) :
-state(HudState::HIDE), touchType(TouchType::NONE), eventType(
-EventType::RELEASE), timeTouch(0), isPan(false), ignoreInput(
-false), timeCatchEvent(0) {
+GameHud::GameHud(Size visibleSize) :touch(nullptr),state(HudState::HIDE), touchType(TouchType::NONE), eventType(EventType::RELEASE), timeTouch(0), isPan(false), ignoreInput(false), timeCatchEvent(0) {
 	this->setContentSize(visibleSize);
 	this->scheduleUpdate();
 }
@@ -13,7 +10,7 @@ void GameHud::buildComponent() {
 
 	EventListenerTouchOneByOne* listenerMove =
 		EventListenerTouchOneByOne::create();
-	listenerMove->onTouchBegan = [this](Touch* touch, Event* event) {
+	listenerMove->onTouchBegan = [this](Touch* touchElement, Event* event) {
 		timeTouch = 0;
 		timeCatchEvent = -1;
 		isFling = false;
@@ -21,14 +18,14 @@ void GameHud::buildComponent() {
 		ignoreInput = false;
 		eventType = EventType::BEGIN;
 		touchType = TouchType::NONE;
+		this->touch = touchElement;
 		return true;
 
 	};
 	listenerMove->onTouchMoved =
 		[this](Touch* touch, Event* event) {
+		this->touch = touch;
 		if (ignoreInput) return;
-		
-
 		Vec2 delta = touch->getDelta();
 		float length = touch->getDelta().getLength();
 		float angle = 180 * atan2f(touch->getDelta().y, touch->getDelta().x) / M_PI;
@@ -114,6 +111,7 @@ void GameHud::buildComponent() {
 	};
 
 	listenerMove->onTouchEnded = [this](Touch* touch, Event* event) {
+		this->touch = touch;
 		if (ignoreInput) return;
 		if (!isPan) {
 
@@ -165,12 +163,12 @@ void GameHud::update(float delta) {
 	}
 }
 void GameHud::setCallBack(
-	const std::function<void(GameHud::EventType, GameHud::TouchType)> &callBack) {
+	const std::function<void(Touch* touch,GameHud::EventType, GameHud::TouchType)> &callBack) {
 	this->callBack = callBack;
 }
 void GameHud::notifyEvent() {
 	if (callBack) {
-		callBack(eventType, touchType);
+		callBack(touch,eventType, touchType);
 	}
 }
 

@@ -4,35 +4,34 @@
 Effects::Effects(){}
 Effects::~Effects(){}
 
-HitEffect::HitEffect(Node* node) : hitType(R::CharacterType::NONAME) { this->node = node; }
+HitEffect::HitEffect(Node* node) : hitType(R::CharacterType::NONAME), safeToRemove(false) { this->node = node; }
 void HitEffect::setHitStyle(R::CharacterType type){ this->hitType = type; }
-void HitEffect::start(){
-	node->setAnchorPoint(Vec2(.5,.5));
-	node->ignoreAnchorPointForPosition(false);
-	
 
-	Sprite* sprite = Sprite::create();
-	node->addChild(sprite);
-	Vector<SpriteFrame*> animFrames(4);
-	char str[100] = { 0 };
-	for (int i = 0; i < 4; i++)
-	{
-		if (hitType == R::CharacterType::GOKU){ sprintf(str, "textures/hit%02d.png", i); }
-		else{
-			sprintf(str, "textures/enemyhit%02d.png", i);
-		}
-		
-		auto frame = SpriteFrame::create(str, Rect(0, 0, 60, 60)); //we assume that the sprites' dimentions are 40*40 rectangles.
-		animFrames.pushBack(frame);
+void HitEffect::start(){
+	node->setAnchorPoint(Vec2(.5, .5));
+	node->ignoreAnchorPointForPosition(false);
+	spine::SkeletonAnimation* animation = spine::SkeletonAnimation::createWithFile("spine/Trung don.json", "spine/Trung don.atlas", 1);
+	if (hitType == R::CharacterType::GOKU){
+		animation->setAnimation(0, "trungdon2", false);
 	}
-	auto animation = Animation::createWithSpriteFrames(animFrames, 0.05f);
-	auto animate = Animate::create(animation);
-	auto sequence = Sequence::create(animate, CallFunc::create([this](){
-		node->removeFromParent();
-		delete this;
-	}), nullptr);
-	sprite->runAction(sequence);
+	else {
+		animation->setAnimation(0, "trungdon", false);
+	}
+	animation->setTimeScale(.6f);
+	animation->setAnchorPoint(Vec2(.5, .5));
+	animation->ignoreAnchorPointForPosition(false);
+	animation->setCompleteListener([this, animation](int trackIndex, int loopCount){
+		dismiss();
+	});
+
+	node->addChild(animation);
 }
+void HitEffect::dismiss(){
+	node->setVisible(false);
+	RemoveSelf* actionRemove = RemoveSelf::create(true);
+	node->runAction(actionRemove);
+}
+
 
 KameKameHa::KameKameHa(Node* node)  { this->node = node; }
 
@@ -47,15 +46,6 @@ void KameKameHa::start(bool isLeftDirection){
 	chuong->ignoreAnchorPointForPosition(false);
 	node->addChild(chuong);
 
-
-
-
-	/*Sprite* sprite = Sprite::create("textures/effect_chuong.png"); 
-	sprite->setScale(0);
-	auto scaleOutAction = ScaleTo::create(.5,1);
-	auto scaleOut = EaseBackOut::create(scaleOutAction->clone());
-	sprite->runAction(scaleOut);
-	node->addChild(sprite);*/
 }
 
 
@@ -74,7 +64,7 @@ void NotEnoughManaEffect::start(){
 	auto fadeIn = FadeIn::create(.5);
 
 
-	auto timeLine = Spawn::create(moveBy,fadeIn,nullptr);
+	auto timeLine = Spawn::create(moveBy, fadeIn, nullptr);
 	text->runAction(Sequence::create(scaleOut, timeLine, CallFunc::create([=](){
 		dismiss();
 	}), nullptr));
@@ -115,4 +105,133 @@ void Message::start(std::string message){
 void Message::dismiss(){
 	node->removeFromParent();
 	delete this;
+}
+
+PlayerInfoLeft::PlayerInfoLeft(Node* container, std::string name, std::string avatar) : _name(name), _avatar(avatar){
+	this->node = container;
+	ui::ImageView* imgAvatar = ui::ImageView::create(_avatar);
+	ui::ImageView* board_bg = ui::ImageView::create("textures/board_info.png");
+	ui::Text* playerName = ui::Text::create(name, "fonts/courbd.ttf", 20);
+	playerName->setColor(Color3B::BLACK);
+
+	size = Size(100, 6);
+	ui::Layout* bgMana = ui::Layout::create();
+	bgMana->setContentSize(size);
+	bgMana->setBackGroundImageScale9Enabled(true);
+	bgMana->setBackGroundImage("textures/column_off.png", ui::Widget::TextureResType::LOCAL);
+
+	mana = ui::Layout::create();
+	mana->setContentSize(size);
+	mana->setBackGroundImageScale9Enabled(true);
+	mana->setBackGroundImage("textures/column_mana.png", ui::Widget::TextureResType::LOCAL);
+
+	ui::Layout* bgBlood = ui::Layout::create();
+	bgBlood->setContentSize(size);
+	bgBlood->setBackGroundImageScale9Enabled(true);
+	bgBlood->setBackGroundImage("textures/column_off.png", ui::Widget::TextureResType::LOCAL);
+
+
+	blood = ui::Layout::create();
+	blood->setContentSize(size);
+	blood->setBackGroundImageScale9Enabled(true);
+	blood->setBackGroundImage("textures/column_strength.png", ui::Widget::TextureResType::LOCAL);
+
+
+	node->addChild(board_bg);
+	node->addChild(imgAvatar);
+	node->addChild(playerName);
+	node->addChild(bgMana);
+	node->addChild(bgBlood);
+	node->addChild(mana);
+	node->addChild(blood);
+
+
+
+	imgAvatar->setPosition(Vec2(imgAvatar->getContentSize().width / 2, imgAvatar->getContentSize().height / 2 + 20));
+	board_bg->setPosition(Vec2(imgAvatar->getContentSize().width + board_bg->getContentSize().width / 2 - 20, board_bg->getContentSize().height / 2));
+	playerName->setAnchorPoint(Vec2(0, .5f));
+	playerName->setPosition(Vec2(board_bg->getPositionX() - board_bg->getContentSize().width / 2 + 30, board_bg->getPositionY() + 10));
+
+	bgMana->setAnchorPoint(Vec2(0, .5f));
+	bgMana->setPosition(Vec2(playerName->getPositionX(), playerName->getPositionY() - playerName->getContentSize().height / 2 - bgMana->getContentSize().height / 2));
+	mana->setAnchorPoint(Vec2(0, .5f));
+	mana->setPosition(Vec2(bgMana->getPositionX(), bgMana->getPositionY()));
+
+	bgBlood->setAnchorPoint(Vec2(0, .5f));
+	bgBlood->setPosition(Vec2(playerName->getPositionX() - 8, bgMana->getPositionY() - bgMana->getContentSize().height / 2 - bgMana->getContentSize().height / 2 - 6));
+
+	blood->setAnchorPoint(Vec2(0, .5f));
+	blood->setPosition(Vec2(bgBlood->getPositionX(), bgBlood->getPositionY()));
+	blood->setContentSize(Size(size.width / 2, size.height));
+
+
+}
+
+
+PlayerInfoRight::PlayerInfoRight(Node* container, std::string name, std::string avatar) : _name(name), _avatar(avatar){
+	this->node = container;
+	ui::ImageView* imgAvatar = ui::ImageView::create(_avatar);
+	ui::ImageView* board_bg = ui::ImageView::create("textures/board_info.png");
+	board_bg->setFlipX(-1);
+	ui::Text* playerName = ui::Text::create(name, "fonts/courbd.ttf", 20);
+	playerName->setColor(Color3B::BLACK);
+
+	size = Size(100, 6);
+	ui::Layout* bgMana = ui::Layout::create();
+	bgMana->setContentSize(size);
+	bgMana->setBackGroundImageScale9Enabled(true);
+	bgMana->setBackGroundImage("textures/column_off.png", ui::Widget::TextureResType::LOCAL);
+
+	 mana = ui::Layout::create();
+	mana->setContentSize(size);
+	mana->setBackGroundImageScale9Enabled(true);
+	mana->setBackGroundImage("textures/column_mana.png", ui::Widget::TextureResType::LOCAL);
+
+	ui::Layout* bgBlood = ui::Layout::create();
+	bgBlood->setContentSize(size);
+	bgBlood->setBackGroundImageScale9Enabled(true);
+	bgBlood->setBackGroundImage("textures/column_off.png", ui::Widget::TextureResType::LOCAL);
+
+	blood = ui::Layout::create();
+	blood->setContentSize(size);
+	blood->setBackGroundImageScale9Enabled(true);
+	blood->setBackGroundImage("textures/column_strength.png", ui::Widget::TextureResType::LOCAL);
+
+	node->addChild(board_bg);
+	node->addChild(imgAvatar);
+	node->addChild(playerName);
+	node->addChild(bgMana);
+	node->addChild(bgBlood);
+	node->addChild(mana);
+	node->addChild(blood);
+
+	board_bg->setPosition(Vec2(board_bg->getContentSize().width / 2, board_bg->getContentSize().height / 2));
+	imgAvatar->setPosition(Vec2(board_bg->getPositionX() + board_bg->getContentSize().width / 2 + 10, board_bg->getPositionY() + 20));
+	playerName->setAnchorPoint(Vec2(0, .5f));
+	playerName->setPosition(Vec2(board_bg->getPositionX() - 30, board_bg->getPositionY() + 10));
+
+	bgMana->setAnchorPoint(Vec2(1, .5f));
+	bgMana->setPosition(Vec2(board_bg->getPositionX() + 52, playerName->getPositionY() - playerName->getContentSize().height / 2 - bgMana->getContentSize().height / 2));
+	mana->setAnchorPoint(Vec2(1, .5f));
+	mana->setPosition(Vec2(bgMana->getPositionX(), bgMana->getPositionY()));
+
+	bgBlood->setAnchorPoint(Vec2(1, .5f));
+	bgBlood->setPosition(Vec2(board_bg->getPositionX() + 60, bgMana->getPositionY() - bgMana->getContentSize().height / 2 - bgMana->getContentSize().height / 2 - 6));
+
+	blood->setAnchorPoint(Vec2(1, .5f));
+	blood->setPosition(Vec2(bgBlood->getPositionX(), bgBlood->getPositionY()));
+	blood->setContentSize(Size(size.width / 2, size.height));
+}
+
+void PlayerInfoLeft::update(float _blood, float _mana){
+	_blood = (_blood<0) ? 0 : ((_blood>1) ? 1 : _blood);
+	_mana = (_mana<0) ? 0 : ((_mana>1) ? 1 : _mana);
+	blood->setContentSize(Size(size.width * _blood, size.height));
+	mana->setContentSize(Size(size.width * _mana, size.height));
+}
+void PlayerInfoRight::update(float _blood, float _mana){
+	_blood = (_blood<0) ? 0 : ((_blood>1) ? 1 : _blood);
+	_mana = (_mana<0) ? 0 : ((_mana>1) ? 1 : _mana);
+	blood->setContentSize(Size(size.width * _blood, size.height));
+	mana->setContentSize(Size(size.width * _mana, size.height));
 }

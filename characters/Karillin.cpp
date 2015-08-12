@@ -1,12 +1,10 @@
-#include "Goku.h"
+#include "Karillin.h"
+
 #include "renders/Effects.h"
-Goku::Goku() :timeHoldInput(0){}
+Karillin::Karillin(){}
+Karillin::~Karillin(){}
 
-
-Goku::~Goku()
-{
-}
-void Goku::changeState(artemis::Entity &e){
+void Karillin::changeState(artemis::Entity &e){
 	StateComponent* state = (StateComponent*)e.getComponent<StateComponent>();
 	CharacterInfoComponent* characterInfo = (CharacterInfoComponent*)e.getComponent<CharacterInfoComponent>();
 	if (state->state == R::CharacterState::ATTACK){
@@ -16,61 +14,58 @@ void Goku::changeState(artemis::Entity &e){
 		attackComponent->type = state->attack;
 		attackComponent->powerOfAttack = characterInfo->NORMAL_SKILL_POWER;
 
-		if (state->attack == R::Attack::GOKU_BEAT1){
+		if (state->attack == R::Attack::KARILLIN_BEAT1){
 			actionBeat1(e, state->direction);
-			attackComponent->minX = position->x -60;
-			attackComponent->maxX = position->x + 60;
+			attackComponent->minX = position->x - 50;
+			attackComponent->maxX = position->x + 50;
 			attackComponent->minY = position->y - 80;
 			attackComponent->maxY = position->y + 80;
-
 		}
-		else if (state->attack == R::Attack::GOKU_BEAT2){
+		else if (state->attack == R::Attack::KARILLIN_BEAT2){
 			actionBeat2(e, state->direction);
-			attackComponent->minX = position->x - 80;
-			attackComponent->maxX = position->x + 80;
+			attackComponent->minX = position->x - 70;
+			attackComponent->maxX = position->x + 70;
 			attackComponent->minY = position->y - 80;
 			attackComponent->maxY = position->y + 80;
-
 		}
-		else if (state->attack == R::Attack::GOKU_BEAT3){
+		else if (state->attack == R::Attack::KARILLIN_BEAT3){
 			actionBeat3(e, state->direction);
-			attackComponent->minX = position->x - 80;
-			attackComponent->maxX = position->x + 80;
+			attackComponent->minX = position->x - 70;
+			attackComponent->maxX = position->x + 70;
 			attackComponent->minY = position->y - 40;
 			attackComponent->maxY = position->y + 140;
 		}
-		else if (state->attack == R::Attack::GOKU_PUNCH1){
+		else if (state->attack == R::Attack::KARILLIN_PUNCH1){
 			actionPunch1(e, state->direction);
 			//createAttack by ChangeStateSystem.
 			return;
 		}
-		else if (state->attack == R::Attack::GOKU_PUNCH2){
+		else if (state->attack == R::Attack::KARILLIN_PUNCH2){
 			actionPunch2(e, state->direction);
-			attackComponent->minX = position->x - 100;
-			attackComponent->maxX = position->x + 100;
+			attackComponent->minX = position->x - 90;
+			attackComponent->maxX = position->x + 90;
 			attackComponent->minY = position->y - 120;
 			attackComponent->maxY = position->y + 120;
-
 		}
 
-		else if (state->attack == R::Attack::GOKU_KICK1){
+		else if (state->attack == R::Attack::KARILLIN_KICK1){
 			actionKick1(e, state->direction);
-			attackComponent->minX = position->x - 50;
-			attackComponent->maxX = position->x + 50;
+			attackComponent->minX = position->x - 40;
+			attackComponent->maxX = position->x + 40;
 			attackComponent->minY = position->y - 30;
 			attackComponent->maxY = position->y + 30;
 		}
-		else if (state->attack == R::Attack::GOKU_KICK2){
+		else if (state->attack == R::Attack::KARILLIN_KICK2){
 			actionKick2(e, state->direction);
-			attackComponent->minX = position->x - 50;
-			attackComponent->maxX = position->x + 50;
+			attackComponent->minX = position->x - 40;
+			attackComponent->maxX = position->x + 40;
 			attackComponent->minY = position->y - 40;
 			attackComponent->maxY = position->y + 60;
 		}
-		else if (state->attack == R::Attack::GOKU_KICK3){
+		else if (state->attack == R::Attack::KARILLIN_KICK3){
 			actionKick3(e, state->direction);
-			attackComponent->minX = position->x - 50;
-			attackComponent->maxX = position->x + 50;
+			attackComponent->minX = position->x - 40;
+			attackComponent->maxX = position->x + 40;
 			attackComponent->minY = position->y - 40;
 			attackComponent->maxY = position->y + 60;
 		}
@@ -86,15 +81,15 @@ void Goku::changeState(artemis::Entity &e){
 	else if (state->state == R::CharacterState::START){ actionStart(e, state->direction); }
 	else if (state->state == R::CharacterState::STAND){ actionStand(e); }
 	else if (state->state == R::CharacterState::STAND_UP){ actionStandUp(e); }
-	else if (state->state == R::CharacterState::LEFT){ actionMove(e, R::Direction::LEFT); timeHoldInput = 0; }
-	else if (state->state == R::CharacterState::RIGHT){ actionMove(e, R::Direction::RIGHT); timeHoldInput = 0; }
-	else if (state->state == R::CharacterState::WALK_RIGHT){ actionMoveOn(e, R::Direction::RIGHT); timeHoldInput += .017; }
-	else if (state->state == R::CharacterState::WALK_LEFT){ actionMoveOn(e, R::Direction::LEFT); timeHoldInput += .017; }
+	else if (state->state == R::CharacterState::LEFT){ actionMove(e, R::Direction::LEFT);  }
+	else if (state->state == R::CharacterState::RIGHT){ actionMove(e, R::Direction::RIGHT);  }
+	else if (state->state == R::CharacterState::WALK_RIGHT){ actionMoveOn(e, R::Direction::RIGHT);  }
+	else if (state->state == R::CharacterState::WALK_LEFT){ actionMoveOn(e, R::Direction::LEFT);  }
 	else if (state->state == R::CharacterState::JUMP){
 		actionJump1(e, R::Direction::AUTO);
 	}
 }
-void Goku::actionStand(artemis::Entity &e){
+void Karillin::actionStand(artemis::Entity &e){
 	StateComponent* state = (StateComponent*)e.getComponent<StateComponent>();
 	SkeletonComponent* skeleton = (SkeletonComponent*)e.getComponent<SkeletonComponent>();
 	PhysicComponent* physic = (PhysicComponent*)e.getComponent<PhysicComponent>();
@@ -105,7 +100,7 @@ void Goku::actionStand(artemis::Entity &e){
 	skeleton->skeleton->setTimeScale(1);
 	physic->vx = 0; physic->vy = 0;
 }
-void Goku::actionStandUp(artemis::Entity &e) {
+void Karillin::actionStandUp(artemis::Entity &e) {
 	bool dudieukien = true;
 	if (!dudieukien) {
 		return;
@@ -149,7 +144,7 @@ void Goku::actionStandUp(artemis::Entity &e) {
 		}
 	}
 }
-void Goku::actionDie(artemis::Entity &e, R::Direction direction) {
+void Karillin::actionDie(artemis::Entity &e, R::Direction direction) {
 	bool dudieukien = true;
 	if (!dudieukien) {
 		return;
@@ -188,7 +183,7 @@ void Goku::actionDie(artemis::Entity &e, R::Direction direction) {
 		}
 	}
 }
-void Goku::actionMove(artemis::Entity &e, R::Direction direction) {
+void Karillin::actionMove(artemis::Entity &e, R::Direction direction) {
 	WallSensorComponent* wallSensor = (WallSensorComponent*)(e.getComponent<WallSensorComponent>());
 	bool dudieukien = wallSensor->onFloor;
 	if (!dudieukien) {
@@ -228,7 +223,7 @@ void Goku::actionMove(artemis::Entity &e, R::Direction direction) {
 		}
 	}
 }
-void Goku::actionMoveOn(artemis::Entity &e, R::Direction direction) {
+void Karillin::actionMoveOn(artemis::Entity &e, R::Direction direction) {
 	WallSensorComponent* wallSensor = (WallSensorComponent*)(e.getComponent<WallSensorComponent>());
 	bool dudieukien = wallSensor->onFloor;
 	if (!dudieukien) {
@@ -239,7 +234,7 @@ void Goku::actionMoveOn(artemis::Entity &e, R::Direction direction) {
 		// xử lý action
 		StateComponent* state = (StateComponent*)e.getComponent<StateComponent>();
 		//	CCLOG("Time on State : %f ", timeHoldInput);
-		if (timeHoldInput >= .4 && (state->state == R::CharacterState::WALK_LEFT || state->state == R::CharacterState::WALK_RIGHT)){
+		if ((state->state == R::CharacterState::WALK_LEFT || state->state == R::CharacterState::WALK_RIGHT)){
 
 			actionRun(e, direction);
 
@@ -272,7 +267,7 @@ void Goku::actionMoveOn(artemis::Entity &e, R::Direction direction) {
 
 	}
 }
-void Goku::actionRun(artemis::Entity &e, R::Direction direction) {
+void Karillin::actionRun(artemis::Entity &e, R::Direction direction) {
 	WallSensorComponent* wallSensor = (WallSensorComponent*)(e.getComponent<WallSensorComponent>());
 	bool dudieukien = wallSensor->onFloor;
 	if (!dudieukien) {
@@ -312,7 +307,7 @@ void Goku::actionRun(artemis::Entity &e, R::Direction direction) {
 		}
 	}
 }
-void Goku::actionStart(artemis::Entity &e, R::Direction direction) {
+void Karillin::actionStart(artemis::Entity &e, R::Direction direction) {
 	WallSensorComponent* wallSensor = (WallSensorComponent*)(e.getComponent<WallSensorComponent>());
 	bool dudieukien = wallSensor->onFloor;
 	if (!dudieukien) {
@@ -355,7 +350,7 @@ void Goku::actionStart(artemis::Entity &e, R::Direction direction) {
 		}
 	}
 }
-void Goku::actionTrungDon(artemis::Entity &e, R::Direction direction) {
+void Karillin::actionTrungDon(artemis::Entity &e, R::Direction direction) {
 	bool dudieukien = true;
 	if (!dudieukien) {
 		return;
@@ -404,7 +399,7 @@ void Goku::actionTrungDon(artemis::Entity &e, R::Direction direction) {
 		}
 	}
 }
-void Goku::actionTrungDonNga(artemis::Entity &e, R::Direction direction) {
+void Karillin::actionTrungDonNga(artemis::Entity &e, R::Direction direction) {
 	bool dudieukien = true;
 	if (!dudieukien) {
 		return;
@@ -453,7 +448,7 @@ void Goku::actionTrungDonNga(artemis::Entity &e, R::Direction direction) {
 		}
 	}
 }
-void Goku::actionVictory(artemis::Entity &e) {
+void Karillin::actionVictory(artemis::Entity &e) {
 
 
 
@@ -475,7 +470,7 @@ void Goku::actionVictory(artemis::Entity &e) {
 
 	}
 }
-void Goku::actionBeat1(artemis::Entity &e, R::Direction direction) {
+void Karillin::actionBeat1(artemis::Entity &e, R::Direction direction) {
 	WallSensorComponent* wallSensor = (WallSensorComponent*)(e.getComponent<WallSensorComponent>());
 	bool dudieukien = wallSensor->onFloor;
 	if (!dudieukien) {
@@ -491,13 +486,13 @@ void Goku::actionBeat1(artemis::Entity &e, R::Direction direction) {
 		// xử lý action
 		skeletonAnimation->clearTracks();
 		skeletonAnimation->setAnimation(0, "Beat1", false);
-		skeletonAnimation->setTimeScale(2.5f);
+		skeletonAnimation->setTimeScale(1.5f);
 		skeletonAnimation->setCompleteListener([=](int trackID, int loopCount) {
 			state->setState(R::CharacterState::STAND);
 		});
 	}
 }
-void Goku::actionBeat2(artemis::Entity &e, R::Direction direction) {
+void Karillin::actionBeat2(artemis::Entity &e, R::Direction direction) {
 	WallSensorComponent* wallSensor = (WallSensorComponent*)(e.getComponent<WallSensorComponent>());
 	bool dudieukien = wallSensor->onFloor;
 	if (!dudieukien) {
@@ -524,7 +519,7 @@ void Goku::actionBeat2(artemis::Entity &e, R::Direction direction) {
 
 	}
 }
-void Goku::actionBeat3(artemis::Entity &e, R::Direction direction) {
+void Karillin::actionBeat3(artemis::Entity &e, R::Direction direction) {
 	WallSensorComponent* wallSensor = (WallSensorComponent*)(e.getComponent<WallSensorComponent>());
 	bool dudieukien = wallSensor->onFloor;
 	if (!dudieukien) {
@@ -551,7 +546,7 @@ void Goku::actionBeat3(artemis::Entity &e, R::Direction direction) {
 
 	}
 }
-void Goku::actionJump1(artemis::Entity &e, R::Direction direction) {
+void Karillin::actionJump1(artemis::Entity &e, R::Direction direction) {
 	WallSensorComponent* wallSensor = (WallSensorComponent*)(e.getComponent<WallSensorComponent>());
 	bool dudieukien = wallSensor->onFloor;
 	if (!dudieukien) {
@@ -579,7 +574,7 @@ void Goku::actionJump1(artemis::Entity &e, R::Direction direction) {
 		}
 	}
 }
-void Goku::actionJump2(artemis::Entity &e, R::Direction direction) {
+void Karillin::actionJump2(artemis::Entity &e, R::Direction direction) {
 	WallSensorComponent* wallSensor = (WallSensorComponent*)(e.getComponent<WallSensorComponent>());
 	bool dudieukien = wallSensor->onFloor;
 	if (!dudieukien) {
@@ -603,7 +598,7 @@ void Goku::actionJump2(artemis::Entity &e, R::Direction direction) {
 		skeletonAnimation->setCompleteListener(nullptr);
 	}
 }
-void Goku::actionJump3(artemis::Entity &e, R::Direction direction) {
+void Karillin::actionJump3(artemis::Entity &e, R::Direction direction) {
 	WallSensorComponent* wallSensor = (WallSensorComponent*)(e.getComponent<WallSensorComponent>());
 	bool dudieukien = wallSensor->onFloor;
 	if (!dudieukien) {
@@ -626,7 +621,7 @@ void Goku::actionJump3(artemis::Entity &e, R::Direction direction) {
 		skeletonAnimation->setCompleteListener(nullptr);
 	}
 }
-void Goku::actionKick1(artemis::Entity &e, R::Direction direction) {
+void Karillin::actionKick1(artemis::Entity &e, R::Direction direction) {
 	WallSensorComponent* wallSensor = (WallSensorComponent*)(e.getComponent<WallSensorComponent>());
 	bool dudieukien = wallSensor->onFloor;
 	if (!dudieukien) {
@@ -650,7 +645,7 @@ void Goku::actionKick1(artemis::Entity &e, R::Direction direction) {
 
 	}
 }
-void Goku::actionKick2(artemis::Entity &e, R::Direction direction) {
+void Karillin::actionKick2(artemis::Entity &e, R::Direction direction) {
 	WallSensorComponent* wallSensor = (WallSensorComponent*)(e.getComponent<WallSensorComponent>());
 	bool dudieukien = wallSensor->onFloor;
 	if (!dudieukien) {
@@ -674,7 +669,7 @@ void Goku::actionKick2(artemis::Entity &e, R::Direction direction) {
 
 	}
 }
-void Goku::actionKick3(artemis::Entity &e, R::Direction direction) {
+void Karillin::actionKick3(artemis::Entity &e, R::Direction direction) {
 	WallSensorComponent* wallSensor = (WallSensorComponent*)(e.getComponent<WallSensorComponent>());
 	bool dudieukien = wallSensor->onFloor;
 	if (!dudieukien) {
@@ -698,7 +693,7 @@ void Goku::actionKick3(artemis::Entity &e, R::Direction direction) {
 
 	}
 }
-void Goku::actionPunch1(artemis::Entity &e, R::Direction direction) {
+void Karillin::actionPunch1(artemis::Entity &e, R::Direction direction) {
 	WallSensorComponent* wallSensor = (WallSensorComponent*)(e.getComponent<WallSensorComponent>());
 
 	CharacterInfoComponent* characterInfo = (CharacterInfoComponent*)e.getComponent<CharacterInfoComponent>();
@@ -721,13 +716,13 @@ void Goku::actionPunch1(artemis::Entity &e, R::Direction direction) {
 		// xử lý action
 		skeletonAnimation->clearTracks();
 		skeletonAnimation->setAnimation(0, "Punch1", false);
-		skeletonAnimation->setTimeScale(2);
+		skeletonAnimation->setTimeScale(1.5f);
 		skeletonAnimation->setCompleteListener([this, state, entity](int trackID, int loopCount){
 			state->setState(R::CharacterState::STAND);
 		});
 	}
 }
-void Goku::actionPunch2(artemis::Entity &e, R::Direction direction) {
+void Karillin::actionPunch2(artemis::Entity &e, R::Direction direction) {
 	WallSensorComponent* wallSensor = (WallSensorComponent*)(e.getComponent<WallSensorComponent>());
 	bool dudieukien = wallSensor->onFloor;
 	if (!dudieukien) {
@@ -747,7 +742,7 @@ void Goku::actionPunch2(artemis::Entity &e, R::Direction direction) {
 		// xử lý action
 		skeletonAnimation->clearTracks();
 		skeletonAnimation->setAnimation(0, "Punch2", false);
-		skeletonAnimation->setTimeScale(2);
+		skeletonAnimation->setTimeScale(1.5f);
 		skeletonAnimation->setCompleteListener([=](int trackID, int loopCount) {
 			state->setState(R::CharacterState::STAND);
 		});
@@ -758,7 +753,7 @@ void Goku::actionPunch2(artemis::Entity &e, R::Direction direction) {
 		EntityUtils::getInstance()->createAttackEntity(e, attackComponent);
 	}
 }
-void Goku::actionPunch3(artemis::Entity &e, R::Direction direction) {
+void Karillin::actionPunch3(artemis::Entity &e, R::Direction direction) {
 	WallSensorComponent* wallSensor = (WallSensorComponent*)(e.getComponent<WallSensorComponent>());
 	bool dudieukien = wallSensor->onFloor;
 	if (!dudieukien) {
@@ -777,7 +772,7 @@ void Goku::actionPunch3(artemis::Entity &e, R::Direction direction) {
 		// xử lý action
 		skeletonAnimation->clearTracks();
 		skeletonAnimation->setAnimation(0, "Punch3", false);
-		skeletonAnimation->setTimeScale(2);
+		skeletonAnimation->setTimeScale(1.5f);
 		skeletonAnimation->setCompleteListener([=](int trackID, int loopCount) {
 			state->setState(R::CharacterState::STAND);
 		});

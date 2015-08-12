@@ -12,7 +12,12 @@
 #include "Characters/Goku.h"
 #include "Characters/Giran.h"
 #include "Characters/Bear.h"
+#include "Characters/Tegiac.h"
 #include "Characters/Jackiechun.h"
+#include "Characters/CaMap.h"
+#include "Characters/Rua.h"
+#include "Characters/Karillin.h"
+#include "Characters/Picolo.h"
 #include "R.h"
 USING_NS_CC;
 
@@ -22,6 +27,8 @@ public:
 	static ECSWorld* getInstance();
 	static ECSWorld* instance;
 	virtual void createWorld(R::Match_Type matchType);
+	virtual void resetCurrentMatch();
+	virtual void nextMatch();
 	artemis::World* getWorld();
 
 	void processWorld(float delta);
@@ -30,20 +37,28 @@ public:
 	void createMainCharacter();
 	void createEnemyCharacter();
 	
-
 	R::Match_Type matchType;
 private:
+	
+	void createPicoloCharacter();
+	void createKarillinCharacter();
 	void createGiranCharacter();
 	void createBearCharacter();
 	void createJackiechunCharacter();
+	void createTegiacCharacter();
+	void createCamapCharacter();
+	void createRuaCharacter();
+	void createEnemyAssistant();
+	void createCameraFollowEntity();
 	ECSWorld();
 	~ECSWorld();
 	GameHud* gameHud;
 	artemis::Entity* goku;
 	
 protected:
-	const float STEP = 0.015f;
-	float accumulate = 0;
+	int match;
+	const float STEP;
+	float accumulate;
 
 	artemis::World* world;
 	

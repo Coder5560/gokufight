@@ -21,6 +21,7 @@ class CallBackComponent;
 class DelayComponent;
 class CollisionComponent;
 class SkeletonBound;
+class CatFollowComponent;
 
 
 class Components
@@ -109,6 +110,7 @@ public:
 	R::GameState gameState;
 	float time_on_state;
 
+
 };
 
 class CharacterInfoComponent : public artemis::Component{
@@ -117,10 +119,16 @@ public :
 	CharacterInfoComponent();
 	bool isMainCharacter;
 	std::string avatar;
+	std::string name;
+
 	float MAX_BLOOD;
 	float MAX_POWER;
 	float blood;
 	float power;
+
+	float NORMAL_SKILL_POWER;
+	float SPECIAL_SKILL_POWER;
+
 	// kiểm tra xem còn đủ mana để ra chưởng hay không
 	bool notifyMana;
 	void notifyNotEnoughMana();
@@ -176,6 +184,8 @@ public:
 
 
 	float time_on_state;
+	int trungdonlientiep;
+	bool doneAction;
 };
 
 class CharacterTypeComponent : public artemis::Component{
@@ -188,11 +198,13 @@ public :
 class AttackComponent : public artemis::Component{
 public :
 	AttackComponent();
+	R::Attack type;
 	R::CharacterType whoAttack;
 	float powerOfAttack;
 	float manaOfAttack;
 	// còn hiệu lực hay ko
 	bool expire;
+	bool isSpecialSkill;
 	// for range attack
 	float minX;
 	float maxX;
@@ -229,4 +241,36 @@ public :
 	std::string boneName;
 	std::string slotName;
 
+};
+class CatFollowComponent : public artemis::Component{
+public:
+	CatFollowComponent();
+	void setState(R::CatFollowState newState);
+
+	R::CatFollowState state;
+	float timeOnState;
+	float nextTimeAttack;
+};
+
+class BomComponent : public artemis::Component{
+public:
+	BomComponent();
+	bool expire;
+	float powerOfAttack;
+};
+
+class CameraFollowComponent : public artemis::Component{
+public:
+	CameraFollowComponent();
+	R::CameraState state;
+	float timeOnState;
+	void setState(R::CameraState newState);
+};
+class CharacterUIComponent : public artemis::Component{
+public:
+	CharacterUIComponent();
+
+	R::CharacterUIState state;
+	float timeOnState;
+	void setState(R::CharacterUIState newState);
 };

@@ -18,7 +18,7 @@ void NodeInfo::createNode(CharacterInfoComponent* characterInfo){
 
 	this->setLayoutType(ui::Layout::Type::ABSOLUTE);
 	this->setContentSize(size);
-	this->setPosition(Vec2(isLeft ? 10: visibleSize.width - this->getContentSize().width , visibleSize.height - this->getContentSize().height - 50));
+	this->setPosition(Vec2(isLeft ? 10: visibleSize.width - this->getContentSize().width , visibleSize.height - this->getContentSize().height - 20));
 	RenderLayer::getInstance()->getHudLayer()->addChild(this);
 	
 	

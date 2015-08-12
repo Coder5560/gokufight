@@ -15,3 +15,8 @@ void CharacterBase::changeState(artemis::Entity &e){
 void CharacterBase::actionStand(artemis::Entity &e){
 
 }
+
+void CharacterBase::process(){
+
+}
+

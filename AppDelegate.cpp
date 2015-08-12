@@ -1,5 +1,6 @@
 #include "AppDelegate.h"
 #include "HelloWorldScene.h"
+#include "renders/StartScreen.h"
 #include "R.h"
 USING_NS_CC;
 
@@ -38,18 +39,19 @@ bool AppDelegate::applicationDidFinishLaunching() {
     if(!glview) {
         glview = GLViewImpl::create("Goku Fight");
         director->setOpenGLView(glview);
-		glview->setFrameSize(R::Constants::WIDTH_SCREEN,R::Constants::HEIGHT_SCREEN);
+		glview->setFrameSize(R::Constants::WIDTH_SCREEN,R::Constants::HEIGHT_SCREEN-200);
     }
 
     // turn on display FPS
     director->setDisplayStats(false);
-	director->getOpenGLView()->setDesignResolutionSize(R::Constants::WIDTH_SCREEN, R::Constants::HEIGHT_SCREEN, ResolutionPolicy::FIXED_WIDTH);
+	director->getOpenGLView()->setDesignResolutionSize(R::Constants::WIDTH_SCREEN, R::Constants::HEIGHT_SCREEN, ResolutionPolicy::SHOW_ALL);
   
     director->setAnimationInterval(1.0 / 60);
 
     register_all_packages();
 
-    auto scene = HelloWorld::createScene();
+    //auto scene = HelloWorld::createScene();
+	auto scene = StartScreen::createScene();
     director->runWithScene(scene);
 
     return true;
@@ -58,7 +60,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
 // This function will be called when the app is inactive. When comes a phone call,it's be invoked too
 void AppDelegate::applicationDidEnterBackground() {
     Director::getInstance()->stopAnimation();
-
+	
     // if you use SimpleAudioEngine, it must be pause
     // SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
 }

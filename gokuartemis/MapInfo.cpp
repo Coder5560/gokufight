@@ -1,11 +1,12 @@
 #include "MapInfo.h"
+#include "RenderLayer.h"
 #include "R.h"
 
 MapInfo::MapInfo()
 {
-	GROUND = 220;
-	WALL_LEFT = 20;
-	WALL_RIGHT = R::Constants::MAX_SCREEN_WIDTH-20;
+	GROUND = 80;
+	WALL_LEFT = 10;
+	WALL_RIGHT = R::Constants::MAX_SCREEN_WIDTH/RenderLayer::getInstance()->getGameLayer()->getScale() -10;
 	WALL_UP = Director::getInstance()->getVisibleSize().height - 20;
 }
 

@@ -6,7 +6,7 @@ class CharacterBase
 public:
 	CharacterBase();
 	~CharacterBase();
-
+	virtual void process();
 	virtual void changeState(artemis::Entity &e);
 	virtual void actionStand(artemis::Entity &e);
 };

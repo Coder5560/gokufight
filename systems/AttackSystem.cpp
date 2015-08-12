@@ -9,8 +9,6 @@ AttackSystem::AttackSystem()
 	addComponentType<BoundComponent>();
 	addComponentType<PhysicComponent>();
 	addComponentType<AttackComponent>();
-
-
 }
 void AttackSystem::initialize(){
 	attackMapper.init(*world);
@@ -40,7 +38,7 @@ void AttackSystem::processEntity(artemis::Entity &e){
 		return;
 	}
 
-	
+
 	if (attack->whoAttack == R::CharacterType::GOKU){
 		artemis::Entity &entity = world->getTagManager()->getEntity("enemy");
 		if (attackToEntity(e, entity)) {
@@ -53,7 +51,7 @@ void AttackSystem::processEntity(artemis::Entity &e){
 			EntityUtils::getInstance()->removeEntity(e);
 		}
 	}
-	
+
 }
 void AttackSystem::end(){}
 
@@ -63,7 +61,7 @@ bool AttackSystem::attackToEntity(artemis::Entity& attackEntity, artemis::Entity
 	PosComponent* attackPosition = posMapper.get(attackEntity);
 	BoundComponent* attackBound = boundMapper.get(attackEntity);
 
-	AttackComponent* defense = attackMapper.get(entity);
+
 	PosComponent* defensePosition = posMapper.get(entity);
 	BoundComponent* defenseBound = boundMapper.get(entity);
 	CharacterInfoComponent* defenseInfo = (CharacterInfoComponent*)entity.getComponent<CharacterInfoComponent>();
@@ -81,20 +79,28 @@ bool AttackSystem::attackToEntity(artemis::Entity& attackEntity, artemis::Entity
 		}
 		else{
 			defenseState->setState(R::CharacterState::DEFENSE);
-			defenseState->defense = R::Defense::TRUNG_DON;
+			attack->isSpecialSkill ? (defenseState->defense = R::Defense::TRUNG_DON_NGA) : (defenseState->defense = R::Defense::TRUNG_DON);
+
 		}
-				
+		float distance = attackRect.getMidX() - defenseRect.getMidX();
 		Node* node = RenderLayer::getInstance()->createGameNode();
-		node->setPosition(Vec2(attackRect.getMidX()/2 + defenseRect.getMidX()/2,defenseRect.getMidY()/2 + attackRect.getMidY()/2));
+		if (attack->whoAttack == R::CharacterType::GOKU)node->setPosition(Vec2(attackRect.getMidX() / 2 + defenseRect.getMidX() / 2, defenseRect.getMidY() / 2 + attackRect.getMidY() / 2));
+		else
+			node->setPosition(Vec2(attackRect.getMidX() / 4 + 3 * defenseRect.getMidX() / 4, 3 * defenseRect.getMidY() / 4 + attackRect.getMidY() / 4));
 		HitEffect* hitEffect = new HitEffect(node);
 		hitEffect->setHitStyle(attack->whoAttack);
 		hitEffect->start();
 		attack->expire = true;
-
 		// remove all attack component
 		artemis::ImmutableBag<artemis::Entity*> *entities = world->getGroupManager()->getEntities((attack->whoAttack == R::CharacterType::GOKU) ? "enemies" : "gokus");
 		for (int i = 0; i < entities->getCount(); i++){
-			EntityUtils::getInstance()->removeEntity(*entities->get(i));
+			artemis::Entity* et = entities->get(i);
+
+			if (et) {
+				RenderComponent* render = (RenderComponent*)et->getComponent<RenderComponent>();
+				if (render)	render->node->removeFromParent();
+				et->remove();
+			}
 		}
 		return true;
 	}

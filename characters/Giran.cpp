@@ -15,11 +15,12 @@ void Giran::changeState(artemis::Entity &e){
 
 	StateComponent* state = (StateComponent*)e.getComponent<StateComponent>();
 	PosComponent* position = (PosComponent*)e.getComponent<PosComponent>();
+	CharacterInfoComponent* characterInfo = (CharacterInfoComponent*)e.getComponent<CharacterInfoComponent>();
 	if (state->state == R::CharacterState::ATTACK){
 		AttackComponent* attackComponent = new AttackComponent();
 		attackComponent->whoAttack = ((CharacterTypeComponent*)e.getComponent<CharacterTypeComponent>())->type;
-		attackComponent->powerOfAttack = 5;
-
+		attackComponent->powerOfAttack = characterInfo->NORMAL_SKILL_POWER;
+		attackComponent->type = state->attack;
 		if (state->attack == R::Attack::GIRAN_PUNCH1){
 			actionPunch1(e, state->direction); 
 			attackComponent->minX = position->x - 450;

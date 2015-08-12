@@ -3,9 +3,8 @@
 #include "artemis/Artemis.h"
 #include "gokuartemis/Components.h"
 #include "RenderLayer.h"
-class AI;
-class JackiechunAIKhieuKhich;
 
+class StateComponent;
 class DecisionBase
 {
 public:
@@ -14,6 +13,7 @@ public:
 	void setWorld(artemis::World *world);
 	virtual void obsever(artemis::Entity &e);
 	virtual void decision(artemis::Entity &e);
+	virtual void move(StateComponent* stateComponent,R::Direction direction);
 	artemis::World *world;
 };
 class GokuDecision : public DecisionBase{
@@ -59,62 +59,61 @@ private:
 	DecisionBase super;
 };
 
-
-class JackiechunDecision2 : public DecisionBase{
+class TegiacDecision : public DecisionBase{
 public:
-	JackiechunDecision2();
+	TegiacDecision();
 	void decision(artemis::Entity &e);
 	void obsever(artemis::Entity &e);
-	int totalChoose;
 protected:
+	bool doSpecificSkill;
+	bool doneSpeicalSkill;
 	bool isFarFromGoku;
+	float timeInRageAttack;
+	int solanTrungDon;
+
+	bool doneStep;
+	int currentStep;
+	
 private:
-	AI* ai;
 	DecisionBase super;
 };
 
-
-
-class RandomAI : public DecisionBase{
-
+class RuaDecision : public DecisionBase{
 public:
-	RandomAI();
-	void decision(artemis::Entity &attacker);
-
-	void obsever(artemis::Entity &attacker);
-protected :
-	bool doiThuRaChieuTamXa;
-	bool doiThuRaChieuGan;
-	bool trongPhamViDonDanhCuaDoiThu;
-	bool coTheRaChuongTamXa;
-	bool nhieuMauHonDoiThu;
-	float phamViSatThuongCuaDoiThu;
-
+	RuaDecision();
+	void decision(artemis::Entity &e);
+	void obsever(artemis::Entity &e);
+	
 private:
-
 	DecisionBase super;
 };
 
-class AI{
+class CamapDecision : public DecisionBase{
 public:
-	AI();
-	virtual bool process(artemis::Entity &attacker, artemis::Entity &defenser);
-	virtual void setActive(bool active);
-	
-	float timeActive;
-	bool active;
-};
-class JackiechunAIKhieuKhich : public AI{
-	// step 1 : vỗ tay
-public :
-	JackiechunAIKhieuKhich();
-	bool process(artemis::Entity &attacker, artemis::Entity &defenser);
-	
-	bool nextStep;
-	bool alldone;
+	CamapDecision();
+	void decision(artemis::Entity &e);
+	void obsever(artemis::Entity &e);
 
+private:
+	DecisionBase super;
 };
 
+class KarillinDecision : public DecisionBase{
+public:
+	KarillinDecision();
+	void decision(artemis::Entity &e);
+	void obsever(artemis::Entity &e);
 
+private:
+	DecisionBase super;
+};
 
+class PicoloDecision : public DecisionBase{
+public:
+	PicoloDecision();
+	void decision(artemis::Entity &e);
+	void obsever(artemis::Entity &e);
 
+private:
+	DecisionBase super;
+};

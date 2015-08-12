@@ -1,7 +1,7 @@
 #include "gokuartemis/ECSWorld.h"
 
 ECSWorld* ECSWorld::instance = NULL;
-ECSWorld::ECSWorld() : goku(nullptr), world(nullptr){	}
+ECSWorld::ECSWorld() : match(0), accumulate(0), STEP(0.015f), goku(nullptr), world(nullptr){	}
 ECSWorld* ECSWorld::getInstance(){
 	if (instance == NULL){
 		instance = new ECSWorld();
@@ -29,12 +29,22 @@ void ECSWorld::createWorld(R::Match_Type matchType){
 
 	createEnemyCharacter();
 	createMainCharacter();
+	createCameraFollowEntity();
 
 	//create GameState system manager
 	artemis::Entity &e = world->createEntity();
 	e.addComponent(new GameStateComponent());
 	e.setTag("gameState");
 	e.refresh();
+
+	//create CharacterUI system manager
+	artemis::Entity &ui = world->createEntity();
+	ui.addComponent(new CharacterUIComponent());
+	ui.setTag("characterrender");
+	ui.refresh();
+
+
+
 
 
 	inputSystem = new InputSystem();
@@ -43,6 +53,7 @@ void ECSWorld::createWorld(R::Match_Type matchType){
 	setSystem(new GameStateSystem());
 	setSystem(inputSystem);
 
+	setSystem(new SpecialSkillSystem());
 	setSystem(new PhysicSystem());
 	setSystem(new GravitySystem());
 	setSystem(new MapCollisionSystem());
@@ -50,31 +61,36 @@ void ECSWorld::createWorld(R::Match_Type matchType){
 	setSystem(new AttackSystem());
 	setSystem(new MotionSystem());
 	setSystem(new SkeletonSystem());
-	setSystem(new UICharacterSystem());
+//	setSystem(new UICharacterSystem());
+	setSystem(new CharacterRenderSystem());
 	setSystem(new CharacterStateSystem());
 	setSystem(new RenderSystem());
 	setSystem(new RemoveEntitySystem());
-
+	setSystem(new CatFollowGokuSystem());
+	setSystem(new BombSystem());
+	setSystem(new CameraFollowSystem());
 	//setSystem(new DebugSystem());
 	setSystem(new DecisionSystem());
 	
-	
+
+
 	world->getSystemManager()->initializeAll();
 	gameHud = new GameHud(Director::getInstance()->getOpenGLView()->getFrameSize());
 	gameHud->setAnchorPoint(Vec2(.5, .5));
 	gameHud->buildComponent();
-	gameHud->setCallBack([=](GameHud::EventType event, GameHud::TouchType type) {
-		ECSWorld::getInstance()->inputSystem->notifyInput(event, type);
+	gameHud->setCallBack([=](Touch* touch,GameHud::EventType event, GameHud::TouchType type) {
+		ECSWorld::getInstance()->inputSystem->notifyInput(touch,event, type);
 	});
 	RenderLayer::getInstance()->getHudLayer()->addChild(gameHud);
 	RenderLayer::getInstance()->getHudLayer()->setCameraMask((unsigned short)CameraFlag::USER1);
 
-	ui::Text* text = ui::Text::create("Touch to begin", "fonts/Marker Felt.ttf", 40);
-	text->setColor(Color3B::RED);
+	ui::Text* text = ui::Text::create("TOUCH TO BEGIN", "fonts/courbd.ttf", 30);
+	text->setColor(Color3B::WHITE);
+	text->enableOutline(Color4B::BLACK,2);
 	Node* node = RenderLayer::getInstance()->createHudNode();
 	node->setContentSize(Size(R::Constants::WIDTH_SCREEN, R::Constants::HEIGHT_SCREEN));
 	text->setAnchorPoint(Vec2(.5, .5));
-	text->setPosition(node->getContentSize() / 2);
+	text->setPosition(Size(node->getContentSize().width / 2, node->getContentSize().height / 3));
 	auto fadeIn = FadeIn::create(.5);
 	auto fadeOut = FadeOut::create(.5);
 	text->runAction(RepeatForever::create(Sequence::create(fadeIn, fadeOut, nullptr)));
@@ -84,9 +100,47 @@ void ECSWorld::createWorld(R::Match_Type matchType){
 	node->setCameraMask((unsigned short)CameraFlag::USER1);
 }
 
+void ECSWorld::resetCurrentMatch(){
+	RenderLayer::getInstance()->getHudLayer()->removeAllChildren();
+	RenderLayer::getInstance()->getGameLayer()->removeAllChildren();
+	createWorld(matchType);
+}
+void ECSWorld::nextMatch(){
+	RenderLayer::getInstance()->getHudLayer()->removeAllChildren();
+	RenderLayer::getInstance()->getGameLayer()->removeAllChildren();
+	match++;
+	int matchIndex = match % 6;
+	if (matchIndex == 0){
+		createWorld(R::Match_Type::GOKU_TEGIAC);
+	}
+	else	if (matchIndex == 1){
+		createWorld(R::Match_Type::GOKU_CAMAP);
+	}
+	else	if (matchIndex == 2){
+		createWorld(R::Match_Type::GOKU_RUA);
+	}
+	else	if (matchIndex == 3){
+		createWorld(R::Match_Type::GOKU_JACKIECHUN);
+	}
+	else	if (matchIndex == 4){
+		createWorld(R::Match_Type::GOKU_BEAR);
+	}
+	else	if (matchIndex == 5){
+		createWorld(R::Match_Type::GOKU_GIRAN);
+	}
+}
+
+void ECSWorld::createCameraFollowEntity(){
+	artemis::Entity &e = world->createEntity();
+	e.setTag("camera");
+	e.addComponent(new CameraFollowComponent());
+	e.refresh();
+}
+
 void ECSWorld::createMainCharacter(){	// create main Character
 	CharacterInfoComponent* characterInfo = new CharacterInfoComponent();
 	characterInfo->avatar = "textures/goku.png";
+	characterInfo->name = "SONGOKU";
 	characterInfo->isMainCharacter = true;
 	characterInfo->MAX_BLOOD = 100;
 	characterInfo->MAX_POWER = 100;
@@ -148,11 +202,29 @@ void ECSWorld::createEnemyCharacter(){
 	else if (matchType == R::Match_Type::GOKU_JACKIECHUN){
 		createJackiechunCharacter();
 	}
+	else if (matchType == R::Match_Type::GOKU_TEGIAC){
+		createTegiacCharacter();
+		createEnemyAssistant();
+	}
+
+	else if (matchType == R::Match_Type::GOKU_CAMAP){
+		createCamapCharacter();
+	}
+	else if (matchType == R::Match_Type::GOKU_RUA){
+		createRuaCharacter();
+	}
+	else if (matchType == R::Match_Type::GOKU_KARILLIN){
+		createKarillinCharacter();
+	}
+	else if (matchType == R::Match_Type::GOKU_PICOLO){
+		createPicoloCharacter();	
+	}
 }
 
 void ECSWorld::createGiranCharacter(){
 	CharacterInfoComponent* characterInfo = new CharacterInfoComponent();
-	characterInfo->avatar = "textures/giran.png";
+	characterInfo->avatar = "textures/casau.png";
+	characterInfo->name = "GIRAN";
 	characterInfo->MAX_BLOOD = 100;
 	characterInfo->MAX_POWER = 100;
 	characterInfo->blood = 100;
@@ -208,6 +280,7 @@ void ECSWorld::createGiranCharacter(){
 void ECSWorld::createBearCharacter(){
 	CharacterInfoComponent* characterInfo = new CharacterInfoComponent();
 	characterInfo->avatar = "textures/bear.png";
+	characterInfo->name = "BEAR";
 	characterInfo->MAX_BLOOD = 100;
 	characterInfo->MAX_POWER = 100;
 	characterInfo->blood = 100;
@@ -262,6 +335,7 @@ void ECSWorld::createBearCharacter(){
 void ECSWorld::createJackiechunCharacter(){
 	CharacterInfoComponent* characterInfo = new CharacterInfoComponent();
 	characterInfo->avatar = "textures/jackiechun.png";
+	characterInfo->name = "JACKIECHUN";
 	characterInfo->MAX_BLOOD = 100;
 	characterInfo->MAX_POWER = 100;
 	characterInfo->blood = 100;
@@ -287,8 +361,8 @@ void ECSWorld::createJackiechunCharacter(){
 	DecisionComponent* decisionComponent = new DecisionComponent();
 	decisionComponent->DECISION_TIME = .4;
 	decisionComponent->decisionBase = new JackiechunDecision();
-//	decisionComponent->DECISION_TIME = 10000;
-//	decisionComponent->decisionBase = new JackiechunDecision2();
+	//decisionComponent->DECISION_TIME = 10000;
+	//decisionComponent->decisionBase = new JackiechunDecision2();
 	decisionComponent->decisionBase->setWorld(world);
 
 	StateComponent* stateComponent = new StateComponent();
@@ -314,6 +388,318 @@ void ECSWorld::createJackiechunCharacter(){
 
 }
 
+
+void ECSWorld::createTegiacCharacter(){
+	CharacterInfoComponent* characterInfo = new CharacterInfoComponent();
+	characterInfo->avatar = "textures/tegiac.png";
+	characterInfo->name = "CROCODIE";
+	characterInfo->MAX_BLOOD = 100;
+	characterInfo->MAX_POWER = 100;
+	characterInfo->blood = 100;
+	characterInfo->power = 100;
+	//create keletoncomponent
+	spine::SkeletonAnimation* skeletonAnimation =
+		spine::SkeletonAnimation::createWithFile("spine/Tegiac.json",
+		"spine/Tegiac.atlas");
+	skeletonAnimation->setAnimation(0, "Prepare", true);
+	skeletonAnimation->setScale(.3);
+
+	Node* node = RenderLayer::getInstance()->createGameNode();
+	node->setAnchorPoint(Vec2(.5, .5));
+	node->setContentSize(skeletonAnimation->getContentSize());
+	node->addChild(skeletonAnimation);
+	node->setVisible(false);
+
+	SkeletonComponent* characterSkeleton = new SkeletonComponent();
+	characterSkeleton->skeleton = skeletonAnimation;
+	characterSkeleton->node = node;
+	characterSkeleton->isCreated = true;
+
+	DecisionComponent* decisionComponent = new DecisionComponent();
+	decisionComponent->DECISION_TIME = .4;
+	decisionComponent->decisionBase = new TegiacDecision();
+	decisionComponent->decisionBase->setWorld(world);
+
+	StateComponent* stateComponent = new StateComponent();
+	stateComponent->characterBase = new Tegiac();
+
+
+	artemis::Entity &character = (world->getEntityManager()->create());
+	character.addComponent(new CharacterTypeComponent(R::CharacterType::TEGIAC));
+	character.addComponent(new PosComponent(3 * Director::getInstance()->getVisibleSize().width / 4, Director::getInstance()->getVisibleSize().height / 2));
+	character.addComponent(new BoundComponent(-30, -10, 30, 80));
+	character.addComponent(new WallSensorComponent());
+	character.addComponent(new GravityComponent());
+	character.addComponent(new PhysicComponent());
+	character.addComponent(decisionComponent);
+	character.addComponent(stateComponent);
+	character.addComponent(characterSkeleton);
+	character.addComponent(characterInfo);
+	character.setTag("enemy");
+
+	character.refresh();
+
+	((PhysicComponent*)(character.getComponent<PhysicComponent>()))->bounce = 0;
+
+}
+// con mèo máy hỗ trợ nhân vật
+void ECSWorld::createEnemyAssistant(){
+
+	//create keletoncomponent
+	spine::SkeletonAnimation* skeletonAnimation =
+		spine::SkeletonAnimation::createWithFile("spine/Meo.json",
+		"spine/Meo.atlas");
+	skeletonAnimation->setAnimation(0, "stand", true);
+	skeletonAnimation->setScale(.3);
+
+
+	Node* node = RenderLayer::getInstance()->createGameNode();
+	node->setAnchorPoint(Vec2(.5, .5));
+	node->setContentSize(skeletonAnimation->getContentSize());
+	node->addChild(skeletonAnimation);
+	node->setVisible(true);
+	node->setPosition(Vec2(-1000,1000));
+
+	SkeletonComponent* characterSkeleton = new SkeletonComponent();
+	characterSkeleton->skeleton = skeletonAnimation;
+	characterSkeleton->node = node;
+	characterSkeleton->isCreated = true;
+	
+
+
+
+	artemis::Entity &character = (world->getEntityManager()->create());
+	character.addComponent(new CharacterTypeComponent(R::CharacterType::CAT));
+	character.addComponent(new PosComponent(3 * Director::getInstance()->getVisibleSize().width / 4, Director::getInstance()->getVisibleSize().height / 2));
+	character.addComponent(characterSkeleton);
+	character.addComponent(new CatFollowComponent());
+	character.setTag("meo");
+
+	character.refresh();
+
+
+}
+
+
+
+void ECSWorld::createRuaCharacter(){
+	CharacterInfoComponent* characterInfo = new CharacterInfoComponent();
+	characterInfo->avatar = "textures/rua.png";
+	characterInfo->name = "TURTLE";
+	characterInfo->MAX_BLOOD = 100;
+	characterInfo->MAX_POWER = 100;
+	characterInfo->blood = 100;
+	characterInfo->power = 100;
+	//create keletoncomponent
+	spine::SkeletonAnimation* skeletonAnimation =
+		spine::SkeletonAnimation::createWithFile("spine/rua.json",
+		"spine/rua.atlas");
+	skeletonAnimation->setAnimation(0, "standing", true);
+	skeletonAnimation->setScale(.25);
+
+	Node* node = RenderLayer::getInstance()->createGameNode();
+	node->setAnchorPoint(Vec2(.5, .5));
+	node->setContentSize(skeletonAnimation->getContentSize());
+	node->addChild(skeletonAnimation);
+	node->setVisible(false);
+
+	SkeletonComponent* characterSkeleton = new SkeletonComponent();
+	characterSkeleton->skeleton = skeletonAnimation;
+	characterSkeleton->node = node;
+	characterSkeleton->isCreated = true;
+
+	DecisionComponent* decisionComponent = new DecisionComponent();
+	decisionComponent->DECISION_TIME = .4;
+	decisionComponent->decisionBase = new RuaDecision();
+	decisionComponent->decisionBase->setWorld(world);
+
+	StateComponent* stateComponent = new StateComponent();
+	stateComponent->characterBase = new Rua();
+
+
+	artemis::Entity &character = (world->getEntityManager()->create());
+	character.addComponent(new CharacterTypeComponent(R::CharacterType::RUA));
+	character.addComponent(new PosComponent(3 * Director::getInstance()->getVisibleSize().width / 4, Director::getInstance()->getVisibleSize().height / 2));
+	character.addComponent(new BoundComponent(-40, 0, 40, 90));
+	character.addComponent(new WallSensorComponent());
+	character.addComponent(new GravityComponent());
+	character.addComponent(new PhysicComponent());
+	character.addComponent(decisionComponent);
+	character.addComponent(stateComponent);
+	character.addComponent(characterSkeleton);
+	character.addComponent(characterInfo);
+	character.setTag("enemy");
+
+	character.refresh();
+
+	((PhysicComponent*)(character.getComponent<PhysicComponent>()))->bounce = 0;
+
+}
+
+void ECSWorld::createCamapCharacter(){
+	CharacterInfoComponent* characterInfo = new CharacterInfoComponent();
+	characterInfo->avatar = "textures/camap.png";
+	characterInfo->name = "SHARK";
+	characterInfo->MAX_BLOOD = 100;
+	characterInfo->MAX_POWER = 100;
+	characterInfo->blood = 100;
+	characterInfo->power = 100;
+	//create keletoncomponent
+	spine::SkeletonAnimation* skeletonAnimation =
+		spine::SkeletonAnimation::createWithFile("spine/Camap.json",
+		"spine/Camap.atlas", .4);
+	skeletonAnimation->setAnimation(0, "Stand", true);
+
+	Node* node = RenderLayer::getInstance()->createGameNode();
+	node->setAnchorPoint(Vec2(.5, .5));
+	node->setContentSize(skeletonAnimation->getContentSize());
+	node->addChild(skeletonAnimation);
+	node->setVisible(false);
+
+	SkeletonComponent* characterSkeleton = new SkeletonComponent();
+	characterSkeleton->skeleton = skeletonAnimation;
+	characterSkeleton->node = node;
+	characterSkeleton->isCreated = true;
+
+	DecisionComponent* decisionComponent = new DecisionComponent();
+	decisionComponent->DECISION_TIME = .4;
+	decisionComponent->decisionBase = new CamapDecision();
+	decisionComponent->decisionBase->setWorld(world);
+
+	StateComponent* stateComponent = new StateComponent();
+	stateComponent->characterBase = new CaMap();
+
+
+	artemis::Entity &character = (world->getEntityManager()->create());
+	character.addComponent(new CharacterTypeComponent(R::CharacterType::CAMAP));
+	character.addComponent(new PosComponent(3 * Director::getInstance()->getVisibleSize().width / 4, Director::getInstance()->getVisibleSize().height / 2));
+	character.addComponent(new BoundComponent(-30, -10, 30, 80));
+	character.addComponent(new WallSensorComponent());
+	character.addComponent(new GravityComponent());
+	character.addComponent(new PhysicComponent());
+	character.addComponent(decisionComponent);
+	character.addComponent(stateComponent);
+	character.addComponent(characterSkeleton);
+	character.addComponent(characterInfo);
+	character.setTag("enemy");
+
+	character.refresh();
+
+	((PhysicComponent*)(character.getComponent<PhysicComponent>()))->bounce = 0;
+
+}
+
+
+void ECSWorld::createKarillinCharacter(){
+	CharacterInfoComponent* characterInfo = new CharacterInfoComponent();
+	characterInfo->avatar = "textures/khi.png";
+	characterInfo->name = "KARILLIN";
+	characterInfo->MAX_BLOOD = 100;
+	characterInfo->MAX_POWER = 100;
+	characterInfo->blood = 100;
+	characterInfo->power = 100;
+	//create keletoncomponent
+	spine::SkeletonAnimation* skeletonAnimation =
+		spine::SkeletonAnimation::createWithFile("spine/Karilin.json",
+		"spine/Karilin.atlas");
+	skeletonAnimation->setAnimation(0, "Stand", true);
+	skeletonAnimation->setScale(.4);
+
+	Node* node = RenderLayer::getInstance()->createGameNode();
+	node->setAnchorPoint(Vec2(.5, .5));
+	node->setContentSize(skeletonAnimation->getContentSize());
+	node->addChild(skeletonAnimation);
+	node->setVisible(false);
+
+	SkeletonComponent* characterSkeleton = new SkeletonComponent();
+	characterSkeleton->skeleton = skeletonAnimation;
+	characterSkeleton->node = node;
+	characterSkeleton->isCreated = true;
+
+	DecisionComponent* decisionComponent = new DecisionComponent();
+	decisionComponent->DECISION_TIME = .4;
+	decisionComponent->decisionBase = new KarillinDecision();
+	decisionComponent->decisionBase->setWorld(world);
+
+	StateComponent* stateComponent = new StateComponent();
+	stateComponent->characterBase = new Karillin();
+
+
+	artemis::Entity &character = (world->getEntityManager()->create());
+	character.addComponent(new CharacterTypeComponent(R::CharacterType::KARILLIN));
+	character.addComponent(new PosComponent(3 * Director::getInstance()->getVisibleSize().width / 4, Director::getInstance()->getVisibleSize().height / 2));
+	character.addComponent(new BoundComponent(-25, -12, 25, 50));
+	character.addComponent(new WallSensorComponent());
+	character.addComponent(new GravityComponent());
+	character.addComponent(new PhysicComponent());
+	character.addComponent(decisionComponent);
+	character.addComponent(stateComponent);
+	character.addComponent(characterSkeleton);
+	character.addComponent(characterInfo);
+	character.setTag("enemy");
+
+	character.refresh();
+
+	((PhysicComponent*)(character.getComponent<PhysicComponent>()))->bounce = 0;
+
+}
+void ECSWorld::createPicoloCharacter(){
+	CharacterInfoComponent* characterInfo = new CharacterInfoComponent();
+	characterInfo->avatar = "textures/doi.png";
+	characterInfo->name = "PICOLO";
+	characterInfo->MAX_BLOOD = 100;
+	characterInfo->MAX_POWER = 100;
+	characterInfo->blood = 100;
+	characterInfo->power = 100;
+	//create keletoncomponent
+	spine::SkeletonAnimation* skeletonAnimation =
+		spine::SkeletonAnimation::createWithFile("spine/doi.json",
+		"spine/doi.atlas",.2f);
+	skeletonAnimation->setAnimation(0, "flying", true);
+	
+
+	Node* node = RenderLayer::getInstance()->createGameNode();
+	node->setAnchorPoint(Vec2(.5, .5));
+	node->setContentSize(skeletonAnimation->getContentSize());
+	node->addChild(skeletonAnimation);
+	node->setVisible(false);
+
+	SkeletonComponent* characterSkeleton = new SkeletonComponent();
+	characterSkeleton->skeleton = skeletonAnimation;
+	characterSkeleton->node = node;
+	characterSkeleton->isCreated = true;
+
+	DecisionComponent* decisionComponent = new DecisionComponent();
+	decisionComponent->DECISION_TIME = .5;
+	decisionComponent->decisionBase = new PicoloDecision();
+	decisionComponent->decisionBase->setWorld(world);
+
+	StateComponent* stateComponent = new StateComponent();
+	stateComponent->characterBase = new Picolo();
+
+
+	artemis::Entity &character = (world->getEntityManager()->create());
+	character.addComponent(new CharacterTypeComponent(R::CharacterType::PICOLO));
+	character.addComponent(new PosComponent(3 * Director::getInstance()->getVisibleSize().width / 4, Director::getInstance()->getVisibleSize().height / 2));
+	character.addComponent(new BoundComponent(-25, 0, 25, 50));
+	character.addComponent(new WallSensorComponent());
+	character.addComponent(new GravityComponent());
+	character.addComponent(new PhysicComponent());
+	character.addComponent(decisionComponent);
+	character.addComponent(stateComponent);
+	character.addComponent(characterSkeleton);
+	character.addComponent(characterInfo);
+	character.setTag("enemy");
+
+	character.refresh();
+
+	((PhysicComponent*)(character.getComponent<PhysicComponent>()))->bounce = 0;
+
+}
+
+
+
+
 artemis::EntitySystem*  ECSWorld::setSystem(artemis::EntitySystem* system){
 	return world->getSystemManager()->setSystem(system);
 }
@@ -327,20 +713,5 @@ void ECSWorld::processWorld(float delta){
 		world->processWorld();
 		accumulate -= STEP;
 	}
-	if (world->getTagManager()->isSubscribed("goku")){
-		artemis::Entity &e = world->getTagManager()->getEntity("goku");
-		PosComponent* pos = (PosComponent*)e.getComponent<PosComponent>();
-		auto defaulcamera = Camera::getDefaultCamera();
-		float cameraX = defaulcamera->getPositionX();
-		if (cameraX - pos->x > R::Constants::WIDTH_SCREEN / 2 - 140){
-			cameraX = pos->x + R::Constants::WIDTH_SCREEN / 2 - 140;
-		}
 
-		if (pos->x - cameraX > R::Constants::WIDTH_SCREEN / 2 - 140){
-			cameraX = pos->x - R::Constants::WIDTH_SCREEN / 2 + 140;
-		}
-		cameraX = cameraX < R::Constants::WIDTH_SCREEN / 2 ? R::Constants::WIDTH_SCREEN / 2 : cameraX;
-		cameraX = cameraX>(R::Constants::MAX_SCREEN_WIDTH - R::Constants::WIDTH_SCREEN / 2) ? (R::Constants::MAX_SCREEN_WIDTH - R::Constants::WIDTH_SCREEN / 2) : cameraX;
-		defaulcamera->setPositionX(cameraX);
-	}
 }

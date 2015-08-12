@@ -8,6 +8,7 @@
 #include "R.h"
 #include "renders/NodeInfo.h"
 #include "renders/Effects.h"
+#include "ui/UIText.h"
 
 USING_NS_CC;
 
@@ -24,6 +25,11 @@ class UICharacterSystem;
 class RemoveEntitySystem;
 class DelaySystem;
 class SkeletonCollisonSystem;
+class CatFollowGokuSystem;
+class BombSystem;
+class CameraFollowSystem;
+class SpecialSkillSystem;
+class CharacterRenderSystem;
 
 class Systems {
 public:
@@ -136,10 +142,15 @@ private:
 class InputSystem : public artemis::EntityProcessingSystem {
 public:
 	InputSystem();
+	virtual void begin();
 	virtual void initialize();
 	virtual void processEntity(artemis::Entity &e);
-	void notifyInput(GameHud::EventType event, GameHud::TouchType touchType);
+	void processInputTap(int tapCount);
+	void notifyInput(Touch* touch,GameHud::EventType event, GameHud::TouchType touchType);
+	float _timeLastTouch;
+	int _tapCount;
 	int match = 0;
+	int bgIndex = 0;
 };
 
 class SkeletonSystem : public artemis::EntityProcessingSystem {
@@ -173,6 +184,7 @@ protected:
 	std::map<std::string, NodeInfo*> renderObjects;
 	artemis::ComponentMapper<CharacterInfoComponent> characterInfoMapper;
 };
+
 
 
 class DebugSystem : public artemis::EntityProcessingSystem {
@@ -218,3 +230,84 @@ protected :
 	artemis::ComponentMapper<CollisionComponent> collisionMapper; 
 	Vec2 collisionPoint;
 };
+
+class CatFollowGokuSystem : public artemis::EntityProcessingSystem{
+
+public:
+	CatFollowGokuSystem();
+	virtual void initialize();
+	virtual void processEntity(artemis::Entity &e);
+	virtual void createBomAtack(PosComponent* positionComponent, bool isLeftDirection);
+
+	bool prepareAttack;
+	bool readyToAttack;
+
+protected:
+	artemis::ComponentMapper<PosComponent> positionMapper;
+	artemis::ComponentMapper<SkeletonComponent> skeletonMapper;
+	artemis::ComponentMapper<CatFollowComponent> catFollowMapper;
+	artemis::ComponentMapper<CharacterTypeComponent> characterTypeMapper;
+	
+};
+
+class BombSystem : public artemis::EntityProcessingSystem{
+
+public:
+	BombSystem();
+	virtual void initialize();
+	virtual void processEntity(artemis::Entity &e);
+
+protected:
+	artemis::ComponentMapper<PosComponent> positionMapper;
+	artemis::ComponentMapper<SkeletonComponent> skeletonMapper;
+	artemis::ComponentMapper<BomComponent> bombMapper;
+	artemis::ComponentMapper<CharacterTypeComponent> characterTypeMapper;
+};
+
+class SpecialSkillSystem : public artemis::EntityProcessingSystem{
+
+public:
+	SpecialSkillSystem();
+	virtual void initialize();
+	virtual void begin();
+	virtual void processEntity(artemis::Entity &e);
+	virtual void processPicolo(artemis::Entity &e);
+	virtual void processGoku(artemis::Entity &e);
+
+protected:
+	artemis::ComponentMapper<PosComponent> positionMapper;
+	artemis::ComponentMapper<SkeletonComponent> skeletonMapper;
+	artemis::ComponentMapper<CharacterTypeComponent> typeMapper;
+	artemis::ComponentMapper<StateComponent> stateMapper;
+	artemis::ComponentMapper<CharacterInfoComponent> infoMapper;
+};
+
+
+class CameraFollowSystem : public artemis::EntityProcessingSystem{
+	
+public:
+	CameraFollowSystem();
+	virtual void initialize();
+	virtual void processEntity(artemis::Entity &e);
+
+protected:
+	artemis::ComponentMapper<CameraFollowComponent> cameraMapper;
+};
+
+
+class CharacterRenderSystem : public artemis::EntityProcessingSystem {
+public:
+	CharacterRenderSystem();
+	virtual void begin();
+	virtual void initialize();
+	virtual void processEntity(artemis::Entity &e);
+
+protected:
+	artemis::ComponentMapper<CharacterUIComponent> characterUIMapper;
+	
+	PlayerInfoLeft* infoLeft;
+	PlayerInfoRight* infoRight;
+	ui::Text* text;
+	bool isCreated;
+};
+

@@ -5,17 +5,17 @@
 #include "gokuartemis/Components.h"
 #include "systems/EntityUtils.h"
 
-class Goku :public CharacterBase
+class Karillin :public CharacterBase
 {
 public:
-	Goku();
-	~Goku();
+	Karillin();
+	~Karillin();
 
 	virtual void changeState(artemis::Entity &e);
 
 
 	void actionStand(artemis::Entity &e);
-	void actionStandUp(artemis::Entity &e );
+	void actionStandUp(artemis::Entity &e);
 	void actionDie(artemis::Entity &e, R::Direction direction);
 	void actionMove(artemis::Entity &e, R::Direction direction);
 	void actionMoveOn(artemis::Entity &e, R::Direction direction);
@@ -37,6 +37,5 @@ public:
 	void actionPunch2(artemis::Entity &e, R::Direction direction);
 	void actionPunch3(artemis::Entity &e, R::Direction direction);
 
-	float timeHoldInput;
 };
 

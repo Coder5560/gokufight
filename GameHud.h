@@ -49,14 +49,15 @@ public:
 
 	void buildComponent();
 	void notifyEvent();
-	void setCallBack(const std::function<void(GameHud::EventType, GameHud::TouchType)> &callBack);
+	void setCallBack(const std::function<void(Touch* touch,GameHud::EventType, GameHud::TouchType)> &callBack);
 	void setState(HudState state);
 	void update(float delta);
 	HudState getState();
+	Touch* touch;
 
 
 protected:
-	std::function<void(GameHud::EventType, GameHud::TouchType)> callBack;
+	std::function<void(Touch* touch,GameHud::EventType, GameHud::TouchType)> callBack;
 		
 	HudState state;
 	
