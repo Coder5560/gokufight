@@ -66,11 +66,24 @@ void CaMap::changeState(artemis::Entity &e){
 			attackComponent->minY = position->y - 100;
 			attackComponent->maxY = position->y + 100;
 		}
-
+		if (R::Constants::soundEnable){
+			CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/enemy_attack.mp3", false, 1, 0, 1);
+		}
 		EntityUtils::getInstance()->createAttackEntity(e, attackComponent);
 	}
-	else if (state->state == R::CharacterState::DIE){ actionDie(e, state->direction); }
+	else if (state->state == R::CharacterState::DIE){ actionDie(e, state->direction); 
+	if (R::Constants::soundEnable){
+		CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
+		CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/enemy_death.mp3", false, 1, 0, 1);
+	}
+	
+	}
 	else if (state->state == R::CharacterState::DEFENSE){
+		if (R::Constants::soundEnable){
+			CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/punch.mp3", false, 1, 0, 1);
+		}
 		if (state->defense == R::Defense::TRUNG_DON)  actionTrungDon(e, state->direction);
 		if (state->defense == R::Defense::TRUNG_DON_NGA)  actionTrungDonNga(e, state->direction);
 	}
@@ -227,7 +240,7 @@ void CaMap::actionTrungDon(artemis::Entity &e, R::Direction direction){
 			EntityUtils::getInstance()->clampVelocity(e, 0, 60);
 			skeletonAnimation->clearTracks();
 			skeletonAnimation->setAnimation(0, "Trungdon", false);
-			skeletonAnimation->setTimeScale(3.5f);
+			skeletonAnimation->setTimeScale(1.5f);
 			skeletonAnimation->setCompleteListener(
 				[=](int trackIndex, int loopCount) {
 				state->setState(R::CharacterState::STAND);
@@ -239,7 +252,7 @@ void CaMap::actionTrungDon(artemis::Entity &e, R::Direction direction){
 			EntityUtils::getInstance()->clampVelocity(e, 0, 60);
 			skeletonAnimation->clearTracks();
 			skeletonAnimation->setAnimation(0, "Trungdon", false);
-			skeletonAnimation->setTimeScale(3.5f);
+			skeletonAnimation->setTimeScale(1.5f);
 			skeletonAnimation->setCompleteListener(
 				[=](int trackIndex, int loopCount) {
 				state->setState(R::CharacterState::STAND);
@@ -247,11 +260,11 @@ void CaMap::actionTrungDon(artemis::Entity &e, R::Direction direction){
 			node->setScaleX(-1);
 		}
 		else if (direction == R::Direction::AUTO) {
-			EntityUtils::getInstance()->push(e, node->getScaleX() == 1 ? 0 : 180, 160);
+			EntityUtils::getInstance()->push(e, node->getScaleX() == 1 ? 0 : 180, 60);
 			EntityUtils::getInstance()->clampVelocity(e, 0, 60);
 			skeletonAnimation->clearTracks();
 			skeletonAnimation->setAnimation(0, "Trungdon", false);
-			skeletonAnimation->setTimeScale(3.5f);
+			skeletonAnimation->setTimeScale(1.5f);
 			skeletonAnimation->setCompleteListener(
 				[=](int trackIndex, int loopCount) {
 				state->setState(R::CharacterState::STAND);

@@ -83,6 +83,8 @@ public:
 	virtual void createPicoloAttackPower1(artemis::Entity &attackEntity, AttackComponent* attackComponent);
 	virtual void createPicoloAttackPower2(artemis::Entity &attackEntity, AttackComponent* attackComponent);
 
+
+	virtual Vec2 checkAttack(artemis::Entity &defense, SkeletonComponent* skeleton, std::string boneName,float boneRadius);
 	virtual void removeEntity(artemis::Entity &e);
 private :
 	static EntityUtils* instance;

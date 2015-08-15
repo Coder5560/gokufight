@@ -56,12 +56,26 @@ void Rua::changeState(artemis::Entity &e){
 			attackComponent->powerOfAttack = characterInfo->SPECIAL_SKILL_POWER;
 			attackComponent->isSpecialSkill = true;
 			attackComponent->manaOfAttack = 40;
+
 		}
-		
+		if (R::Constants::soundEnable){
+			CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/enemy_attack.mp3", false, 1, 0, 1);
+		}
 		EntityUtils::getInstance()->createAttackEntity(e, attackComponent);
 	}
-	else if (state->state == R::CharacterState::DIE){ actionDie(e, state->direction); }
+	else if (state->state == R::CharacterState::DIE){
+		if (R::Constants::soundEnable){
+			CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/enemy_death.mp3", false, 1, 0, 1);
+		} 
+		actionDie(e, state->direction);
+	}
 	else if (state->state == R::CharacterState::DEFENSE){
+		if (R::Constants::soundEnable){
+			CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/punch.mp3", false, 1, 0, 1);
+		}
 		if (state->defense == R::Defense::TRUNG_DON)  actionTrungDon(e, state->direction);
 		if (state->defense == R::Defense::TRUNG_DON_NGA)  actionTrungDonNga(e, state->direction);
 	}
@@ -219,7 +233,7 @@ void Rua::actionTrungDon(artemis::Entity &e, R::Direction direction){
 			EntityUtils::getInstance()->clampVelocity(e, 0, 60);
 			skeletonAnimation->clearTracks();
 			skeletonAnimation->setAnimation(0, "hitting", false);
-			skeletonAnimation->setTimeScale(3.5f);
+			skeletonAnimation->setTimeScale(1.5f);
 			skeletonAnimation->setCompleteListener(
 				[=](int trackIndex, int loopCount) {
 				state->setState(R::CharacterState::STAND);
@@ -231,7 +245,7 @@ void Rua::actionTrungDon(artemis::Entity &e, R::Direction direction){
 			EntityUtils::getInstance()->clampVelocity(e, 0, 60);
 			skeletonAnimation->clearTracks();
 			skeletonAnimation->setAnimation(0, "hitting", false);
-			skeletonAnimation->setTimeScale(3.5f);
+			skeletonAnimation->setTimeScale(1.5f);
 			skeletonAnimation->setCompleteListener(
 				[=](int trackIndex, int loopCount) {
 				state->setState(R::CharacterState::STAND);
@@ -243,7 +257,7 @@ void Rua::actionTrungDon(artemis::Entity &e, R::Direction direction){
 			EntityUtils::getInstance()->clampVelocity(e, 0, 60);
 			skeletonAnimation->clearTracks();
 			skeletonAnimation->setAnimation(0, "hitting", false);
-			skeletonAnimation->setTimeScale(3.5f);
+			skeletonAnimation->setTimeScale(1.5f);
 			skeletonAnimation->setCompleteListener(
 				[=](int trackIndex, int loopCount) {
 				state->setState(R::CharacterState::STAND);

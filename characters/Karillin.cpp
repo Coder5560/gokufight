@@ -16,68 +16,82 @@ void Karillin::changeState(artemis::Entity &e){
 
 		if (state->attack == R::Attack::KARILLIN_BEAT1){
 			actionBeat1(e, state->direction);
-			attackComponent->minX = position->x - 50;
-			attackComponent->maxX = position->x + 50;
+			attackComponent->minX = position->x - 40;
+			attackComponent->maxX = position->x + 40;
 			attackComponent->minY = position->y - 80;
 			attackComponent->maxY = position->y + 80;
 		}
 		else if (state->attack == R::Attack::KARILLIN_BEAT2){
 			actionBeat2(e, state->direction);
-			attackComponent->minX = position->x - 70;
-			attackComponent->maxX = position->x + 70;
+			attackComponent->minX = position->x - 60;
+			attackComponent->maxX = position->x + 60;
 			attackComponent->minY = position->y - 80;
 			attackComponent->maxY = position->y + 80;
 		}
 		else if (state->attack == R::Attack::KARILLIN_BEAT3){
 			actionBeat3(e, state->direction);
-			attackComponent->minX = position->x - 70;
-			attackComponent->maxX = position->x + 70;
+			attackComponent->minX = position->x - 60;
+			attackComponent->maxX = position->x + 60;
 			attackComponent->minY = position->y - 40;
 			attackComponent->maxY = position->y + 140;
 		}
 		else if (state->attack == R::Attack::KARILLIN_PUNCH1){
 			actionPunch1(e, state->direction);
-			//createAttack by ChangeStateSystem.
+	
 			return;
 		}
 		else if (state->attack == R::Attack::KARILLIN_PUNCH2){
 			actionPunch2(e, state->direction);
-			attackComponent->minX = position->x - 90;
-			attackComponent->maxX = position->x + 90;
+			attackComponent->minX = position->x - 80;
+			attackComponent->maxX = position->x + 80;
 			attackComponent->minY = position->y - 120;
 			attackComponent->maxY = position->y + 120;
 		}
 
 		else if (state->attack == R::Attack::KARILLIN_KICK1){
 			actionKick1(e, state->direction);
-			attackComponent->minX = position->x - 40;
-			attackComponent->maxX = position->x + 40;
+			attackComponent->minX = position->x - 30;
+			attackComponent->maxX = position->x + 30;
 			attackComponent->minY = position->y - 30;
 			attackComponent->maxY = position->y + 30;
 		}
 		else if (state->attack == R::Attack::KARILLIN_KICK2){
 			actionKick2(e, state->direction);
-			attackComponent->minX = position->x - 40;
-			attackComponent->maxX = position->x + 40;
+			attackComponent->minX = position->x - 30;
+			attackComponent->maxX = position->x + 30;
 			attackComponent->minY = position->y - 40;
 			attackComponent->maxY = position->y + 60;
 		}
 		else if (state->attack == R::Attack::KARILLIN_KICK3){
 			actionKick3(e, state->direction);
-			attackComponent->minX = position->x - 40;
-			attackComponent->maxX = position->x + 40;
+			attackComponent->minX = position->x - 30;
+			attackComponent->maxX = position->x + 30;
 			attackComponent->minY = position->y - 40;
 			attackComponent->maxY = position->y + 60;
+		}
+		if (R::Constants::soundEnable){
+			CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/enemy_attack.mp3", false, 1, 0, 1);
 		}
 		EntityUtils::getInstance()->createAttackEntity(e, attackComponent);
 		state->state == R::CharacterState::STAND;
 	}
 	else if (state->state == R::CharacterState::DEFENSE){
+		if (R::Constants::soundEnable){
+			CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/punch.mp3", false, 1, 0, 1);
+		}
 		if (state->defense == R::Defense::TRUNG_DON)  actionTrungDon(e, state->direction);
 		if (state->defense == R::Defense::TRUNG_DON_NGA)  actionTrungDonNga(e, state->direction);
 	}
 	else if (state->state == R::CharacterState::WIN){ actionVictory(e); }
-	else if (state->state == R::CharacterState::DIE){ actionDie(e, state->direction); }
+	else if (state->state == R::CharacterState::DIE){ 
+		if (R::Constants::soundEnable){
+			CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/enemy_death.mp3", false, 1, 0, 1);
+		}
+
+		actionDie(e, state->direction); }
 	else if (state->state == R::CharacterState::START){ actionStart(e, state->direction); }
 	else if (state->state == R::CharacterState::STAND){ actionStand(e); }
 	else if (state->state == R::CharacterState::STAND_UP){ actionStandUp(e); }
@@ -85,9 +99,7 @@ void Karillin::changeState(artemis::Entity &e){
 	else if (state->state == R::CharacterState::RIGHT){ actionMove(e, R::Direction::RIGHT);  }
 	else if (state->state == R::CharacterState::WALK_RIGHT){ actionMoveOn(e, R::Direction::RIGHT);  }
 	else if (state->state == R::CharacterState::WALK_LEFT){ actionMoveOn(e, R::Direction::LEFT);  }
-	else if (state->state == R::CharacterState::JUMP){
-		actionJump1(e, R::Direction::AUTO);
-	}
+	else if (state->state == R::CharacterState::JUMP){	actionJump1(e, R::Direction::AUTO);	}
 }
 void Karillin::actionStand(artemis::Entity &e){
 	StateComponent* state = (StateComponent*)e.getComponent<StateComponent>();
@@ -367,7 +379,7 @@ void Karillin::actionTrungDon(artemis::Entity &e, R::Direction direction) {
 			EntityUtils::getInstance()->clampVelocity(e, 0, 160);
 			skeletonAnimation->clearTracks();
 			skeletonAnimation->setAnimation(0, "Trungdon", false);
-			skeletonAnimation->setTimeScale(1.5f);
+			skeletonAnimation->setTimeScale(2);
 			skeletonAnimation->setCompleteListener(
 				[=](int trackIndex, int loopCount) {
 				state->setState(R::CharacterState::STAND);
@@ -379,7 +391,7 @@ void Karillin::actionTrungDon(artemis::Entity &e, R::Direction direction) {
 			EntityUtils::getInstance()->clampVelocity(e, 0, 160);
 			skeletonAnimation->clearTracks();
 			skeletonAnimation->setAnimation(0, "Trungdon", false);
-			skeletonAnimation->setTimeScale(1.5f);
+			skeletonAnimation->setTimeScale(2);
 			skeletonAnimation->setCompleteListener(
 				[=](int trackIndex, int loopCount) {
 				state->setState(R::CharacterState::STAND);
@@ -391,7 +403,7 @@ void Karillin::actionTrungDon(artemis::Entity &e, R::Direction direction) {
 			EntityUtils::getInstance()->clampVelocity(e, 0, 160);
 			skeletonAnimation->clearTracks();
 			skeletonAnimation->setAnimation(0, "Trungdon", false);
-			skeletonAnimation->setTimeScale(1.5f);
+			skeletonAnimation->setTimeScale(2);
 			skeletonAnimation->setCompleteListener(
 				[=](int trackIndex, int loopCount) {
 				state->setState(R::CharacterState::STAND);
@@ -486,7 +498,7 @@ void Karillin::actionBeat1(artemis::Entity &e, R::Direction direction) {
 		// xử lý action
 		skeletonAnimation->clearTracks();
 		skeletonAnimation->setAnimation(0, "Beat1", false);
-		skeletonAnimation->setTimeScale(1.5f);
+		skeletonAnimation->setTimeScale(2);
 		skeletonAnimation->setCompleteListener([=](int trackID, int loopCount) {
 			state->setState(R::CharacterState::STAND);
 		});
@@ -510,7 +522,7 @@ void Karillin::actionBeat2(artemis::Entity &e, R::Direction direction) {
 		// xử lý action
 		skeletonAnimation->clearTracks();
 		skeletonAnimation->setAnimation(0, "Beat2", false);
-		skeletonAnimation->setTimeScale(1.5f);
+		skeletonAnimation->setTimeScale(2);
 		skeletonAnimation->setCompleteListener([=](int trackID, int loopCount) {
 			state->setState(R::CharacterState::STAND);
 		});

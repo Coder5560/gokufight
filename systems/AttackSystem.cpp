@@ -80,7 +80,6 @@ bool AttackSystem::attackToEntity(artemis::Entity& attackEntity, artemis::Entity
 		else{
 			defenseState->setState(R::CharacterState::DEFENSE);
 			attack->isSpecialSkill ? (defenseState->defense = R::Defense::TRUNG_DON_NGA) : (defenseState->defense = R::Defense::TRUNG_DON);
-
 		}
 		float distance = attackRect.getMidX() - defenseRect.getMidX();
 		Node* node = RenderLayer::getInstance()->createGameNode();
@@ -95,7 +94,6 @@ bool AttackSystem::attackToEntity(artemis::Entity& attackEntity, artemis::Entity
 		artemis::ImmutableBag<artemis::Entity*> *entities = world->getGroupManager()->getEntities((attack->whoAttack == R::CharacterType::GOKU) ? "enemies" : "gokus");
 		for (int i = 0; i < entities->getCount(); i++){
 			artemis::Entity* et = entities->get(i);
-
 			if (et) {
 				RenderComponent* render = (RenderComponent*)et->getComponent<RenderComponent>();
 				if (render)	render->node->removeFromParent();

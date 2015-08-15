@@ -1,6 +1,5 @@
 #pragma once
-
-
+#include <SimpleAudioEngine.h>
 namespace R{
 
 	class Constants{
@@ -9,9 +8,14 @@ namespace R{
 		static const int WIDTH_SCREEN;
 		static const int HEIGHT_SCREEN;
 		static const int MAX_SCREEN_WIDTH;
+		static float musicVolumn;
+		static float soundVolumn;
+		static bool musicEnable;
+		static bool soundEnable;
+		static int unlocked;
 	};
 	enum class Match_Type{
-		NONE, GOKU_GIRAN, GOKU_BEAR,GOKU_JACKIECHUN,GOKU_TEGIAC,GOKU_CAMAP,GOKU_RUA, GOKU_KARILLIN,GOKU_PICOLO
+		GOKU_BEAR_INTRODUCE, NONE, GOKU_GIRAN, GOKU_BEAR, GOKU_JACKIECHUN, GOKU_TEGIAC, GOKU_CAMAP, GOKU_RUA, GOKU_KARILLIN, GOKU_PICOLO
 
 	};
 
@@ -97,6 +101,11 @@ namespace R{
 
 	enum class CharacterUIState{
 		SHOW, HIDE, ANIMATING
+	};
+
+
+	enum class IntroduceStep{
+		NONE, KICK_ATTACK,PUNCH_ATTACK,BEAT_ATTACK, MOVE, MOVE_AND_JUMP,JUMP
 	};
 };
 

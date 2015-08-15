@@ -24,6 +24,10 @@ void Bear::changeState(artemis::Entity &e){
 		attackComponent->powerOfAttack = characterInfo->NORMAL_SKILL_POWER;
 		attackComponent->type = state->attack;
 		if (state->attack == R::Attack::BEAR_ATTACK1){
+			if (R::Constants::soundEnable) {
+				CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
+				CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/enemy_attack.mp3", false, 1, 0, 1);
+			}
 			actionAttack1(e, state->direction);
 			attackComponent->minX = position->x - 140;
 			attackComponent->maxX = position->x + 140;
@@ -31,6 +35,10 @@ void Bear::changeState(artemis::Entity &e){
 			attackComponent->maxY = position->y + 140;
 		}
 		else if (state->attack == R::Attack::BEAR_ATTACK2){
+			if (R::Constants::soundEnable) {
+				CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
+				CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/enemy_attack.mp3", false, 1, 0, 1);
+			}
 			actionAttack2(e, state->direction);
 			attackComponent->minX = position->x - 140;
 			attackComponent->maxX = position->x + 140;
@@ -40,8 +48,19 @@ void Bear::changeState(artemis::Entity &e){
 		EntityUtils::getInstance()->createAttackEntity(e, attackComponent);
 
 	}
-	else if (state->state == R::CharacterState::DIE){ actionDie(e, state->direction); }
-	else if (state->state == R::CharacterState::DEFENSE){ actionTrungDon(e, state->direction); }
+	else if (state->state == R::CharacterState::DIE){ 
+		if (R::Constants::soundEnable) {
+			CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/enemy_death.mp3", false, 1, 0, 1);
+		}
+		actionDie(e, state->direction); }
+	else if (state->state == R::CharacterState::DEFENSE){
+		if (R::Constants::soundEnable) {
+			CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/enemy_hit_2.mp3", false, 1, 0, 1);
+		}
+		actionTrungDon(e, state->direction);
+	}
 	else if (state->state == R::CharacterState::STAND){ actionStand(e); }
 	else if (state->state == R::CharacterState::LEFT){ actionMove(e, R::Direction::LEFT); }
 	else if (state->state == R::CharacterState::RIGHT){ actionMove(e, R::Direction::RIGHT); }
@@ -50,6 +69,10 @@ void Bear::changeState(artemis::Entity &e){
 
 }
 void Bear::actionTrungDon(artemis::Entity &e, R::Direction direction){
+
+	
+
+
 	StateComponent* state = (StateComponent*)e.getComponent<StateComponent>();
 	SkeletonComponent* skeleton = (SkeletonComponent*)e.getComponent<SkeletonComponent>();
 	skeleton->skeleton->clearTracks();
@@ -65,6 +88,8 @@ void Bear::actionTrungDon(artemis::Entity &e, R::Direction direction){
 	}
 	else if (direction == R::Direction::RIGHT){
 		EntityUtils::getInstance()->push(e, 0, 240);
+	}else if (direction == R::Direction::AUTO){
+		EntityUtils::getInstance()->push(e, skeleton->node->getScaleX()>0 ? 0:180, 240);
 	}
 }
 void Bear::actionStand(artemis::Entity &e){

@@ -1,6 +1,7 @@
 #pragma once
 #include "cocos2d.h"
 #include "artemis/Artemis.h"
+#include "R.h"
 #include "gokuartemis/Systems.h"
 #include "gokuartemis/Components.h"
 #include "systems/EntityUtils.h"
@@ -18,7 +19,8 @@
 #include "Characters/Rua.h"
 #include "Characters/Karillin.h"
 #include "Characters/Picolo.h"
-#include "R.h"
+
+
 USING_NS_CC;
 
 class ECSWorld
@@ -29,8 +31,10 @@ public:
 	virtual void createWorld(R::Match_Type matchType);
 	virtual void resetCurrentMatch();
 	virtual void nextMatch();
+	
 	artemis::World* getWorld();
 
+	void ignoreWorld(bool ignore);
 	void processWorld(float delta);
 	artemis::EntitySystem* setSystem(artemis::EntitySystem* system);
 	InputSystem* inputSystem;
@@ -44,6 +48,7 @@ private:
 	void createKarillinCharacter();
 	void createGiranCharacter();
 	void createBearCharacter();
+	void createBearIntroduceCharacter();
 	void createJackiechunCharacter();
 	void createTegiacCharacter();
 	void createCamapCharacter();
@@ -56,6 +61,7 @@ private:
 	artemis::Entity* goku;
 	
 protected:
+	bool isIgnoreWorld;
 	int match;
 	const float STEP;
 	float accumulate;

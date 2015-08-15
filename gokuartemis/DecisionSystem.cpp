@@ -13,6 +13,7 @@ void DecisionSystem::processEntity(artemis::Entity& e){
 	if (gameState->gameState != R::GameState::FIGHTING){return; }
 	
 	DecisionComponent* decision = decisionMapper.get(e);
+	if (!decision->decisionBase->isActive) return;
 	StateComponent* stateComponent = (StateComponent*)e.getComponent<StateComponent>();
 	if (stateComponent->state == R::CharacterState::DIE) return;
 	decision->thinkingTime += world->getDelta();

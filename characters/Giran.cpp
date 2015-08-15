@@ -42,11 +42,27 @@ void Giran::changeState(artemis::Entity &e){
 			attackComponent->minY = position->y - 450;
 			attackComponent->maxY = position->y + 450;
 		}
+		if (R::Constants::soundEnable){
+			CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/enemy_attack.mp3", false, 1, 0, 1);
+		}
 		EntityUtils::getInstance()->createAttackEntity(e, attackComponent);
 		state->state = R::CharacterState::STAND;
 	}
-	else if (state->state == R::CharacterState::DIE){ actionDie(e, state->direction); }
-	else if (state->state == R::CharacterState::DEFENSE){ actionTrungDon(e, state->direction); }
+	else if (state->state == R::CharacterState::DIE){
+		if (R::Constants::soundEnable){
+			CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/enemy_death.mp3", false, 1, 0, 1);
+		} 
+		actionDie(e, state->direction);
+	}
+	else if (state->state == R::CharacterState::DEFENSE){
+		if (R::Constants::soundEnable){
+			CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/punch.mp3", false, 1, 0, 1);
+		}
+		actionTrungDon(e, state->direction);
+	}
 	else if (state->state == R::CharacterState::STAND){ actionStand(e); }
 	else if (state->state == R::CharacterState::LEFT){ actionMove(e, R::Direction::LEFT); }
 	else if (state->state == R::CharacterState::RIGHT){ actionMove(e, R::Direction::RIGHT); }
@@ -61,8 +77,6 @@ void Giran::actionTrungDon(artemis::Entity &e, R::Direction direction){
 	skeleton->skeleton->setToSetupPose();
 	skeleton->skeleton->setCompleteListener(nullptr);
 	skeleton->skeleton->setTimeScale(1);
-	//	if (direction == R::Direction::LEFT){ skeleton->node->setScaleX(1); }
-	//	if (direction == R::Direction::RIGHT){ skeleton->node->setScaleX(-1);}
 	if (direction == R::Direction::LEFT){
 		EntityUtils::getInstance()->push(e, 180, 240);
 	}

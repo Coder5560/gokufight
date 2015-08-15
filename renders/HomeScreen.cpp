@@ -1,31 +1,35 @@
-#include "StartScreen.h"
-#include "renders/Effects.h"
+#include "HomeScreen.h"
 
-Scene* StartScreen::createScene() {
+
+
+Scene* HomeScreen::createScene() {
 	auto scene = Scene::create();
-	auto layer = StartScreen::create();
+	auto layer = HomeScreen::create();
 	scene->addChild(layer);
 	return scene;
 }
 
 // on "init" you need to initialize your instance
-bool StartScreen::init() {
+bool HomeScreen::init() {
 	//////////////////////////////
 	// 1. super init first
 	if (!LayerColor::initWithColor(Color4B::BLACK)) {
 		return false;
 	}
 
+
+
 	this->showingStartLayer = false;
 	this->layoutSelectCreated = false;
 	this->setContentSize(Size(R::Constants::WIDTH_SCREEN, R::Constants::HEIGHT_SCREEN));
 	this->setSwallowsTouches(false);
-	showFlashImage();
-	this->scheduleUpdate();
+	showStartLayer();
 
+	this->scheduleUpdate();
+	
 	return true;
 }
-void StartScreen::update(float delta){
+void HomeScreen::update(float delta){
 	if (showingStartLayer && gokuAnimation){
 		if (!gokuAnimation->isVisible()) {
 			gokuAnimation->setVisible(true);
@@ -46,29 +50,9 @@ void StartScreen::update(float delta){
 	}
 }
 
-void StartScreen::showFlashImage(){
-	showingStartLayer = false;
-	Sprite* flashImage = Sprite::create("splash/Default@2x.png");
-	flashImage->ignoreAnchorPointForPosition(false);
 
-	flashImage->setPosition(this->getContentSize() / 2);
-	flashImage->setOpacity(0);
-	this->addChild(flashImage);
 
-	FadeIn* fadeIn = FadeIn::create(.4f);
-	DelayTime* delay = DelayTime::create(.5f);
-	FadeOut* fadeOut = FadeOut::create(.2);
-	CallFunc* callBack = CallFunc::create([=](){
-		this->showStartLayer();
-	});
-
-	Sequence* sequence = Sequence::create(fadeIn, delay, fadeOut, callBack, nullptr);
-	flashImage->runAction(sequence);
-
-	
-}
-
-void StartScreen::showStartLayer(){
+void HomeScreen::showStartLayer(){
 	if (R::Constants::musicEnable) {
 		CocosDenshion::SimpleAudioEngine::getInstance()->setBackgroundMusicVolume(R::Constants::musicVolumn);
 		CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("sounds/menu.mp3", true);
@@ -121,8 +105,8 @@ void StartScreen::showStartLayer(){
 	music->ignoreAnchorPointForPosition(false);
 	music->setPosition(Vec2(400, 210));
 	music->setTouchEnabled(true);
-	music->addClickEventListener([this,music](Ref* sender){
-		
+	music->addClickEventListener([this, music](Ref* sender){
+
 		if (R::Constants::soundEnable) {
 			CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
 			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/button_click.mp3", false, 1, 0, 1);
@@ -139,7 +123,7 @@ void StartScreen::showStartLayer(){
 		music->setTouchEnabled(false);
 		ScaleTo* scaleIn = ScaleTo::create(.1f, .56f);
 		ScaleTo* scaleout = ScaleTo::create(.1f, .6f);
-		CallFunc* call = CallFunc::create([this,music](){
+		CallFunc* call = CallFunc::create([this, music](){
 			onMusicClick();
 			music->setTouchEnabled(true);
 			music->loadTexture(R::Constants::musicEnable ? "menu/music_on.png" : "menu/music_off.png", ui::ImageView::TextureResType::LOCAL);
@@ -155,7 +139,7 @@ void StartScreen::showStartLayer(){
 	sound->setPosition(Vec2(400, 150));
 	sound->setTouchEnabled(true);
 	sound->addClickEventListener([this, sound](Ref* sender){
-		
+
 		if (R::Constants::soundEnable) {
 			CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
 			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/button_click.mp3", false, 1, 0, 1);
@@ -210,16 +194,16 @@ void StartScreen::showStartLayer(){
 	gokuAnimation->setPositionX(-100);
 }
 
-void StartScreen::onMusicClick(){
+void HomeScreen::onMusicClick(){
 }
 
-void StartScreen::onSoundClick(){
+void HomeScreen::onSoundClick(){
 }
 
-void StartScreen::onGuildClick(){
+void HomeScreen::onGuildClick(){
 }
 
-void StartScreen::onSelectPlayGame(){
+void HomeScreen::onSelectPlayGame(){
 	if (R::Constants::soundEnable) {
 		CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
 		CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/button_click.mp3", false, 1, 0, 1);
@@ -234,7 +218,7 @@ void StartScreen::onSelectPlayGame(){
 	buttonPlay->runAction(Sequence::create(scaleIn, scaleout, callBack, nullptr));
 }
 
-void StartScreen::switchToSelectScreen(){
+void HomeScreen::switchToSelectScreen(){
 	/*auto scene = HelloWorld::createScene();
 	Director::getInstance()->replaceScene(scene);
 	return;*/
@@ -290,7 +274,7 @@ void StartScreen::switchToSelectScreen(){
 	layoutSelectCreated = true;
 }
 
-void StartScreen::goToGame(R::Match_Type type){
+void HomeScreen::goToGame(R::Match_Type type){
 	CocosDenshion::SimpleAudioEngine::getInstance()->stopBackgroundMusic(true);
 	auto scene = HelloWorld::createScene(type);
 	Director::getInstance()->replaceScene(TransitionFade::create(0.3, scene, Color3B(0, 0, 0)));
@@ -300,7 +284,7 @@ void StartScreen::goToGame(R::Match_Type type){
 // state = 0 : lock
 // state = 1 : to unlock
 // state = 2 : unlocked
-void StartScreen::addCharacterItem(int index, int state, std::string name, std::string unlock, std::string lock, const std::function<void()> &callback){
+void HomeScreen::addCharacterItem(int index, int state, std::string name, std::string unlock, std::string lock, const std::function<void()> &callback){
 
 	CharacterItem* character = new CharacterItem(state, name, unlock, lock);
 
@@ -331,61 +315,10 @@ void StartScreen::addCharacterItem(int index, int state, std::string name, std::
 // state = 0 : lock
 // state = 1 : to unlock
 // state = 2 : unlocked
-void StartScreen::addCharacterItem(int index, std::string name, std::string unlock, std::string lock, const std::function<void()> &callback){
+void HomeScreen::addCharacterItem(int index, std::string name, std::string unlock, std::string lock, const std::function<void()> &callback){
 	int state = 0;
 	if (index < R::Constants::unlocked) state = 2;
 	else if (index == R::Constants::unlocked) state = 1;
 	else state = 0;
 	addCharacterItem(index, state, name, unlock, lock, callback);
-}
-
-
-
-CharacterItem::CharacterItem(int state, std::string name, std::string textureUnlock, std::string textureLock){
-	this->setLayoutType(ui::Layout::Type::ABSOLUTE);
-	ui::ImageView* image;
-	if (state == 0 || state == 1){
-		//lock
-		image = ui::ImageView::create(textureLock);
-	}
-	else {
-		// unlock
-		image = ui::ImageView::create(textureUnlock);
-	}
-	this->setContentSize(image->getContentSize());
-	this->setAnchorPoint(Vec2(.5f, .5f));
-	this->ignoreAnchorPointForPosition(false);
-	image->setPosition(getContentSize() / 2);
-	this->addChild(image);
-	ui::ImageView* khoa = ui::ImageView::create("select_screen/khoa.png");
-	khoa->ignoreAnchorPointForPosition(false);
-	khoa->setScale9Enabled(true);
-	khoa->setPosition(Vec2(getContentSize().width / 4 + 6, getContentSize().height / 2));
-
-	ui::Text* _name = ui::Text::create(name, "fonts/courbd.ttf", 20);
-	_name->setPosition(Vec2(getContentSize().width / 4 + 6, getContentSize().height / 2 + 10));
-
-	ui::Text* toUnlock = ui::Text::create("TO UNLOCK", "fonts/courbd.ttf", 16);
-	toUnlock->setPosition(Vec2(getContentSize().width / 4 + 6, getContentSize().height / 2 - 16));
-
-	ui::Text* unlocked = ui::Text::create("UNLOCKED", "fonts/courbd.ttf", 16);
-	unlocked->setPosition(Vec2(getContentSize().width / 4 + 6, getContentSize().height / 2 - 16));
-	unlocked->setColor(Color3B::BLACK);
-	if (state == 0){
-		this->addChild(khoa);
-	}
-
-	if (state == 1){
-		this->addChild(_name);
-		this->addChild(toUnlock);
-	}
-
-
-	if (state == 2){
-		this->addChild(_name);
-		this->addChild(unlocked);
-	}
-
-
-
 }

@@ -117,6 +117,11 @@ bool CharacterInfoComponent::hasManaForSkill(float skillMana){ return (power - s
 void CharacterInfoComponent::notifyNotEnoughMana(){ notifyMana = true; }
 
 DecisionComponent::DecisionComponent() : thinkingTime(0), DECISION_TIME(2), decisionBase(nullptr){}
+void DecisionComponent::setActive(bool active){
+	if (decisionBase){
+		decisionBase->isActive = active;
+	}
+};
 
 StateComponent::StateComponent() : trungdonlientiep(0), doneAction(true), attack(R::Attack::NONE), defense(R::Defense::NONE), characterBase(nullptr), state(R::CharacterState::STAND), time_on_state(1), direction(R::Direction::AUTO){}
 
@@ -167,4 +172,12 @@ CharacterUIComponent::CharacterUIComponent() :state(R::CharacterUIState::HIDE), 
 void CharacterUIComponent::setState(R::CharacterUIState newState){
 	state = newState;
 	timeOnState = 0;
+}
+
+
+IntroduceComponent::IntroduceComponent() :step(R::IntroduceStep::NONE), timeOnState(0), isDoneStep(false), isDoneAll(false){}
+void IntroduceComponent::setStep(R::IntroduceStep newStep){
+	step = newStep;
+	timeOnState = 0;
+	isDoneStep = true;
 }

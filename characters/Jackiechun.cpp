@@ -57,11 +57,23 @@ void Jackiechun::changeState(artemis::Entity &e){
 			attackComponent->minY = position->y - 140;
 			attackComponent->maxY = position->y + 140;
 		}
+		if (R::Constants::soundEnable){
+			CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/enemy_attack.mp3", false, 1, 0, 1);
+		}
 		EntityUtils::getInstance()->createAttackEntity(e, attackComponent);
 	}
-	else if (state->state == R::CharacterState::DIE){ actionDie(e, state->direction); }
+	else if (state->state == R::CharacterState::DIE){
+		if (R::Constants::soundEnable){
+			CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/enemy_death.mp3", false, 1, 0, 1);
+		}
+		actionDie(e, state->direction); }
 	else if (state->state == R::CharacterState::DEFENSE){ 
-		// we have three choice : trung don, get hit, back
+		if (R::Constants::soundEnable){
+			CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/hit_03.mp3", false, 1, 0, 1);
+		}
 		actionTrungDon(e, state->direction); }
 	else if (state->state == R::CharacterState::START){ actionStart(e,state->direction); }
 	else if (state->state == R::CharacterState::STAND){ actionStand(e); }

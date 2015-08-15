@@ -16,6 +16,8 @@ public:
 	Layer* getBackgroundLayer();
 	Layer* getGameLayer();
 	Layer* getHudLayer();
+
+	void resetAll();
 private :
 	
 	Size visibleSize;

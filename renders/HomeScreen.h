@@ -8,27 +8,26 @@
 #include "spine/spine-cocos2dx.h"
 #include "HelloWorldScene.h"
 #include "ui/UIPageView.h"
+#include "renders/StartScreen.h"
+#include "renders/Effects.h"
 USING_NS_CC;
-class CharacterItem;
-
-class StartScreen : public cocos2d::LayerColor
+class HomeScreen : public cocos2d::LayerColor
 {
 public:
 
 	static cocos2d::Scene* createScene();
 	virtual bool init();
-	CREATE_FUNC(StartScreen);
+	CREATE_FUNC(HomeScreen);
 
 	virtual void update(float delta);
 
-	void showFlashImage();
 	void showStartLayer();
 	void onSelectPlayGame();
 	void switchToSelectScreen();
 	void addCharacterItem(int index, int state, std::string name, std::string unlock, std::string lock, const std::function<void()> &callback);
 	void addCharacterItem(int index, std::string name, std::string unlock, std::string lock, const std::function<void()> &callback);
 	void goToGame(R::Match_Type matchType);
-	
+
 	void onSoundClick();
 	void onMusicClick();
 	void onGuildClick();
@@ -43,9 +42,4 @@ public:
 	bool layoutSelectCreated;
 	spine::SkeletonAnimation* gokuAnimation;
 	ui::ImageView* buttonPlay;
-};
-
-class CharacterItem : public ui::Layout{
-public:
-	CharacterItem(int state, std::string name, std::string textureUnlock, std::string textureLock);
 };

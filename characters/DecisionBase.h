@@ -15,6 +15,7 @@ public:
 	virtual void decision(artemis::Entity &e);
 	virtual void move(StateComponent* stateComponent,R::Direction direction);
 	artemis::World *world;
+	bool isActive;
 };
 class GokuDecision : public DecisionBase{
 public:

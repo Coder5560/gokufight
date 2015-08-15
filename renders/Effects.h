@@ -11,6 +11,7 @@ USING_NS_CC;
 class MatchInfo;
 class HitEffect;
 class KameKameHa;
+class PauseScene;
 
 class Effects
 {
@@ -41,6 +42,13 @@ public :
 class Message : public Effects {
 public:
 	Message(Node* node);
+	void start(std::string message);
+	void dismiss();
+};
+
+class IntroduceMessage : public Effects {
+public:
+	IntroduceMessage(Node* node);
 	void start(std::string message);
 	void dismiss();
 };
@@ -77,4 +85,84 @@ public:
 	ui::Layout* mana;
 	ui::Layout* blood;
 	Size size;
+};
+
+class PauseScene : public Effects{
+public :
+	PauseScene(Node* node);
+
+	void showPauseScene();
+	void setContinueCallBack(const std::function<void()> &callback);
+	void setReplayCallback(const std::function<void()> &callback);
+	void setMenuCallBack(const std::function<void()> &callback);
+	void setNextMatchCallBack(const std::function<void()> &callback);
+	
+	std::function<void()> continueCallBack;
+	std::function<void()> menuCallBack;
+	std::function<void()> replayCallBack;
+	std::function<void()> nextMatchCallBack;
+
+	bool isShowing;
+
+
+	ui::ImageView* background;
+	ui::ImageView* btnMenu;
+	ui::ImageView* btnNext;
+	ui::ImageView* btnReplay;
+	ui::ImageView* btnContinue;
+	ui::ImageView* btnMusic;
+	ui::ImageView* btnSound;
+	ui::ImageView* btnGuide;
+	
+	ui::Text* text;
+};
+
+
+class Winscene : public Effects{
+public:
+	Winscene(Node* node);
+
+	void showWinScene();
+	
+	void setReplayCallback(const std::function<void()> &callback);
+	void setMenuCallBack(const std::function<void()> &callback);
+	void setNextMatchCallBack(const std::function<void()> &callback);
+
+
+	std::function<void()> menuCallBack;
+	std::function<void()> replayCallBack;
+	std::function<void()> nextMatchCallBack;
+
+	bool isShowing;
+
+
+	ui::ImageView* background;
+	ui::ImageView* btnMenu;
+	ui::ImageView* btnNext;
+	ui::ImageView* btnReplay;
+
+	ui::Text* text;
+};
+
+
+class LoseScene : public Effects{
+public:
+	LoseScene(Node* node);
+
+	void showLoseScene();
+
+	void setReplayCallback(const std::function<void()> &callback);
+	void setMenuCallBack(const std::function<void()> &callback);
+
+	std::function<void()> menuCallBack;
+	std::function<void()> replayCallBack;
+	std::function<void()> nextMatchCallBack;
+	bool isShowing;
+
+
+	ui::ImageView* background;
+	ui::ImageView* btnMenu;
+	ui::ImageView* btnReplay;
+
+	ui::Text* text;
 };

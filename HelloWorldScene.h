@@ -25,7 +25,6 @@ public:
 	
 protected:
 	spine::SkeletonAnimation* skeletonNode;
-
 	artemis::World* world;
 	Sprite* sprite;
 };

@@ -29,14 +29,12 @@ bool HelloWorld::init() {
 	}
 	this->setKeypadEnabled(true);
 
-
-
-	
 	return true;
 }
 
 void HelloWorld::gotoMatch(R::Match_Type type){
 	this->removeAllChildren();
+	RenderLayer::getInstance()->resetAll();
 	this->addChild(RenderLayer::getInstance()->getBackgroundLayer());
 	this->addChild(RenderLayer::getInstance()->getGameLayer());
 	this->addChild(RenderLayer::getInstance()->getHudLayer());
@@ -46,11 +44,6 @@ void HelloWorld::gotoMatch(R::Match_Type type){
 	this->addChild(cameraHud);
 	ECSWorld::getInstance()->createWorld(type);
 	this->scheduleUpdate();
-
-	Sprite* bg = Sprite::create("backgrounds/bg5.png");
-	bg->setAnchorPoint(Vec2(0, 0));
-	bg->setPosition(Vec2(0, 0));
-	RenderLayer::getInstance()->getBackgroundLayer()->addChild(bg);
 }
 
 
@@ -123,32 +116,32 @@ void HelloWorld::onKeyReleased(EventKeyboard::KeyCode keyCode, Event* event) {
 	//if (keyCode == EventKeyboard::KeyCode::KEY_8){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::KARILLIN_PUNCH2; }
 
 
-	//for Picolo
-	if (keyCode == EventKeyboard::KeyCode::KEY_0){ skeletonComponent->node->setScaleX(-skeletonComponent->node->getScaleX()); }
-	if (keyCode == EventKeyboard::KeyCode::KEY_1){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::PICOLO_ATTACK1; }
-	if (keyCode == EventKeyboard::KeyCode::KEY_2){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::PICOLO_ATTACK2; }
-	if (keyCode == EventKeyboard::KeyCode::KEY_3){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::PICOLO_ATTACK3; }
-	if (keyCode == EventKeyboard::KeyCode::KEY_4){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::PICOLO_KICK; }
-	if (keyCode == EventKeyboard::KeyCode::KEY_5){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::PICOLO_POWER1; }
-	if (keyCode == EventKeyboard::KeyCode::KEY_6){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::PICOLO_POWER2; }
-
-
-
-	//// for GOKU
-	//artemis::Entity &e = ECSWorld::getInstance()->getWorld()->getTagManager()->getEntity("goku");
-	//StateComponent* stateComponent = (StateComponent*)e.getComponent<StateComponent>();
-	//SkeletonComponent* skeletonComponent = (SkeletonComponent*)e.getComponent<SkeletonComponent>();
-
+	////for Picolo
 	//if (keyCode == EventKeyboard::KeyCode::KEY_0){ skeletonComponent->node->setScaleX(-skeletonComponent->node->getScaleX()); }
-	//if (keyCode == EventKeyboard::KeyCode::KEY_1){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::GOKU_BEAT1; }
-	//if (keyCode == EventKeyboard::KeyCode::KEY_2){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::GOKU_BEAT2; }
-	//if (keyCode == EventKeyboard::KeyCode::KEY_3){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::GOKU_BEAT3; }
-	//if (keyCode == EventKeyboard::KeyCode::KEY_4){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::GOKU_KICK1; }
-	//if (keyCode == EventKeyboard::KeyCode::KEY_5){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::GOKU_KICK2; }
-	//if (keyCode == EventKeyboard::KeyCode::KEY_6){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::GOKU_KICK3; }
-	//if (keyCode == EventKeyboard::KeyCode::KEY_7){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::GOKU_PUNCH1; }
-	//if (keyCode == EventKeyboard::KeyCode::KEY_8){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::GOKU_PUNCH2; }
-	
+	//if (keyCode == EventKeyboard::KeyCode::KEY_1){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::PICOLO_ATTACK1; }
+	//if (keyCode == EventKeyboard::KeyCode::KEY_2){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::PICOLO_ATTACK2; }
+	//if (keyCode == EventKeyboard::KeyCode::KEY_3){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::PICOLO_ATTACK3; }
+	//if (keyCode == EventKeyboard::KeyCode::KEY_4){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::PICOLO_KICK; }
+	//if (keyCode == EventKeyboard::KeyCode::KEY_5){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::PICOLO_POWER1; }
+	//if (keyCode == EventKeyboard::KeyCode::KEY_6){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::PICOLO_POWER2; }
+
+
+
+	// for GOKU
+	/*artemis::Entity &e = ECSWorld::getInstance()->getWorld()->getTagManager()->getEntity("goku");
+	StateComponent* stateComponent = (StateComponent*)e.getComponent<StateComponent>();
+	SkeletonComponent* skeletonComponent = (SkeletonComponent*)e.getComponent<SkeletonComponent>();
+
+	if (keyCode == EventKeyboard::KeyCode::KEY_0){ skeletonComponent->node->setScaleX(-skeletonComponent->node->getScaleX()); }
+	if (keyCode == EventKeyboard::KeyCode::KEY_1){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::GOKU_BEAT1; }
+	if (keyCode == EventKeyboard::KeyCode::KEY_2){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::GOKU_BEAT2; }
+	if (keyCode == EventKeyboard::KeyCode::KEY_3){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::GOKU_BEAT3; }
+	if (keyCode == EventKeyboard::KeyCode::KEY_4){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::GOKU_KICK1; }
+	if (keyCode == EventKeyboard::KeyCode::KEY_5){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::GOKU_KICK2; }
+	if (keyCode == EventKeyboard::KeyCode::KEY_6){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::GOKU_KICK3; }
+	if (keyCode == EventKeyboard::KeyCode::KEY_7){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::GOKU_PUNCH1; }
+	if (keyCode == EventKeyboard::KeyCode::KEY_8){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::GOKU_PUNCH2; }*/
+
 
 }
 void HelloWorld::update(float delta) {

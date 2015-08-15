@@ -1,7 +1,8 @@
 #include "DecisionBase.h"
 #include "systems/EntityUtils.h"
 
-DecisionBase::DecisionBase(){}
+DecisionBase::DecisionBase(){
+}
 
 DecisionBase::~DecisionBase()
 {
@@ -44,124 +45,108 @@ void GokuDecision::obsever(artemis::Entity &e){
 	}
 }
 
-GiranDecision::GiranDecision() :totalChoose(0){}
+GiranDecision::GiranDecision() :totalChoose(0){ this->isActive = true; }
 void GiranDecision::decision(artemis::Entity &e){
-	artemis::Entity& goku = world->getTagManager()->getEntity("goku");
-	BoundComponent* gokuBound = (BoundComponent*)e.getComponent<BoundComponent>();
-	DecisionComponent* decision = (DecisionComponent*)e.getComponent<DecisionComponent>();
-	PosComponent* gokuPosition = (PosComponent*)goku.getComponent<PosComponent>();
-	PosComponent* characterPosition = (PosComponent*)e.getComponent<PosComponent>();
-	CharacterInfoComponent* gokuInfo = (CharacterInfoComponent*)goku.getComponent<CharacterInfoComponent>();
-	CharacterInfoComponent* characterInfo = (CharacterInfoComponent*)e.getComponent<CharacterInfoComponent>();
-	StateComponent* stateComponent = (StateComponent*)e.getComponent<StateComponent>();
-
-	if (stateComponent->state == R::CharacterState::JUMP){
-		return;
-	}
-
-	float distance = abs(gokuPosition->x - characterPosition->x);
-	bool gokuOnTheLeft = gokuPosition->x < characterPosition->x;
-
-	if (distance > gokuBound->getWidth() + 20){
-		if (gokuOnTheLeft){
-			if (stateComponent->state != R::CharacterState::WALK_LEFT && stateComponent->state != R::CharacterState::LEFT){
-				stateComponent->direction = R::Direction::LEFT;
-				stateComponent->setState(R::CharacterState::LEFT);
-
-			}
-			else{
-				stateComponent->direction = R::Direction::LEFT;
-				stateComponent->setState(R::CharacterState::WALK_LEFT);
-			}
-		}
-		else{
-			if (stateComponent->state != R::CharacterState::WALK_RIGHT && stateComponent->state != R::CharacterState::RIGHT){
-				stateComponent->direction = R::Direction::RIGHT;
-				stateComponent->setState(R::CharacterState::RIGHT);
-			}
-			else{
-				stateComponent->direction = R::Direction::RIGHT;
-				stateComponent->setState(R::CharacterState::WALK_RIGHT);
-			}
-		}
-	}
-	else if (distance < gokuBound->getWidth() / 2){
-		//	R::Direction direction = gokuOnTheLeft ? R::Direction::LEFT : R::Direction::RIGHT;
-		//	stateComponent->setState(gokuOnTheLeft ? R::CharacterState::WALK_LEFT : R::CharacterState::WALK_RIGHT);
-	}
-
-	else{
-		srand(time(NULL));
-		int rad = rand() % 10 + 1;
-		R::Direction direction = gokuOnTheLeft ? R::Direction::LEFT : R::Direction::RIGHT;
-		stateComponent->direction = direction;
-		if (rad <= 3) stateComponent->attack = R::Attack::GIRAN_PUNCH1;
-		else if (rad <= 6)	stateComponent->attack = R::Attack::GIRAN_PUNCH2;
-		else stateComponent->attack = R::Attack::GIRAN_PUNCH3;
-		stateComponent->setState(R::CharacterState::ATTACK);
-	}
+	return;
 }
 void GiranDecision::obsever(artemis::Entity &e){
 	artemis::Entity& goku = world->getTagManager()->getEntity("goku");
-	BoundComponent* gokuBound = (BoundComponent*)e.getComponent<BoundComponent>();
+	BoundComponent* gokuBound = (BoundComponent*)goku.getComponent<BoundComponent>();
 	PosComponent* gokuPosition = (PosComponent*)goku.getComponent<PosComponent>();
+	StateComponent* gokuState = (StateComponent*)goku.getComponent<StateComponent>();
+
+	BoundComponent* characterBound = (BoundComponent*)e.getComponent<BoundComponent>();
 	PosComponent* characterPosition = (PosComponent*)e.getComponent<PosComponent>();
-	StateComponent* stateComponent = (StateComponent*)e.getComponent<StateComponent>();
-
-	if (stateComponent->state == R::CharacterState::DEFENSE){
-		//	return;
-	}
-
-	if (stateComponent->state == R::CharacterState::ATTACK){
-		return;
-	}
-	if (stateComponent->state == R::CharacterState::JUMP){
+	StateComponent* characterState = (StateComponent*)e.getComponent<StateComponent>();
+	SkeletonComponent* characterSkeleton = (SkeletonComponent*)e.getComponent<SkeletonComponent>();
+	if (characterState->state == R::CharacterState::DEFENSE){
 		return;
 	}
 
-	float distance = abs(gokuPosition->x - characterPosition->x);
-	bool gokuOnTheLeft = gokuPosition->x < characterPosition->x;
+	if (characterState->state == R::CharacterState::ATTACK){
+		return;
+	}
 
-	if (distance > gokuBound->getWidth()){
+	float distance = characterPosition->x - gokuPosition->x;
+	float phamViTanCong = 20;
 
 
+	bool isGokuDungyen = gokuState->state == R::CharacterState::STAND;
+	bool isGokuDichuyenSangTrai = (gokuState->state == R::CharacterState::WALK_LEFT) || (gokuState->state == R::CharacterState::LEFT);
+	bool isGokuDichuyenSangPhai = (gokuState->state == R::CharacterState::WALK_RIGHT) || (gokuState->state == R::CharacterState::RIGHT);
 
-		if (gokuOnTheLeft){
-			if (stateComponent->state != R::CharacterState::WALK_LEFT && stateComponent->state != R::CharacterState::LEFT){
-				stateComponent->direction = R::Direction::LEFT;
-				stateComponent->setState(R::CharacterState::LEFT);
-			}
-			else{
-				stateComponent->direction = R::Direction::LEFT;
-				stateComponent->setState(R::CharacterState::WALK_LEFT);
+	bool isCharacterDangDichuyen = (characterState->state == R::CharacterState::LEFT || characterState->state == R::CharacterState::RIGHT || characterState->state == R::CharacterState::WALK_LEFT || characterState->state == R::CharacterState::WALK_RIGHT);
+	bool isDichuyenSangTrai = (characterState->state == R::CharacterState::WALK_LEFT) || (characterState->state == R::CharacterState::LEFT);
+	bool isDichuyenSangPhai = (characterState->state == R::CharacterState::WALK_RIGHT) || (characterState->state == R::CharacterState::RIGHT);
+
+	bool isGokuDungBenPhaiPhamVitancong = (gokuPosition->x + gokuBound->x1) > (characterPosition->x + characterBound->x2 + phamViTanCong);
+	bool isGokuDungBenTraiPhamVitancong = (gokuPosition->x + gokuBound->x2) < (characterPosition->x + characterBound->x1 - phamViTanCong);
+	bool isGokuDungTrongPhamVitancong = (!isGokuDungBenPhaiPhamVitancong && !isGokuDungBenTraiPhamVitancong);
+
+	bool isGokuDungGanBenTrai = distance>0 && distance < characterBound->getWidth() / 2;
+	bool isGokuDungGanBenPhai = distance <0 && distance > -characterBound->getWidth() / 2;
+	bool coTheRadon = (characterState->state == R::CharacterState::STAND) || (characterState->state == R::CharacterState::WALK_LEFT) || (characterState->state == R::CharacterState::WALK_RIGHT || (characterState->state == R::CharacterState::LEFT) || (characterState->state == R::CharacterState::RIGHT));
+
+
+	if (isGokuDungTrongPhamVitancong){
+		// nằm trong phạm vi tấn công
+		if (!isGokuDungGanBenTrai && !isGokuDungGanBenPhai){
+			// Có thể tấn công
+			if (coTheRadon){
+				if (distance > 0) {
+					characterState->direction = R::Direction::LEFT;
+					characterSkeleton->node->setScaleX(-1);
+				}
+				else {
+					characterState->direction = R::Direction::RIGHT;
+					characterSkeleton->node->setScaleX(1);
+				}
+				srand(time(NULL));
+				int random = rand() % 3 + 1;
+				if (random == 1)characterState->attack = R::Attack::GIRAN_PUNCH1;
+				else if (random == 2)characterState->attack = R::Attack::GIRAN_PUNCH2;
+				else characterState->attack = R::Attack::GIRAN_PUNCH3;
+				characterState->setState(R::CharacterState::ATTACK);
 			}
 		}
 		else{
-			if (stateComponent->state != R::CharacterState::WALK_RIGHT && stateComponent->state != R::CharacterState::RIGHT){
-				stateComponent->direction = R::Direction::RIGHT;
-				stateComponent->setState(R::CharacterState::RIGHT);
-			}
-			else{
-				stateComponent->direction = R::Direction::RIGHT;
-				stateComponent->setState(R::CharacterState::WALK_RIGHT);
-
+			// không thể tấn công
+			if (isGokuDichuyenSangPhai) characterPosition->x -= 2;
+			else if (isGokuDichuyenSangTrai) characterPosition->x += 2;
+			else if (isGokuDungyen){
+				if (isGokuDungGanBenPhai) characterPosition->x -= 2;
+				if (isGokuDungGanBenTrai) characterPosition->x += 2;
 			}
 		}
 	}
-	else if (distance < gokuBound->getWidth() - 30){
-		stateComponent->setState(gokuOnTheLeft ? R::CharacterState::LEFT : R::CharacterState::RIGHT);
-	}
+	else {
 
-	else{
-		if (stateComponent->state == R::CharacterState::WALK_LEFT || stateComponent->state == R::CharacterState::WALK_RIGHT || stateComponent->state == R::CharacterState::WALK_LEFT || stateComponent->state == R::CharacterState::RIGHT){
-			//stateComponent->setState(R::CharacterState::STAND);
+		// ở ngoài phạm vi tấn công
+		if (isGokuDungyen){
+			// nếu goku đứng yên thì di chuyển lại gần.
+			if (isGokuDungBenPhaiPhamVitancong)	{
+				characterState->direction = R::Direction::RIGHT;
+				if (characterState->state == R::CharacterState::RIGHT || characterState->state == R::CharacterState::WALK_RIGHT)
+					characterState->setState(R::CharacterState::WALK_RIGHT);
+				else
+					characterState->setState(R::CharacterState::RIGHT);
+			}
+			if (isGokuDungBenTraiPhamVitancong)	{
+				characterState->direction = R::Direction::LEFT;
+				if (characterState->state == R::CharacterState::LEFT || characterState->state == R::CharacterState::WALK_LEFT)
+					characterState->setState(R::CharacterState::WALK_LEFT);
+				else
+					characterState->setState(R::CharacterState::LEFT);
+
+			}
+			return;
 		}
 	}
 }
 
 
 
-BearDecision::BearDecision() :totalChoose(0), isFarFromGoku(true){}
+BearDecision::BearDecision() :totalChoose(0), isFarFromGoku(true){ this->isActive = true; }
 void BearDecision::decision(artemis::Entity &e){
 	return;
 	artemis::Entity& goku = world->getTagManager()->getEntity("goku");
@@ -225,76 +210,95 @@ void BearDecision::decision(artemis::Entity &e){
 }
 void BearDecision::obsever(artemis::Entity &e){
 	artemis::Entity& goku = world->getTagManager()->getEntity("goku");
-	BoundComponent* gokuBound = (BoundComponent*)e.getComponent<BoundComponent>();
+	BoundComponent* gokuBound = (BoundComponent*)goku.getComponent<BoundComponent>();
 	PosComponent* gokuPosition = (PosComponent*)goku.getComponent<PosComponent>();
+	StateComponent* gokuState = (StateComponent*)goku.getComponent<StateComponent>();
+
+	BoundComponent* characterBound = (BoundComponent*)e.getComponent<BoundComponent>();
 	PosComponent* characterPosition = (PosComponent*)e.getComponent<PosComponent>();
-	StateComponent* stateComponent = (StateComponent*)e.getComponent<StateComponent>();
-
-	if (stateComponent->state == R::CharacterState::DEFENSE){
-		//	return;
-	}
-
-	if (stateComponent->state == R::CharacterState::ATTACK){
+	StateComponent* characterState = (StateComponent*)e.getComponent<StateComponent>();
+	SkeletonComponent* characterSkeleton = (SkeletonComponent*)e.getComponent<SkeletonComponent>();
+	if (characterState->state == R::CharacterState::DEFENSE){
 		return;
 	}
 
-	float distance = abs(gokuPosition->x - characterPosition->x);
-	bool gokuOnTheLeft = gokuPosition->x < characterPosition->x;
+	if (characterState->state == R::CharacterState::ATTACK){
+		return;
+	}
 
-	if (distance > gokuBound->getWidth() + 10){
-		if (gokuOnTheLeft){
-			if (stateComponent->state != R::CharacterState::WALK_LEFT && stateComponent->state != R::CharacterState::LEFT){
-				stateComponent->direction = R::Direction::LEFT;
-				stateComponent->setState(R::CharacterState::LEFT);
-			}
-			else{
-				stateComponent->direction = R::Direction::LEFT;
-				stateComponent->setState(R::CharacterState::WALK_LEFT);
+	float distance = characterPosition->x - gokuPosition->x;
+	float phamViTanCong = 20;
+
+
+	bool isGokuDungyen = gokuState->state == R::CharacterState::STAND;
+	bool isGokuDichuyenSangTrai = (gokuState->state == R::CharacterState::WALK_LEFT) || (gokuState->state == R::CharacterState::LEFT);
+	bool isGokuDichuyenSangPhai = (gokuState->state == R::CharacterState::WALK_RIGHT) || (gokuState->state == R::CharacterState::RIGHT);
+
+	bool isCharacterDangDichuyen = (characterState->state == R::CharacterState::LEFT || characterState->state == R::CharacterState::RIGHT || characterState->state == R::CharacterState::WALK_LEFT || characterState->state == R::CharacterState::WALK_RIGHT);
+	bool isDichuyenSangTrai = (characterState->state == R::CharacterState::WALK_LEFT) || (characterState->state == R::CharacterState::LEFT);
+	bool isDichuyenSangPhai = (characterState->state == R::CharacterState::WALK_RIGHT) || (characterState->state == R::CharacterState::RIGHT);
+
+	bool isGokuDungBenPhaiPhamVitancong = (gokuPosition->x + gokuBound->x1) > (characterPosition->x + characterBound->x2 + phamViTanCong);
+	bool isGokuDungBenTraiPhamVitancong = (gokuPosition->x + gokuBound->x2) < (characterPosition->x + characterBound->x1 - phamViTanCong);
+	bool isGokuDungTrongPhamVitancong = (!isGokuDungBenPhaiPhamVitancong && !isGokuDungBenTraiPhamVitancong);
+
+	bool isGokuDungGanBenTrai = distance>0 && distance < characterBound->getWidth() / 2;
+	bool isGokuDungGanBenPhai = distance <0 && distance > -characterBound->getWidth() / 2;
+	bool coTheRadon = (characterState->state == R::CharacterState::STAND) || (characterState->state == R::CharacterState::WALK_LEFT) || (characterState->state == R::CharacterState::WALK_RIGHT || (characterState->state == R::CharacterState::LEFT) || (characterState->state == R::CharacterState::RIGHT));
+
+
+	if (isGokuDungTrongPhamVitancong){
+		// nằm trong phạm vi tấn công
+		if (!isGokuDungGanBenTrai && !isGokuDungGanBenPhai){
+			// Có thể tấn công
+			if (coTheRadon){
+				if (distance > 0) {
+					characterState->direction = R::Direction::LEFT;
+					characterSkeleton->node->setScaleX(-1);
+				}
+				else {
+					characterState->direction = R::Direction::RIGHT;
+					characterSkeleton->node->setScaleX(1);
+				}
+				srand(time(NULL));
+				int random = rand() % 3 + 1;
+				if (random <= 2)characterState->attack = R::Attack::BEAR_ATTACK1;
+				else characterState->attack = R::Attack::BEAR_ATTACK2;
+				characterState->setState(R::CharacterState::ATTACK);
 			}
 		}
 		else{
-			if (stateComponent->state != R::CharacterState::WALK_RIGHT && stateComponent->state != R::CharacterState::RIGHT){
-				stateComponent->direction = R::Direction::RIGHT;
-				stateComponent->setState(R::CharacterState::RIGHT);
-			}
-			else{
-				stateComponent->direction = R::Direction::RIGHT;
-				stateComponent->setState(R::CharacterState::WALK_RIGHT);
+			// không thể tấn công
+			if (isGokuDichuyenSangPhai) characterPosition->x -= 2;
+			else if (isGokuDichuyenSangTrai) characterPosition->x += 2;
+			else if (isGokuDungyen){
+				if (isGokuDungGanBenPhai) characterPosition->x -= 2;
+				if (isGokuDungGanBenTrai) characterPosition->x += 2;
 			}
 		}
 	}
-	else if (distance < gokuBound->getWidth() / 3){
-		stateComponent->setState(gokuOnTheLeft ? R::CharacterState::LEFT : R::CharacterState::RIGHT);
-	}
+	else {
 
-	else{
-		if (stateComponent->state == R::CharacterState::STAND){
-
-			srand(time(NULL));
-			/* generate secret number between 1 and 10: */
-			int random = rand() % 3 + 1;
-
-			R::Direction direction = gokuOnTheLeft ? R::Direction::LEFT : R::Direction::RIGHT;
-			stateComponent->direction = direction;
-			if (random <= 2){
-				if (isFarFromGoku){
-					stateComponent->attack = R::Attack::BEAR_ATTACK2;
-				}
-				else{
-					stateComponent->attack = R::Attack::BEAR_ATTACK1;
-				}
+		// ở ngoài phạm vi tấn công
+		if (isGokuDungyen){
+			// nếu goku đứng yên thì di chuyển lại gần.
+			if (isGokuDungBenPhaiPhamVitancong)	{
+				characterState->direction = R::Direction::RIGHT; characterState->setState(R::CharacterState::RIGHT);
 			}
-			else stateComponent->attack = R::Attack::BEAR_ATTACK2;
-			stateComponent->setState(R::CharacterState::ATTACK);
-			isFarFromGoku = false;
-		}
-		if (stateComponent->state == R::CharacterState::WALK_LEFT || stateComponent->state == R::CharacterState::WALK_RIGHT || stateComponent->state == R::CharacterState::LEFT || stateComponent->state == R::CharacterState::RIGHT){
-			stateComponent->setState(R::CharacterState::STAND);
+			if (isGokuDungBenTraiPhamVitancong)	{
+				characterState->direction = R::Direction::LEFT; characterState->setState(R::CharacterState::LEFT);
+			}
+			return;
 		}
 	}
+
 }
 
-JackiechunDecision::JackiechunDecision() :totalChoose(0), isFarFromGoku(true){}
+
+
+
+
+JackiechunDecision::JackiechunDecision() :totalChoose(0), isFarFromGoku(true){ this->isActive = true; }
 void JackiechunDecision::decision(artemis::Entity &e){
 	return;
 	artemis::Entity& goku = world->getTagManager()->getEntity("goku");
@@ -401,7 +405,7 @@ void JackiechunDecision::obsever(artemis::Entity &e){
 	}
 }
 
-TegiacDecision::TegiacDecision() :currentStep(0), doneSpeicalSkill(false), doSpecificSkill(false), isFarFromGoku(true), timeInRageAttack(0){}
+TegiacDecision::TegiacDecision() :currentStep(0), doneSpeicalSkill(false), doSpecificSkill(false), isFarFromGoku(true), timeInRageAttack(0){ this->isActive = true; }
 void TegiacDecision::decision(artemis::Entity &e){
 	return;
 }
@@ -436,7 +440,7 @@ void TegiacDecision::obsever(artemis::Entity &e){
 		return;
 	}
 	if (stateComponent->state == R::CharacterState::DEFENSE && stateComponent->defense == R::Defense::TRUNG_DON){
-	//	if (stateComponent->state != R::CharacterState::STAND) stateComponent->setState(R::CharacterState::STAND);
+		//	if (stateComponent->state != R::CharacterState::STAND) stateComponent->setState(R::CharacterState::STAND);
 		return;
 	}
 
@@ -526,7 +530,7 @@ void TegiacDecision::obsever(artemis::Entity &e){
 
 
 
-RuaDecision::RuaDecision() {}
+RuaDecision::RuaDecision() { this->isActive = true; }
 void RuaDecision::decision(artemis::Entity &e){
 	return;
 }
@@ -643,7 +647,7 @@ void RuaDecision::obsever(artemis::Entity &e){
 
 
 
-CamapDecision::CamapDecision() {}
+CamapDecision::CamapDecision() { this->isActive = true; }
 void CamapDecision::decision(artemis::Entity &e){
 	return;
 }
@@ -760,121 +764,121 @@ void CamapDecision::obsever(artemis::Entity &e){
 
 
 
-KarillinDecision::KarillinDecision() {}
+KarillinDecision::KarillinDecision() { this->isActive = true; }
 void KarillinDecision::decision(artemis::Entity &e){
 	return;
 }
 void KarillinDecision::obsever(artemis::Entity &e){
+
 	artemis::Entity& goku = world->getTagManager()->getEntity("goku");
-	BoundComponent* gokuBound = (BoundComponent*)e.getComponent<BoundComponent>();
+	BoundComponent* gokuBound = (BoundComponent*)goku.getComponent<BoundComponent>();
 	PosComponent* gokuPosition = (PosComponent*)goku.getComponent<PosComponent>();
-	PosComponent* characterPosition = (PosComponent*)e.getComponent<PosComponent>();
-	StateComponent* stateComponent = (StateComponent*)e.getComponent<StateComponent>();
 	StateComponent* gokuState = (StateComponent*)goku.getComponent<StateComponent>();
+
+	BoundComponent* characterBound = (BoundComponent*)e.getComponent<BoundComponent>();
+	PosComponent* characterPosition = (PosComponent*)e.getComponent<PosComponent>();
+	StateComponent* characterState = (StateComponent*)e.getComponent<StateComponent>();
+	SkeletonComponent* characterSkeleton = (SkeletonComponent*)e.getComponent<SkeletonComponent>();
 	CharacterInfoComponent* characterInfo = (CharacterInfoComponent*)e.getComponent<CharacterInfoComponent>();
-	CharacterInfoComponent* gokuInfo = (CharacterInfoComponent*)goku.getComponent<CharacterInfoComponent>();
-
-
-	float distance = abs(gokuPosition->x - characterPosition->x);
-	bool gokuOnTheLeft = gokuPosition->x < characterPosition->x;
-
-
-	// trường hợp đánh thằng goku ngã
-	if (gokuState->state == R::CharacterState::DEFENSE && (gokuState->defense == R::Defense::TRUNG_DON_NGA || gokuState->state == R::CharacterState::STAND_UP)){
-		// đứng khiên khích
+	if (characterState->state == R::CharacterState::DEFENSE){
 		return;
 	}
 
-	// trường hợp đang dính đòn thì k làm gì
-	if (stateComponent->state == R::CharacterState::DEFENSE && (stateComponent->defense == R::Defense::TRUNG_DON_NGA || stateComponent->state == R::CharacterState::STAND_UP)){
-		return;
-	}
-	if (stateComponent->state == R::CharacterState::DEFENSE && stateComponent->defense == R::Defense::TRUNG_DON){
-		//	if (stateComponent->state != R::CharacterState::STAND) stateComponent->setState(R::CharacterState::STAND);
+	if (characterState->state == R::CharacterState::ATTACK){
 		return;
 	}
 
-	if (stateComponent->state == R::CharacterState::ATTACK){
-		return;
-	}
+	float distance = characterPosition->x - gokuPosition->x;
+	float phamViTanCong = 20;
 
-	stateComponent->direction = gokuOnTheLeft ? R::Direction::LEFT : R::Direction::RIGHT;
-	if (distance > gokuBound->getWidth() + 40){
-		if (((stateComponent->state == R::CharacterState::WALK_LEFT && gokuOnTheLeft) || (stateComponent->state == R::CharacterState::WALK_RIGHT && !gokuOnTheLeft)) && stateComponent->doneAction){
-			if (distance > (gokuBound->getWidth() + 120)){
-				srand(time(NULL));
-				int random = rand() % 6 + 1;
-				if (random < 4 && characterInfo->hasManaForSkill(40)){
-					stateComponent->doneAction = false;
-					stateComponent->attack = R::Attack::KARILLIN_PUNCH1;
-					stateComponent->setState(R::CharacterState::ATTACK);
-					return;
+
+	bool isGokuDungyen = gokuState->state == R::CharacterState::STAND;
+	bool isGokuDichuyenSangTrai = (gokuState->state == R::CharacterState::WALK_LEFT) || (gokuState->state == R::CharacterState::LEFT);
+	bool isGokuDichuyenSangPhai = (gokuState->state == R::CharacterState::WALK_RIGHT) || (gokuState->state == R::CharacterState::RIGHT);
+
+	bool isCharacterDangDichuyen = (characterState->state == R::CharacterState::LEFT || characterState->state == R::CharacterState::RIGHT || characterState->state == R::CharacterState::WALK_LEFT || characterState->state == R::CharacterState::WALK_RIGHT);
+	bool isDichuyenSangTrai = (characterState->state == R::CharacterState::WALK_LEFT) || (characterState->state == R::CharacterState::LEFT);
+	bool isDichuyenSangPhai = (characterState->state == R::CharacterState::WALK_RIGHT) || (characterState->state == R::CharacterState::RIGHT);
+
+	bool isGokuDungBenPhaiPhamVitancong = (gokuPosition->x + gokuBound->x1) > (characterPosition->x + characterBound->x2 + phamViTanCong);
+	bool isGokuDungBenTraiPhamVitancong = (gokuPosition->x + gokuBound->x2) < (characterPosition->x + characterBound->x1 - phamViTanCong);
+	bool isGokuDungTrongPhamVitancong = (!isGokuDungBenPhaiPhamVitancong && !isGokuDungBenTraiPhamVitancong);
+
+	bool isGokuDungGanBenTrai = distance>0 && distance < characterBound->getWidth() / 2;
+	bool isGokuDungGanBenPhai = distance <0 && distance > -characterBound->getWidth() / 2;
+	bool coTheRadon = (characterState->state == R::CharacterState::STAND) || (characterState->state == R::CharacterState::WALK_LEFT) || (characterState->state == R::CharacterState::WALK_RIGHT || (characterState->state == R::CharacterState::LEFT) || (characterState->state == R::CharacterState::RIGHT));
+
+
+	if (isGokuDungTrongPhamVitancong){
+		// nằm trong phạm vi tấn công
+		if (!isGokuDungGanBenTrai && !isGokuDungGanBenPhai){
+			// Có thể tấn công
+			if (coTheRadon){
+				if (distance > 0) {
+					characterState->direction = R::Direction::LEFT;
+					characterSkeleton->node->setScaleX(-1);
 				}
-			}
-		}
-
-		if (gokuOnTheLeft){
-			if (stateComponent->state != R::CharacterState::WALK_LEFT && stateComponent->state != R::CharacterState::LEFT){
-				stateComponent->direction = R::Direction::LEFT;
-				stateComponent->setState(R::CharacterState::LEFT);
-			}
-			else{
-				stateComponent->direction = R::Direction::LEFT;
-				stateComponent->setState(R::CharacterState::WALK_LEFT);
+				else {
+					characterState->direction = R::Direction::RIGHT;
+					characterSkeleton->node->setScaleX(1);
+				}
+				srand(time(NULL));
+				int random = rand() % 7 + 1;
+				if (random == 1){ characterState->attack = R::Attack::KARILLIN_KICK1; }
+				else if (random == 2){ characterState->attack = R::Attack::KARILLIN_KICK3; }
+				else if (random == 3){ characterState->attack = R::Attack::KARILLIN_PUNCH2; }
+				else if (random == 4){ characterState->attack = R::Attack::KARILLIN_BEAT3; }
+				else if (random == 5){ characterState->attack = R::Attack::KARILLIN_KICK2; }
+				else { characterState->attack = R::Attack::KARILLIN_BEAT1; }
+				characterState->setState(R::CharacterState::ATTACK);
 			}
 		}
 		else{
-			if (stateComponent->state != R::CharacterState::WALK_RIGHT && stateComponent->state != R::CharacterState::RIGHT){
-				stateComponent->direction = R::Direction::RIGHT;
-				stateComponent->setState(R::CharacterState::RIGHT);
-			}
-			else{
-				stateComponent->direction = R::Direction::RIGHT;
-				stateComponent->setState(R::CharacterState::WALK_RIGHT);
+			// không thể tấn công
+			if (isGokuDichuyenSangPhai) characterPosition->x -= 2;
+			else if (isGokuDichuyenSangTrai) characterPosition->x += 2;
+			else if (isGokuDungyen){
+				if (isGokuDungGanBenPhai) characterPosition->x -= 2;
+				if (isGokuDungGanBenTrai) characterPosition->x += 2;
 			}
 		}
 	}
-	else if (distance < gokuBound->getWidth() / 4){
-		if (gokuState->state == R::CharacterState::STAND){
-			stateComponent->setState(gokuOnTheLeft ? R::CharacterState::RIGHT : R::CharacterState::LEFT);
-			characterPosition->x += gokuOnTheLeft ? 20 : -20;
-		}
-		else{
-			stateComponent->setState(R::CharacterState::STAND);
+	else {
+		// ở ngoài phạm vi tấn công
+		if (isGokuDungyen){
+			// có thể ra chưởng tầm xa thì chiến luôn :
+
+			if (!isCharacterDangDichuyen &&  characterInfo->hasManaForSkill(40)){
+				characterState->doneAction = false;
+				characterState->attack = R::Attack::KARILLIN_PUNCH1;
+				characterState->setState(R::CharacterState::ATTACK);
+				return;
+			}
+
+			// nếu goku đứng yên thì di chuyển lại gần.
+			if (isGokuDungBenPhaiPhamVitancong)	{
+				characterState->direction = R::Direction::RIGHT;
+				if (characterState->state == R::CharacterState::RIGHT || characterState->state == R::CharacterState::WALK_RIGHT)
+					characterState->setState(R::CharacterState::WALK_RIGHT);
+				else
+					characterState->setState(R::CharacterState::RIGHT);
+			}
+			if (isGokuDungBenTraiPhamVitancong)	{
+				characterState->direction = R::Direction::LEFT;
+				if (characterState->state == R::CharacterState::LEFT || characterState->state == R::CharacterState::WALK_LEFT)
+					characterState->setState(R::CharacterState::WALK_LEFT);
+				else
+					characterState->setState(R::CharacterState::LEFT);
+			}
+			return;
 		}
 	}
-	else{
-		float thinkingTime = .1f;
-		if (stateComponent->state == R::CharacterState::STAND && stateComponent->time_on_state >= thinkingTime){ // attack
 
-			srand(time(NULL));
-			int random = rand() % 8 + 1;
-
-			if (distance > gokuBound->getWidth() + 30){
-				if (random <= 4) stateComponent->attack = R::Attack::KARILLIN_PUNCH2;
-				else stateComponent->attack = R::Attack::KARILLIN_BEAT2;
-			}
-			else{
-				// kick1, beat1, punch2,beat3,kick3,kick2
-				if (random == 1){ stateComponent->attack = R::Attack::KARILLIN_KICK1; }
-				else if (random == 2){ stateComponent->attack = R::Attack::KARILLIN_KICK3; }
-				else if (random == 3){ stateComponent->attack = R::Attack::KARILLIN_PUNCH2; }
-				else if (random == 4){ stateComponent->attack = R::Attack::KARILLIN_BEAT3; }
-				else if (random == 5){ stateComponent->attack = R::Attack::KARILLIN_KICK2; }
-				else { stateComponent->attack = R::Attack::KARILLIN_BEAT1; }
-
-			}
-			stateComponent->setState(R::CharacterState::ATTACK);
-		}
-		if (gokuState->state == R::CharacterState::STAND && (stateComponent->state == R::CharacterState::WALK_LEFT || stateComponent->state == R::CharacterState::WALK_RIGHT || stateComponent->state == R::CharacterState::LEFT || stateComponent->state == R::CharacterState::RIGHT)){
-			stateComponent->setState(R::CharacterState::STAND);
-		}
-	}
 }
 
 
 
-PicoloDecision::PicoloDecision() {}
+PicoloDecision::PicoloDecision() { this->isActive = true; }
 void PicoloDecision::decision(artemis::Entity &e){
 	return;
 }
@@ -971,13 +975,13 @@ void PicoloDecision::obsever(artemis::Entity &e){
 			srand(time(NULL));
 			int random = rand() % 6 + 1;
 
-			if (distance > gokuBound->getWidth()+10){
+			if (distance > gokuBound->getWidth() + 10){
 				if (random <= 3) stateComponent->attack = R::Attack::PICOLO_KICK;
 				else stateComponent->attack = R::Attack::PICOLO_ATTACK3;
 			}
 			else{
 				// kick1, beat1, punch2,beat3,kick3,kick2
-				 if (random <= 2){ stateComponent->attack = R::Attack::PICOLO_KICK; }
+				if (random <= 2){ stateComponent->attack = R::Attack::PICOLO_KICK; }
 				else if (random <= 4){ stateComponent->attack = R::Attack::PICOLO_ATTACK2; }
 				else { stateComponent->attack = R::Attack::PICOLO_ATTACK1; }
 

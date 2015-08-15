@@ -9,7 +9,7 @@
 #include "renders/NodeInfo.h"
 #include "renders/Effects.h"
 #include "ui/UIText.h"
-
+#include "renders/HomeScreen.h"
 USING_NS_CC;
 
 class GravitySystem;
@@ -30,7 +30,7 @@ class BombSystem;
 class CameraFollowSystem;
 class SpecialSkillSystem;
 class CharacterRenderSystem;
-
+class IntroduceSystem;
 class Systems {
 public:
 	Systems();
@@ -301,13 +301,24 @@ public:
 	virtual void begin();
 	virtual void initialize();
 	virtual void processEntity(artemis::Entity &e);
-
+	virtual void onGameState(bool isPlaying);
 protected:
 	artemis::ComponentMapper<CharacterUIComponent> characterUIMapper;
 	
 	PlayerInfoLeft* infoLeft;
 	PlayerInfoRight* infoRight;
+	bool isPlaying;
+	ui::ImageView*	pauseIcon;
 	ui::Text* text;
 	bool isCreated;
 };
 
+class IntroduceSystem : public artemis::EntityProcessingSystem{
+public: 
+	IntroduceSystem();
+	virtual void begin();
+	virtual void initialize();
+	virtual void processEntity(artemis::Entity &e);
+protected:
+	artemis::ComponentMapper<IntroduceComponent> introduceMapper;
+};

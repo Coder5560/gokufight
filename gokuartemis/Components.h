@@ -22,6 +22,7 @@ class DelayComponent;
 class CollisionComponent;
 class SkeletonBound;
 class CatFollowComponent;
+class IntroduceComponent;
 
 
 class Components
@@ -162,12 +163,14 @@ public :
 class DecisionComponent : public artemis::Component{
 public :
 	DecisionComponent();
+	void setActive(bool active);
 
 	DecisionBase* decisionBase;
 	//thời gian mà entity đã suy nghĩ.
 	float thinkingTime;
 	// thời gian ra quyết định.
 	float DECISION_TIME;
+
 };
 class StateComponent : public artemis::Component{
 public:
@@ -273,4 +276,15 @@ public:
 	R::CharacterUIState state;
 	float timeOnState;
 	void setState(R::CharacterUIState newState);
+};
+
+class IntroduceComponent : public artemis::Component{
+public:
+	IntroduceComponent();
+
+	R::IntroduceStep step;
+	float timeOnState;
+	bool isDoneStep;
+	bool isDoneAll;
+	void setStep(R::IntroduceStep newStep);
 };
