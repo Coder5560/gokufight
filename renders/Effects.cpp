@@ -33,20 +33,110 @@ void HitEffect::dismiss(){
 }
 
 
-KameKameHa::KameKameHa(Node* node)  { this->node = node; }
+KameKameHa::KameKameHa(Node* node){
+	this->node = node;
+	STATE_TODAN = 1;
+	STATE_FLYING = STATE_TODAN + 1;
+	STATE_COLLISION = STATE_FLYING + 1;
+	timeOnState = 0;
+	state = STATE_TODAN;
+	timeHit = 0;
+	velocity = Vec2::ZERO;
+	giatoc = Vec2::ZERO;
+	powerOfAttack = 6;
+	direction = 1;
 
-void KameKameHa::start(bool isLeftDirection){
-	node->setAnchorPoint(Vec2(.5, .5));
-	node->ignoreAnchorPointForPosition(false);
-	Sprite* sprite = Sprite::create("particles/particle_chuong.png");
+	hatNhan = Sprite::create("textures/globe.png");
+	hieuUng1 = Sprite::create("textures/effect4.png");
+	hieuUng2 = Sprite::create("textures/effect4.png");
 
-	ParticleSystemQuad* chuong = ParticleSystemQuad::create("particles/particle_chuong.plist");
-	chuong->setTexture(sprite->getTexture());
-	chuong->setAnchorPoint(Vec2(.5, .5));
-	chuong->ignoreAnchorPointForPosition(false);
-	node->addChild(chuong);
+	hieuUng1->setColor(Color3B::RED);
+	hieuUng2->setColor(Color3B::RED);
+
+	hieuUng1->setAnchorPoint(Vec2(.5f, .5f));
+	hieuUng2->setAnchorPoint(Vec2(.5f, .5f));
+	hieuUng1->runAction(RepeatForever::create(RotateBy::create(.1f, 10)));
+	hieuUng2->runAction(RepeatForever::create(RotateBy::create(.1f, -10)));
+
+	ScaleTo* scaleIn = ScaleTo::create(.1, .8f);
+	ScaleTo* scaleOut = ScaleTo::create(.1, 1.1f);
+	FadeIn* fadeIn = FadeIn::create(.2f);
+	FadeOut* fadeOut = FadeOut::create(.2f);
+	Spawn* spawn1 = Spawn::create(scaleIn, fadeIn, nullptr);
+	Spawn* spawn2 = Spawn::create(scaleOut, fadeOut, nullptr);
+	Sequence* sequence = Sequence::create(spawn1, spawn2, nullptr);
+
+	hatNhan->runAction(RepeatForever::create(sequence));
+	node->addChild(hieuUng1);
+	node->addChild(hieuUng2);
+	node->addChild(hatNhan);
+	node->setContentSize(hatNhan->getContentSize());
+}
+void KameKameHa::setTarget(std::string target){
+	this->target = target;
+}
+void KameKameHa::toDan(){
+	// do some thing
+}
+
+void KameKameHa::bayDi(){
+	state = STATE_FLYING;
+	timeOnState = 0;
+	velocity.x = 600;
+	giatoc.x = 200;
+}
+
+void KameKameHa::bienMat(){
+	state = STATE_DISMISS;
+	timeOnState = 0;
 
 }
+
+void KameKameHa::update(artemis::World* world){
+	float delta = world->getDelta();
+	if (velocity != Vec2::ZERO){
+		velocity.x += giatoc.x*delta;
+		velocity.y += giatoc.y*delta;
+		node->setPositionX(node->getPositionX() + direction* velocity.x*delta);
+		node->setPositionY(node->getPositionY() + direction* velocity.y*delta);
+	}
+	timeOnState += delta;
+	if (state == STATE_TODAN && timeOnState > .5f){
+		bayDi();
+	}
+	if (state == STATE_FLYING){
+		artemis::Entity &e = world->getTagManager()->getEntity(target);
+		PosComponent* targetPositon = (PosComponent*)e.getComponent<PosComponent>();
+		BoundComponent* targetBound = (BoundComponent*)e.getComponent<BoundComponent>();
+		if (targetBound && targetPositon){
+			Rect targetRect = Rect(targetPositon->x + targetBound->x1, targetPositon->y + targetBound->y1, targetBound->getWidth(), targetBound->getHeight());
+			if (targetRect.intersectsCircle(node->getPosition(), 10)){
+				StateComponent* targetState = (StateComponent*)e.getComponent<StateComponent>();
+				CharacterInfoComponent* targetInfo = (CharacterInfoComponent*)e.getComponent<CharacterInfoComponent>();
+				targetInfo->blood -= powerOfAttack;
+				targetState->direction = (node->getPositionX() - 10 < targetPositon->x + targetBound->x1) ? R::Direction::RIGHT : R::Direction::LEFT;
+				if (targetInfo->blood <= 0){
+					targetState->setState(R::CharacterState::DIE);
+				}
+				else{
+					targetState->setState(R::CharacterState::DEFENSE);
+					targetState->defense = R::Defense::TRUNG_DON_NGA;
+				}
+				Node* nodeEffect = RenderLayer::getInstance()->createGameNode();
+				nodeEffect->setPosition(node->getPosition());
+				HitEffect* hitEffect = new HitEffect(nodeEffect);
+				hitEffect->setHitStyle(R::CharacterType::GOKU);
+				hitEffect->start();
+				bienMat();
+			}
+		}
+	}
+
+	if (state == STATE_FLYING && (node->getPositionX() <= 0 || node->getPositionX() >= R::Constants::MAX_SCREEN_WIDTH)){
+		bienMat();
+	}
+}
+
 
 
 NotEnoughManaEffect::NotEnoughManaEffect(Node* node)  { this->node = node; }
@@ -124,8 +214,6 @@ void IntroduceMessage::start(std::string message){
 
 	node->addChild(text);
 }
-
-
 
 
 PlayerInfoLeft::PlayerInfoLeft(Node* container, std::string name, std::string avatar) : _name(name), _avatar(avatar){
@@ -331,8 +419,8 @@ void PauseScene::showPauseScene(){
 	btnMusic->setPosition(Vec2(node->getContentSize().width / 2, 30 + btnSound->getContentSize().height));
 	btnGuide->setPosition(Vec2(node->getContentSize().width / 2 + btnGuide->getContentSize().width + 20, 30 + btnSound->getContentSize().height));
 
-	btnMenu->setPosition(Vec2(node->getContentSize().width / 2, btnMusic->getPositionY() + btnMusic->getContentSize().height  + 30));
-	btnReplay->setPosition(Vec2(node->getContentSize().width / 2, btnMenu->getPositionY() + btnMenu->getContentSize().height  + 30));
+	btnMenu->setPosition(Vec2(node->getContentSize().width / 2, btnMusic->getPositionY() + btnMusic->getContentSize().height + 30));
+	btnReplay->setPosition(Vec2(node->getContentSize().width / 2, btnMenu->getPositionY() + btnMenu->getContentSize().height + 30));
 	btnContinue->setPosition(Vec2(node->getContentSize().width / 2, btnReplay->getPositionY() + btnReplay->getContentSize().height + 30));
 
 	node->addChild(background);
@@ -405,7 +493,7 @@ void PauseScene::showPauseScene(){
 			btnContinue->setTouchEnabled(true);
 			RemoveSelf* removeSelf = RemoveSelf::create(true);
 			node->runAction(removeSelf);
-			if(continueCallBack) continueCallBack();
+			if (continueCallBack) continueCallBack();
 		});
 		btnContinue->runAction(Sequence::create(scaleIn, scaleout, call, nullptr));
 	});
@@ -456,14 +544,14 @@ Winscene::Winscene(Node* node) : isShowing(false) {
 	btnNext->setAnchorPoint(Vec2(.5f, .5f));
 	btnReplay = ui::ImageView::create("menu/btn-replay.png");
 	btnReplay->setAnchorPoint(Vec2(.5f, .5f));
-	
+
 
 
 	text = ui::Text::create("YOU WIN !", "fonts/courbd.ttf", 60);
 	text->setColor(Color3B::WHITE);
 	text->enableOutline(Color4B::BLACK, 2);
 	text->setAnchorPoint(Vec2(.5, .5));
-	
+
 
 }
 
@@ -483,12 +571,12 @@ void Winscene::showWinScene(){
 	// continue,  replay,  menu,sound, music, guide
 
 	background->setPosition(node->getContentSize() / 2);
-	
 
-	btnMenu->setPosition(Vec2(node->getContentSize().width / 2, 40 + btnMenu->getContentSize().height/2));
+
+	btnMenu->setPosition(Vec2(node->getContentSize().width / 2, 40 + btnMenu->getContentSize().height / 2));
 	btnReplay->setPosition(Vec2(node->getContentSize().width / 2, btnMenu->getPositionY() + btnMenu->getContentSize().height + 30));
 	btnNext->setPosition(Vec2(node->getContentSize().width / 2, btnReplay->getPositionY() + btnReplay->getContentSize().height + 30));
-	text->setPosition(Vec2(node->getContentSize().width / 2, btnNext->getPositionY() + btnNext->getContentSize().height/2 + 40 + text->getContentSize().height/2));
+	text->setPosition(Vec2(node->getContentSize().width / 2, btnNext->getPositionY() + btnNext->getContentSize().height / 2 + 40 + text->getContentSize().height / 2));
 
 
 	node->addChild(background);
@@ -497,7 +585,7 @@ void Winscene::showWinScene(){
 	node->addChild(btnNext);
 	node->addChild(text);
 
-	
+
 
 
 	btnMenu->setTouchEnabled(true);
@@ -557,13 +645,13 @@ LoseScene::LoseScene(Node* node) : isShowing(false) {
 	node->ignoreAnchorPointForPosition(false);
 	background = ui::ImageView::create("menu/frame.png");
 	background->setAnchorPoint(Vec2(.5f, .5f));
-	node->setContentSize(background->getContentSize()/1.2f);
+	node->setContentSize(background->getContentSize() / 1.2f);
 
 
 
 	btnMenu = ui::ImageView::create("menu/btn-menu.png");
 	btnMenu->setAnchorPoint(Vec2(.5f, .5f));
-	
+
 	btnReplay = ui::ImageView::create("menu/btn-replay.png");
 	btnReplay->setAnchorPoint(Vec2(.5f, .5f));
 
@@ -591,11 +679,11 @@ void LoseScene::showLoseScene(){
 	// continue,  replay,  menu,sound, music, guide
 
 	background->setPosition(node->getContentSize() / 2);
-	
+
 
 	btnMenu->setPosition(Vec2(node->getContentSize().width / 2, 40 + btnMenu->getContentSize().height / 2));
 	btnReplay->setPosition(Vec2(node->getContentSize().width / 2, btnMenu->getPositionY() + btnMenu->getContentSize().height + 30));
-	
+
 	text->setPosition(Vec2(node->getContentSize().width / 2, btnReplay->getPositionY() + btnReplay->getContentSize().height / 2 + 40 + text->getContentSize().height / 2));
 
 

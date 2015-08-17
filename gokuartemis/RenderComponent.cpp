@@ -9,7 +9,7 @@ RenderComponent::RenderComponent() : renderTime(0), timeToApper(0), removeFromWo
 
 
 RenderComponent::~RenderComponent(){ 
-	
+
 }
 
 BloodComponent::BloodComponent(){

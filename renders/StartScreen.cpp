@@ -61,7 +61,7 @@ void StartScreen::showFlashImage(){
 	CallFunc* callBack = CallFunc::create([=](){
 		this->showStartLayer();
 	});
-
+	
 	Sequence* sequence = Sequence::create(fadeIn, delay, fadeOut, callBack, nullptr);
 	flashImage->runAction(sequence);
 

@@ -513,6 +513,9 @@ void InputSystem::notifyInput(Touch* touch, GameHud::EventType event,
 			if (touchType == GameHud::TouchType::TAP){
 				_tapCount++;
 			}
+			else if (dangtrungdon){
+				return;
+			}
 			else if (touchType == GameHud::TouchType::LONG_PRESS){
 				if (stateComponent->state != R::CharacterState::ATTACK){
 					stateComponent->setState(R::CharacterState::ATTACK);
@@ -569,7 +572,7 @@ void InputSystem::notifyInput(Touch* touch, GameHud::EventType event,
 		case GameHud::EventType::HOLD:
 
 
-			if (dangtrungdon){ break; }
+			if (dangtrungdon){ return; }
 			if (touchType == GameHud::TouchType::LEFT){
 				stateComponent->setState(R::CharacterState::WALK_LEFT);
 				stateComponent->direction = R::Direction::LEFT;
@@ -1140,24 +1143,48 @@ void SpecialSkillSystem::processPicolo(artemis::Entity &e){
 
 void SpecialSkillSystem::processGoku(artemis::Entity &e){
 	StateComponent* stateComponent = stateMapper.get(e);
-	if (stateComponent->state == R::CharacterState::ATTACK && stateComponent->attack == R::Attack::GOKU_PUNCH1 && stateComponent->time_on_state >= .4f){
-		// create Attack Entity
-		/*SkeletonComponent* skeleton = skeletonMapper.get(e);
-		spine::SkeletonAnimation* skeletonAnimation = skeleton->skeleton;
-		spTrackEntry* trackEntry = skeletonAnimation->getCurrent(0);
-		artemis::Entity& defense = world->getTagManager()->getEntity("enemy");
-		Vec2 vec2 = EntityUtils::getInstance()->checkAttack(defense,skeleton, "bone19", 10);
+	SkeletonComponent* skeletonComponent = (SkeletonComponent*)e.getComponent<SkeletonComponent>();
+	if (stateComponent->state == R::CharacterState::ATTACK && (stateComponent->attack == R::Attack::GOKU_BEAT1 || stateComponent->attack == R::Attack::GOKU_BEAT2 || stateComponent->attack == R::Attack::GOKU_BEAT3 || stateComponent->attack == R::Attack::GOKU_PUNCH2)){
+		
+		CCDrawNode* drawnode = CCDrawNode::create();
+		RenderLayer::getInstance()->getGameLayer()->getChildByName("drawnode")->addChild(drawnode);
+		spBoundingBoxAttachment* attachment = (spBoundingBoxAttachment*)skeletonComponent->skeleton->getAttachment("stickbound", "collision");
+		
+		
 
-		if (vec2 != Vec2::ZERO){
-		StateComponent* defenseState = (StateComponent*)defense.getComponent<StateComponent>();
-		if (defenseState->state != R::CharacterState::DEFENSE){
-		defenseState->setState(R::CharacterState::DEFENSE);
-		defenseState->defense = R::Defense::TRUNG_DON_NGA;
-		PosComponent* attackPosition = positionMapper.get(e);
-		PosComponent* defensePosition = (PosComponent*)defense.getComponent<PosComponent>();
-		defenseState->direction = (attackPosition->x > defensePosition->x) ? R::Direction::LEFT : R::Direction::RIGHT;
+		spBone* bone = skeletonComponent->skeleton->findBone("bone19");
+		float scaleX = skeletonComponent->node->getScaleX()*skeletonComponent->skeleton->getScaleX();
+		float scaleY= skeletonComponent->skeleton->getScaleY();
+		int i;
+		float px, py;
+		float* vertices = attachment->vertices;
+		float* worldVertices = new float[attachment->verticesCount];
+		for (i = 0; i < attachment->verticesCount; i += 2) {
+			px = vertices[i];
+			py = vertices[i + 1];
+			worldVertices[i] = (bone->skeleton->x + bone->worldX + px * bone->m00 + py * bone->m01)*scaleX + skeletonComponent->node->getPositionX();
+			worldVertices[i + 1] = (bone->skeleton->y + bone->worldY + px * bone->m10 + py * bone->m11)*scaleY + skeletonComponent->node->getPositionY();
 		}
-		}*/
+
+
+
+		//creating red polygon with thin black border
+		Vec2* vec = new Vec2[attachment->verticesCount / 2];
+		for (int i = 0; i < attachment->verticesCount / 2; i++){
+			vec[i] = Vec2(worldVertices[i * 2], worldVertices[i * 2 + 1]);
+		}
+		drawnode->drawPolygon(vec, 4, ccc4f(1, 1, 0, 1), 1, ccc4f(1, 1, 0, 1));
+		//	RenderLayer::getInstance()->getHudLayer()->addChild(polygon);
+
+		artemis::Entity &enemy = world->getTagManager()->getEntity("enemy");
+		PosComponent* position = (PosComponent*)enemy.getComponent<PosComponent>();
+		BoundComponent* bound = (BoundComponent*)enemy.getComponent<BoundComponent>();
+
+		if (EntityUtils::getInstance()->intersectSegment(attachment->verticesCount, worldVertices, position->x + bound->x1, position->x + bound->x2, position->y + bound->y1, position->y + bound->y2)){
+			CCLOG("COLLISION roi .............");
+		}
+
+
 	}
 
 	if (stateComponent->state == R::CharacterState::ATTACK && (stateComponent->attack == R::Attack::GOKU_BEAT1 || stateComponent->attack == R::Attack::GOKU_BEAT2 || stateComponent->attack == R::Attack::GOKU_BEAT3 || stateComponent->attack == R::Attack::GOKU_PUNCH2)){
@@ -1347,3 +1374,24 @@ void IntroduceSystem::processEntity(artemis::Entity &e){
 	introduceComponent->timeOnState += world->getDelta();
 
 }
+
+
+SkillSystem::SkillSystem(){
+	addComponentType<SkillComponent>();
+
+}
+
+void SkillSystem::initialize(){
+	skillMapper.init(*world);
+}
+
+void SkillSystem::processEntity(artemis::Entity &e){
+	SkillComponent* skillComponent = skillMapper.get(e);
+	if (skillComponent){
+		skillComponent->kamekameha->update(world);
+		if (skillComponent->kamekameha->state == skillComponent->kamekameha->STATE_DISMISS){
+			e.remove();
+		}
+	}
+}
+

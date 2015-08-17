@@ -18,6 +18,10 @@ EntityUtils* EntityUtils::getInstance(){
 void EntityUtils::setWorld(artemis::World *world){
 	this->world = world;
 }
+
+artemis::World* EntityUtils::getWorld(){
+	return world;
+}
 void EntityUtils::createAttackEntity(artemis::Entity &attacker, AttackComponent* attackComponent){
 	CharacterInfoComponent* attackerInfo = (CharacterInfoComponent*)attacker.getComponent<CharacterInfoComponent>();
 	if (!attackerInfo->hasManaForSkill(attackComponent->manaOfAttack)){
@@ -1679,6 +1683,9 @@ void EntityUtils::removeEntity(artemis::Entity &e){
 	e.remove();
 }
 
+
+
+
 Vec2 EntityUtils::checkAttack(artemis::Entity &defense, SkeletonComponent* skeleton, std::string boneName, float boneRadius){
 	Vec2 collisionPoint = Vec2::ZERO;
 
@@ -1699,6 +1706,36 @@ Vec2 EntityUtils::checkAttack(artemis::Entity &defense, SkeletonComponent* skele
 			collisionPoint.y = y;
 		}
 	}
-
 	return collisionPoint;
+}
+
+void EntityUtils::removeGroup(std::string str){
+	// remove all attack component
+	artemis::ImmutableBag<artemis::Entity*> *entities = world->getGroupManager()->getEntities("gokuattack");
+	for (int i = 0; i < entities->getCount(); i++){
+		artemis::Entity* et = entities->get(i);
+		if (et) {
+			et->remove();
+		}
+	}
+}
+bool EntityUtils::intersectSegment(int verticeCount,float* const vertices, float x1, float x2, float y1, float y2){
+	float width12 = x1 - x2, height12 = y1 - y2;
+	float det1 = x1 * y2 - y1 * x2;
+	float x3 = vertices[verticeCount - 2], y3 = vertices[verticeCount - 1];
+	int i;
+	for (i = 0; i < verticeCount; i += 2) {
+		float x4 = vertices[i], y4 = vertices[i + 1];
+		float det2 = x3 * y4 - y3 * x4;
+		float width34 = x3 - x4, height34 = y3 - y4;
+		float det3 = width12 * height34 - height12 * width34;
+		float x = (det1 * width34 - width12 * det2) / det3;
+		if (((x >= x3 && x <= x4) || (x >= x4 && x <= x3)) && ((x >= x1 && x <= x2) || (x >= x2 && x <= x1))) {
+			float y = (det1 * height34 - height12 * det2) / det3;
+			if (((y >= y3 && y <= y4) || (y >= y4 && y <= y3)) && ((y >= y1 && y <= y2) || (y >= y2 && y <= y1))) return true;
+		}
+		x3 = x4;
+		y3 = y4;
+	}
+	return false;
 }

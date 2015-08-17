@@ -2,6 +2,7 @@
 #include "artemis/Artemis.h"
 #include "gokuartemis/Components.h"
 #include "gokuartemis/Systems.h"
+
 class EntityUtils
 {
 public:
@@ -9,6 +10,8 @@ public:
 	EntityUtils();
 	~EntityUtils();
 	void setWorld(artemis::World* world);
+	bool intersectSegment(int verticeCount,float* const vertices, float x1, float x2, float y1, float y2);
+	artemis::World* getWorld();
 	
 	void push(artemis::Entity &entity, float rotate, float force);
 	void stopPhysic(artemis::Entity &entity);
@@ -86,6 +89,7 @@ public:
 
 	virtual Vec2 checkAttack(artemis::Entity &defense, SkeletonComponent* skeleton, std::string boneName,float boneRadius);
 	virtual void removeEntity(artemis::Entity &e);
+	virtual void removeGroup(std::string group);
 private :
 	static EntityUtils* instance;
 	artemis::World* world;

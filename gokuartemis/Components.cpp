@@ -112,7 +112,7 @@ SkeletonComponent::SkeletonComponent(){
 	visible = true;
 }
 
-CharacterInfoComponent::CharacterInfoComponent() : name("NONAME"),NORMAL_SKILL_POWER(3), SPECIAL_SKILL_POWER(6), notifyMana(false), isMainCharacter(false), MAX_BLOOD(-1), MAX_POWER(-1), blood(-1), power(-1), avatar("") {}
+CharacterInfoComponent::CharacterInfoComponent() : name("NONAME"), NORMAL_SKILL_POWER(3), SPECIAL_SKILL_POWER(6), notifyMana(false), isMainCharacter(false), MAX_BLOOD(-1), MAX_POWER(-1), blood(-1), power(-1), avatar("") {}
 bool CharacterInfoComponent::hasManaForSkill(float skillMana){ return (power - skillMana) >= 0; }
 void CharacterInfoComponent::notifyNotEnoughMana(){ notifyMana = true; }
 
@@ -128,7 +128,7 @@ StateComponent::StateComponent() : trungdonlientiep(0), doneAction(true), attack
 void StateComponent::setState(R::CharacterState newState){
 	if (newState == R::CharacterState::DEFENSE)	trungdonlientiep++;
 	else if (newState == R::CharacterState::DEFENSE) trungdonlientiep = 0;
-	
+
 	this->state = newState;
 	time_on_state = 0;
 }
@@ -149,7 +149,7 @@ void DelayComponent::setCallBack(const std::function<void()> &callBack){
 
 SkeletonBound::SkeletonBound(std::string boundName, std::string boneName, std::string slotName) : boundingbox(boundName), boneName(boneName), slotName(slotName){}
 
-CatFollowComponent::CatFollowComponent():state(R::CatFollowState::NONE),timeOnState(0),nextTimeAttack(100){}
+CatFollowComponent::CatFollowComponent() : state(R::CatFollowState::NONE), timeOnState(0), nextTimeAttack(100){}
 
 void CatFollowComponent::setState(R::CatFollowState newState){
 	state = newState;
@@ -159,9 +159,9 @@ void CatFollowComponent::setState(R::CatFollowState newState){
 	nextTimeAttack = random += random * 3 / 10;
 }
 
-BomComponent::BomComponent() : expire(false),powerOfAttack(10){}
+BomComponent::BomComponent() : expire(false), powerOfAttack(10){}
 
-CameraFollowComponent::CameraFollowComponent():state(R::CameraState::NONE),timeOnState(0){}
+CameraFollowComponent::CameraFollowComponent() : state(R::CameraState::NONE), timeOnState(0){}
 void CameraFollowComponent::setState(R::CameraState newState){
 	state = newState;
 	timeOnState = 0;
@@ -181,3 +181,12 @@ void IntroduceComponent::setStep(R::IntroduceStep newStep){
 	timeOnState = 0;
 	isDoneStep = true;
 }
+
+SkillComponent::SkillComponent(KameKameHa* kame) : kamekameha(kame){}
+
+
+SkillComponent::~SkillComponent(){ 
+	kamekameha->node->removeFromParent();
+	delete kamekameha;
+}
+

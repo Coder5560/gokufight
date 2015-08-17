@@ -5,6 +5,7 @@
 #include "R.h"
 #include "characters/CharacterBase.h"
 #include "characters/DecisionBase.h"
+#include "renders/Effects.h"
 
 class PosComponent;
 class GravityComponent;
@@ -23,6 +24,10 @@ class CollisionComponent;
 class SkeletonBound;
 class CatFollowComponent;
 class IntroduceComponent;
+class SkillComponent;
+
+class KameKameHa;
+
 
 
 class Components
@@ -287,4 +292,12 @@ public:
 	bool isDoneStep;
 	bool isDoneAll;
 	void setStep(R::IntroduceStep newStep);
+};
+
+
+class SkillComponent : public artemis::Component{
+public:
+	SkillComponent(KameKameHa* kamekameha);
+	~SkillComponent();
+	KameKameHa* kamekameha;
 };

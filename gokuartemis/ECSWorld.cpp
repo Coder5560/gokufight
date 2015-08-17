@@ -108,15 +108,15 @@ void ECSWorld::createWorld(R::Match_Type matchType){
 	setSystem(new CatFollowGokuSystem());
 	setSystem(new BombSystem());
 	setSystem(new CameraFollowSystem());
+	setSystem(new SkillSystem());
 	//setSystem(new DebugSystem());
-	setSystem(new DecisionSystem());
+	//setSystem(new DecisionSystem());
 	if (matchType == R::Match_Type::GOKU_BEAR_INTRODUCE){
 		//createIntroduceEntity
 		artemis::Entity &introduceEntity = world->createEntity();
 		introduceEntity.addComponent(new IntroduceComponent());
 		introduceEntity.setTag("introduceEntity");
 		introduceEntity.refresh();
-
 		setSystem(new IntroduceSystem());
 	}
 	world->getSystemManager()->initializeAll();

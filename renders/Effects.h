@@ -6,6 +6,8 @@
 #include "ui/UIImageView.h"
 #include "ui/UILayout.h"
 #include "spine/spine-cocos2dx.h"
+#include "artemis/Artemis.h"
+#include "gokuartemis/Components.h"
 
 USING_NS_CC;
 class MatchInfo;
@@ -54,10 +56,32 @@ public:
 };
 
 class KameKameHa : public Effects{
-public :
+public: 
+	
 	KameKameHa(Node* node);
-	void start(bool isLeftDirection);
-	void dismiss();
+	void setTarget(std::string target);
+	void toDan();
+	void bayDi();
+	void bienMat();
+	void update(artemis::World* world);
+	
+
+	int STATE_TODAN;
+	int STATE_DISMISS;
+	int STATE_FLYING;
+	int STATE_COLLISION;
+	float timeOnState;
+	Vec2 giatoc;
+	int state;
+
+	Sprite* hieuUng1;
+	Sprite* hieuUng2;
+	Sprite* hatNhan;
+	Vec2 velocity;
+	int timeHit;
+	float powerOfAttack;
+	std::string target;
+	int direction;
 };
 
 class MatchInfo : public Effects{

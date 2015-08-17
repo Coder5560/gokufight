@@ -31,6 +31,7 @@ class CameraFollowSystem;
 class SpecialSkillSystem;
 class CharacterRenderSystem;
 class IntroduceSystem;
+class SkillSystem;
 class Systems {
 public:
 	Systems();
@@ -322,3 +323,13 @@ public:
 protected:
 	artemis::ComponentMapper<IntroduceComponent> introduceMapper;
 };
+
+class SkillSystem : public artemis::EntityProcessingSystem{
+public:
+	SkillSystem();
+	virtual void initialize();
+	virtual void processEntity(artemis::Entity &e);
+protected:
+	artemis::ComponentMapper<SkillComponent> skillMapper;
+};
+

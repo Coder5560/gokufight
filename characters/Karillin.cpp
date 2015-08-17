@@ -7,6 +7,7 @@ Karillin::~Karillin(){}
 void Karillin::changeState(artemis::Entity &e){
 	StateComponent* state = (StateComponent*)e.getComponent<StateComponent>();
 	CharacterInfoComponent* characterInfo = (CharacterInfoComponent*)e.getComponent<CharacterInfoComponent>();
+	SkeletonComponent* characterSkeleton = (SkeletonComponent*)e.getComponent<SkeletonComponent>();
 	if (state->state == R::CharacterState::ATTACK){
 		PosComponent* position = (PosComponent*)e.getComponent<PosComponent>();
 		AttackComponent* attackComponent = new AttackComponent();
@@ -37,7 +38,18 @@ void Karillin::changeState(artemis::Entity &e){
 		}
 		else if (state->attack == R::Attack::KARILLIN_PUNCH1){
 			actionPunch1(e, state->direction);
-	
+			Node* node = RenderLayer::getInstance()->createGameNode();
+			node->setPosition(Vec2(position->x, position->y));
+			node->setScale(.2f);
+			KameKameHa* kame = new KameKameHa(node);
+			kame->setTarget("goku");
+			kame->powerOfAttack = characterInfo->SPECIAL_SKILL_POWER;
+			kame->direction = (characterSkeleton->node->getScaleX() < 0) ? -1 : 1;
+			artemis::Entity &entity = EntityUtils::getInstance()->getWorld()->createEntity();
+			entity.addComponent(new SkillComponent(kame));
+			entity.refresh();
+			entity.setGroup("enemyattack");
+			characterInfo->power -= 40;
 			return;
 		}
 		else if (state->attack == R::Attack::KARILLIN_PUNCH2){
@@ -77,6 +89,8 @@ void Karillin::changeState(artemis::Entity &e){
 		state->state == R::CharacterState::STAND;
 	}
 	else if (state->state == R::CharacterState::DEFENSE){
+		EntityUtils::getInstance()->removeGroup("enemyattack");
+
 		if (R::Constants::soundEnable){
 			CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
 			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/punch.mp3", false, 1, 0, 1);
@@ -86,6 +100,7 @@ void Karillin::changeState(artemis::Entity &e){
 	}
 	else if (state->state == R::CharacterState::WIN){ actionVictory(e); }
 	else if (state->state == R::CharacterState::DIE){ 
+		EntityUtils::getInstance()->removeGroup("enemyattack");
 		if (R::Constants::soundEnable){
 			CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
 			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/enemy_death.mp3", false, 1, 0, 1);
