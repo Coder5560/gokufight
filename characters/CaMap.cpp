@@ -17,54 +17,30 @@ void CaMap::changeState(artemis::Entity &e){
 		attackComponent->powerOfAttack = characterInfo->NORMAL_SKILL_POWER;
 		if (state->attack == R::Attack::CAMAP_PUNCH_AIR){
 			actionPunchAir(e, state->direction);
-			attackComponent->minX = position->x - 130;
-			attackComponent->maxX = position->x + 130;
-			attackComponent->minY = position->y - 100;
-			attackComponent->maxY = position->y + 100;
-			attackComponent->isSpecialSkill = true;
-			attackComponent->manaOfAttack = 40;
-			attackComponent->powerOfAttack = characterInfo->SPECIAL_SKILL_POWER;
+			characterInfo->power -= 40;
+			return;
 		}
 		else if (state->attack == R::Attack::CAMAP_SKILL){
 			actionSkill(e, state->direction);
-			attackComponent->minX = position->x - 140;
-			attackComponent->maxX = position->x + 140;
-			attackComponent->minY = position->y - 100;
-			attackComponent->maxY = position->y + 120;
-			attackComponent->isSpecialSkill = true;
-			attackComponent->manaOfAttack = 40;
-			attackComponent->powerOfAttack = characterInfo->SPECIAL_SKILL_POWER;
+			characterInfo->power -= 40;
+			return;
 		}
 		else if (state->attack == R::Attack::CAMAP_PUNCH1){
 			actionPunch1(e, state->direction);
-			attackComponent->minX = position->x - 80;
-			attackComponent->maxX = position->x + 80;
-			attackComponent->minY = position->y - 100;
-			attackComponent->maxY = position->y + 100;
-		
+			return;
 		}
 		else if (state->attack == R::Attack::CAMAP_PUNCH2){
 			actionPunch2(e, state->direction);
-			attackComponent->minX = position->x - 80;
-			attackComponent->maxX = position->x + 80;
-			attackComponent->minY = position->y - 100;
-			attackComponent->maxY = position->y + 100;
+			return;
 		
 		}
 		else if (state->attack == R::Attack::CAMAP_PUNCH3){
 			actionPunch3(e, state->direction);
-			attackComponent->minX = position->x - 130;
-			attackComponent->maxX = position->x + 130;
-			attackComponent->minY = position->y - 100;
-			attackComponent->maxY = position->y + 100;
-	
+			return;
 		}
 		else if (state->attack == R::Attack::CAMAP_KICK2){
 			actionKick2(e, state->direction);
-			attackComponent->minX = position->x - 70;
-			attackComponent->maxX = position->x + 70;
-			attackComponent->minY = position->y - 100;
-			attackComponent->maxY = position->y + 100;
+			return;
 		}
 		if (R::Constants::soundEnable){
 			CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);

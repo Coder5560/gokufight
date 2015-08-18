@@ -247,28 +247,30 @@ void HomeScreen::switchToSelectScreen(){
 
 
 
+
+
 	addCharacterItem(0, "BEAR", "select_screen/bear1.png", "select_screen/bear2.png", [=](){
 		goToGame(R::Match_Type::GOKU_BEAR);
 	});
-	addCharacterItem(1, "YAMCHA", "select_screen/yamcha1.png", "select_screen/yamcha2.png", [=](){
+	addCharacterItem(1, "RHINO", "select_screen/yamcha1.png", "select_screen/yamcha2.png", [=](){
 		goToGame(R::Match_Type::GOKU_TEGIAC);
 	});
-	addCharacterItem(2, "KARILLIN", "select_screen/karillin1.png", "select_screen/karillin2.png", [=](){
+	addCharacterItem(2, "CHIMPANZEE", "select_screen/karillin1.png", "select_screen/karillin2.png", [=](){
 		goToGame(R::Match_Type::GOKU_KARILLIN);
 	});
-	addCharacterItem(3, "GIRAN", "select_screen/giran1.png", "select_screen/giran2.png", [=](){
+	addCharacterItem(3, "LACOSTE", "select_screen/giran1.png", "select_screen/giran2.png", [=](){
 		goToGame(R::Match_Type::GOKU_GIRAN);
 	});
-	addCharacterItem(4, "NAM", "select_screen/nam1.png", "select_screen/nam2.png", [=](){
+	addCharacterItem(4, "TURTLE", "select_screen/nam1.png", "select_screen/nam2.png", [=](){
 		goToGame(R::Match_Type::GOKU_RUA);
 	});
-	addCharacterItem(5, "SHINHAN", "select_screen/shinhan1.png", "select_screen/shinhan2.png", [=](){
+	addCharacterItem(5, "SHARK", "select_screen/shinhan1.png", "select_screen/shinhan2.png", [=](){
 		goToGame(R::Match_Type::GOKU_CAMAP);
 	});
-	addCharacterItem(6, "JACKIECHUN", "select_screen/jackiechun1.png", "select_screen/jackiechun2.png", [=](){
+	addCharacterItem(6, "BLACK MONKEY", "select_screen/jackiechun1.png", "select_screen/jackiechun2.png", [=](){
 		goToGame(R::Match_Type::GOKU_JACKIECHUN);
 	});
-	addCharacterItem(7, "PICOLO", "select_screen/picolo1.png", "select_screen/picolo2.png", [=](){
+	addCharacterItem(7, "BAT", "select_screen/picolo1.png", "select_screen/picolo2.png", [=](){
 		goToGame(R::Match_Type::GOKU_PICOLO);
 	});
 	layoutSelectCreated = true;

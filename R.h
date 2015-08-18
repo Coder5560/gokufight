@@ -13,6 +13,7 @@ namespace R{
 		static bool musicEnable;
 		static bool soundEnable;
 		static int unlocked;
+		static int countLose;
 	};
 	enum class Match_Type{
 		GOKU_BEAR_INTRODUCE, NONE, GOKU_GIRAN, GOKU_BEAR, GOKU_JACKIECHUN, GOKU_TEGIAC, GOKU_CAMAP, GOKU_RUA, GOKU_KARILLIN, GOKU_PICOLO
@@ -86,7 +87,7 @@ namespace R{
 	};
 
 	enum class CharacterType {
-		NONAME, GOKU, YAMCHA, KRILLIN, GIRAN,BEAR,JACKIECHUN,TEGIAC,CAT,BOMB,CAMAP,RUA,KARILLIN,PICOLO	
+		NONAME, GOKU, YAMCHA, GIRAN,BEAR,JACKIECHUN,TEGIAC,CAT,BOMB,CAMAP,RUA,KARILLIN,PICOLO	
 
 	};
 

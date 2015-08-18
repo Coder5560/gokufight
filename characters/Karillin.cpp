@@ -41,7 +41,7 @@ void Karillin::changeState(artemis::Entity &e){
 			Node* node = RenderLayer::getInstance()->createGameNode();
 			node->setPosition(Vec2(position->x, position->y));
 			node->setScale(.2f);
-			KameKameHa* kame = new KameKameHa(node);
+			KameKameHa* kame = new KameKameHa(node,R::CharacterType::KARILLIN);
 			kame->setTarget("goku");
 			kame->powerOfAttack = characterInfo->SPECIAL_SKILL_POWER;
 			kame->direction = (characterSkeleton->node->getScaleX() < 0) ? -1 : 1;
@@ -588,7 +588,7 @@ void Karillin::actionJump1(artemis::Entity &e, R::Direction direction) {
 		spine::SkeletonAnimation* skeletonAnimation = skeleton->skeleton;
 		Node* node = skeleton->node;
 		float angle = state->direction == R::Direction::TOP ? 90 : (state->direction == R::Direction::TOP_LEFT ? 135 : (state->direction == R::Direction::TOP_RIGHT ? 45 : 90));
-		float force = state->direction == R::Direction::TOP || state->direction == R::Direction::AUTO ? 300 : 400;
+		float force = state->direction == R::Direction::TOP || state->direction == R::Direction::AUTO ? 200 : 300;
 		// xử lý action
 		EntityUtils::getInstance()->push(e, angle, force);
 		EntityUtils::getInstance()->clampVelocity(e, 0, force);
@@ -616,7 +616,7 @@ void Karillin::actionJump2(artemis::Entity &e, R::Direction direction) {
 		spine::SkeletonAnimation* skeletonAnimation = skeleton->skeleton;
 		Node* node = skeleton->node;
 		float angle = state->direction == R::Direction::TOP ? 90 : (state->direction == R::Direction::TOP_LEFT ? 120 : (state->direction == R::Direction::TOP_RIGHT ? 60 : 90));
-		float force = state->direction == R::Direction::TOP || state->direction == R::Direction::AUTO ? 300 : 400;
+		float force = state->direction == R::Direction::TOP || state->direction == R::Direction::AUTO ? 200 : 300;
 		// xử lý action
 		EntityUtils::getInstance()->push(e, angle, force);
 		EntityUtils::getInstance()->clampVelocity(e, 0, force);
@@ -634,8 +634,7 @@ void Karillin::actionJump3(artemis::Entity &e, R::Direction direction) {
 	else {
 		// xử lý action
 		StateComponent* state = (StateComponent*)e.getComponent<StateComponent>();
-		SkeletonComponent* skeleton = (SkeletonComponent*)e.getComponent<
-			SkeletonComponent>();
+		SkeletonComponent* skeleton = (SkeletonComponent*)e.getComponent<SkeletonComponent>();
 		spine::SkeletonAnimation* skeletonAnimation = skeleton->skeleton;
 		Node* node = skeleton->node;
 		float angle = state->direction == R::Direction::TOP ? 90 : (state->direction == R::Direction::TOP_LEFT ? 120 : (state->direction == R::Direction::TOP_RIGHT ? 60 : 90));

@@ -193,6 +193,7 @@ public:
 
 	float time_on_state;
 	int trungdonlientiep;
+	int hitDetected;
 	bool doneAction;
 };
 

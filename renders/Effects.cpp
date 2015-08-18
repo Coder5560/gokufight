@@ -33,8 +33,9 @@ void HitEffect::dismiss(){
 }
 
 
-KameKameHa::KameKameHa(Node* node){
+KameKameHa::KameKameHa(Node* node,R::CharacterType whoAttack){
 	this->node = node;
+	this->whoAttack = whoAttack;
 	STATE_TODAN = 1;
 	STATE_FLYING = STATE_TODAN + 1;
 	STATE_COLLISION = STATE_FLYING + 1;
@@ -46,12 +47,23 @@ KameKameHa::KameKameHa(Node* node){
 	powerOfAttack = 6;
 	direction = 1;
 
-	hatNhan = Sprite::create("textures/globe.png");
-	hieuUng1 = Sprite::create("textures/effect4.png");
-	hieuUng2 = Sprite::create("textures/effect4.png");
 
-	hieuUng1->setColor(Color3B::RED);
-	hieuUng2->setColor(Color3B::RED);
+	if (whoAttack == R::CharacterType::GOKU){
+		hatNhan = Sprite::create("textures/globe.png");
+		hieuUng1 = Sprite::create("textures/effect4.png");
+		hieuUng2 = Sprite::create("textures/effect4.png");
+
+		hieuUng1->setColor(Color3B::RED);
+		hieuUng2->setColor(Color3B::RED);
+	}
+	else{
+		hatNhan = Sprite::create("textures/globe2.png");
+		hieuUng1 = Sprite::create("textures/effect4.png");
+		hieuUng2 = Sprite::create("textures/effect4.png");
+
+		hieuUng1->setColor(Color3B::BLUE);
+		hieuUng2->setColor(Color3B::BLUE);
+	}
 
 	hieuUng1->setAnchorPoint(Vec2(.5f, .5f));
 	hieuUng2->setAnchorPoint(Vec2(.5f, .5f));
@@ -77,6 +89,7 @@ void KameKameHa::setTarget(std::string target){
 }
 void KameKameHa::toDan(){
 	// do some thing
+	velocity.x = 40;
 }
 
 void KameKameHa::bayDi(){
@@ -94,13 +107,18 @@ void KameKameHa::bienMat(){
 
 void KameKameHa::update(artemis::World* world){
 	float delta = world->getDelta();
+
+	timeOnState += delta;
+
 	if (velocity != Vec2::ZERO){
 		velocity.x += giatoc.x*delta;
 		velocity.y += giatoc.y*delta;
 		node->setPositionX(node->getPositionX() + direction* velocity.x*delta);
 		node->setPositionY(node->getPositionY() + direction* velocity.y*delta);
 	}
-	timeOnState += delta;
+	if (state == STATE_TODAN){
+		
+	}
 	if (state == STATE_TODAN && timeOnState > .5f){
 		bayDi();
 	}
@@ -125,7 +143,7 @@ void KameKameHa::update(artemis::World* world){
 				Node* nodeEffect = RenderLayer::getInstance()->createGameNode();
 				nodeEffect->setPosition(node->getPosition());
 				HitEffect* hitEffect = new HitEffect(nodeEffect);
-				hitEffect->setHitStyle(R::CharacterType::GOKU);
+				hitEffect->setHitStyle(whoAttack);
 				hitEffect->start();
 				bienMat();
 			}
@@ -211,7 +229,7 @@ void IntroduceMessage::start(std::string message){
 	auto fadeIn = FadeIn::create(.4);
 	auto fadeOut = FadeOut::create(.4);
 	text->runAction(RepeatForever::create(Sequence::create(fadeIn, fadeOut, nullptr)));
-
+	text->setPosition(Vec2(0,0));
 	node->addChild(text);
 }
 
@@ -220,7 +238,7 @@ PlayerInfoLeft::PlayerInfoLeft(Node* container, std::string name, std::string av
 	this->node = container;
 	ui::ImageView* imgAvatar = ui::ImageView::create(_avatar);
 	ui::ImageView* board_bg = ui::ImageView::create("textures/board_info.png");
-	ui::Text* playerName = ui::Text::create(name, "fonts/courbd.ttf", 20);
+	ui::Text* playerName = ui::Text::create(name, "fonts/courbd.ttf", 16);
 	playerName->setColor(Color3B::BLACK);
 
 	size = Size(100, 6);
@@ -282,7 +300,7 @@ PlayerInfoRight::PlayerInfoRight(Node* container, std::string name, std::string 
 	ui::ImageView* imgAvatar = ui::ImageView::create(_avatar);
 	ui::ImageView* board_bg = ui::ImageView::create("textures/board_info.png");
 	board_bg->setFlipX(-1);
-	ui::Text* playerName = ui::Text::create(name, "fonts/courbd.ttf", 20);
+	ui::Text* playerName = ui::Text::create(name, "fonts/courbd.ttf", 14);
 	playerName->setColor(Color3B::BLACK);
 
 	size = Size(100, 6);
@@ -457,12 +475,17 @@ void PauseScene::showPauseScene(){
 	});
 
 	btnMusic->addClickEventListener([=](Ref* sender){
-		if (R::Constants::musicEnable) {
+		if (R::Constants::soundEnable) {
 			CocosDenshion::SimpleAudioEngine::getInstance()->setBackgroundMusicVolume(R::Constants::musicVolumn);
 			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/button_click.mp3", false, 1, 0, 1);
 		}
 		R::Constants::musicEnable = !R::Constants::musicEnable;
-
+		if (R::Constants::musicEnable){
+			CocosDenshion::SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
+		}
+		else{
+			CocosDenshion::SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
+		}
 		btnMusic->setTouchEnabled(false);
 		ScaleTo* scaleIn = ScaleTo::create(.1f, .96f);
 		ScaleTo* scaleout = ScaleTo::create(.1f, 1);

@@ -13,3 +13,4 @@ float R::Constants::soundVolumn = 1;
 bool R::Constants::musicEnable = true;
 bool R::Constants::soundEnable = true;
 int R::Constants::unlocked = 8;
+int R::Constants::countLose = 0;

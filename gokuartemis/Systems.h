@@ -10,6 +10,7 @@
 #include "renders/Effects.h"
 #include "ui/UIText.h"
 #include "renders/HomeScreen.h"
+#include "AdsManager.h"
 USING_NS_CC;
 
 class GravitySystem;
@@ -274,6 +275,7 @@ public:
 	virtual void processEntity(artemis::Entity &e);
 	virtual void processPicolo(artemis::Entity &e);
 	virtual void processGoku(artemis::Entity &e);
+	virtual void processCamap(artemis::Entity &e);
 
 protected:
 	artemis::ComponentMapper<PosComponent> positionMapper;
@@ -320,6 +322,16 @@ public:
 	virtual void begin();
 	virtual void initialize();
 	virtual void processEntity(artemis::Entity &e);
+	void callBackInputDone();
+	void notifyInput(Touch* touch, GameHud::EventType event, GameHud::TouchType touchType);
+	int _tapCount;
+	float timeOnState;
+	int subStep;
+	bool enableInput;
+	bool doneInput;
+	int step;
+	Node* node;
+	ui::ImageView* button;
 protected:
 	artemis::ComponentMapper<IntroduceComponent> introduceMapper;
 };

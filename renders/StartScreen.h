@@ -8,6 +8,7 @@
 #include "spine/spine-cocos2dx.h"
 #include "HelloWorldScene.h"
 #include "ui/UIPageView.h"
+#include "AdsManager.h"
 USING_NS_CC;
 class CharacterItem;
 

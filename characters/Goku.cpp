@@ -59,7 +59,7 @@ void Goku::changeState(artemis::Entity &e){
 				Node* node = RenderLayer::getInstance()->createGameNode();
 				node->setPosition(Vec2(position->x, position->y));
 				node->setScale(.2f);
-				KameKameHa* kame = new KameKameHa(node);
+				KameKameHa* kame = new KameKameHa(node,R::CharacterType::GOKU);
 				kame->setTarget("enemy");
 				kame->powerOfAttack = characterInfo->SPECIAL_SKILL_POWER;
 				kame->direction = (characterSkeleton->node->getScaleX() < 0) ? -1 : 1;
@@ -67,6 +67,7 @@ void Goku::changeState(artemis::Entity &e){
 				entity.addComponent(new SkillComponent(kame));
 				entity.refresh();
 				entity.setGroup("gokuattack");
+				entity.setTag("gokupunch");
 				characterInfo->power -= 40;
 			}
 			else{

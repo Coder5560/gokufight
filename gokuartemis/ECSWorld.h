@@ -19,7 +19,7 @@
 #include "Characters/Rua.h"
 #include "Characters/Karillin.h"
 #include "Characters/Picolo.h"
-
+#include "AdsManager.h"
 
 USING_NS_CC;
 
@@ -31,13 +31,14 @@ public:
 	virtual void createWorld(R::Match_Type matchType);
 	virtual void resetCurrentMatch();
 	virtual void nextMatch();
-	
+	virtual void notifyInput(Touch* touch, GameHud::EventType event, GameHud::TouchType touchType);
 	artemis::World* getWorld();
 
 	void ignoreWorld(bool ignore);
 	void processWorld(float delta);
 	artemis::EntitySystem* setSystem(artemis::EntitySystem* system);
 	InputSystem* inputSystem;
+	IntroduceSystem* introduceSystem;
 	void createMainCharacter();
 	void createEnemyCharacter();
 	

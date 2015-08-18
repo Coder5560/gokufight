@@ -58,14 +58,14 @@ public:
 class KameKameHa : public Effects{
 public: 
 	
-	KameKameHa(Node* node);
+	KameKameHa(Node* node,R::CharacterType whoAttack);
 	void setTarget(std::string target);
 	void toDan();
 	void bayDi();
 	void bienMat();
 	void update(artemis::World* world);
 	
-
+	R::CharacterType whoAttack;
 	int STATE_TODAN;
 	int STATE_DISMISS;
 	int STATE_FLYING;

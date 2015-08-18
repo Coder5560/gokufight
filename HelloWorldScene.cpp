@@ -52,9 +52,9 @@ void HelloWorld::onKeyReleased(EventKeyboard::KeyCode keyCode, Event* event) {
 		Director::getInstance()->end();
 	}
 
-	/*artemis::Entity &e = ECSWorld::getInstance()->getWorld()->getTagManager()->getEntity("enemy");
+	artemis::Entity &e = ECSWorld::getInstance()->getWorld()->getTagManager()->getEntity("enemy");
 	StateComponent* stateComponent = (StateComponent*)e.getComponent<StateComponent>();
-	SkeletonComponent* skeletonComponent = (SkeletonComponent*)e.getComponent<SkeletonComponent>();*/
+	SkeletonComponent* skeletonComponent = (SkeletonComponent*)e.getComponent<SkeletonComponent>();
 
 	// test Jackichun
 	/*if (keyCode == EventKeyboard::KeyCode::KEY_1){ stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::JACK_BEAT3; }
@@ -93,17 +93,17 @@ void HelloWorld::onKeyReleased(EventKeyboard::KeyCode keyCode, Event* event) {
 	//if (keyCode == EventKeyboard::KeyCode::KEY_9){ stateComponent->setState(R::CharacterState::BACK); stateComponent->direction = R::Direction::RIGHT; }
 
 
-	//// test camap
-	//if (keyCode == EventKeyboard::KeyCode::KEY_0){ skeletonComponent->node->setScaleX(-skeletonComponent->node->getScaleX()); }
-	//if (keyCode == EventKeyboard::KeyCode::KEY_1){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::CAMAP_KICK2; }
-	//if (keyCode == EventKeyboard::KeyCode::KEY_2){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::CAMAP_PUNCH1; }
-	//if (keyCode == EventKeyboard::KeyCode::KEY_3){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::CAMAP_PUNCH2; }
-	//if (keyCode == EventKeyboard::KeyCode::KEY_4){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::CAMAP_PUNCH3; }
-	//if (keyCode == EventKeyboard::KeyCode::KEY_5){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::CAMAP_PUNCH_AIR; }
-	//if (keyCode == EventKeyboard::KeyCode::KEY_6){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::CAMAP_SKILL; }
-	//if (keyCode == EventKeyboard::KeyCode::KEY_7){}
-	//if (keyCode == EventKeyboard::KeyCode::KEY_8){ stateComponent->setState(R::CharacterState::BACK); stateComponent->direction = R::Direction::LEFT; }
-	//if (keyCode == EventKeyboard::KeyCode::KEY_9){ stateComponent->setState(R::CharacterState::BACK); stateComponent->direction = R::Direction::RIGHT; }
+	// test camap
+	if (keyCode == EventKeyboard::KeyCode::KEY_0){ skeletonComponent->node->setScaleX(-skeletonComponent->node->getScaleX()); }
+	if (keyCode == EventKeyboard::KeyCode::KEY_1){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::CAMAP_KICK2; }
+	if (keyCode == EventKeyboard::KeyCode::KEY_2){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::CAMAP_PUNCH1; }
+	if (keyCode == EventKeyboard::KeyCode::KEY_3){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::CAMAP_PUNCH2; }
+	if (keyCode == EventKeyboard::KeyCode::KEY_4){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::CAMAP_PUNCH3; }
+	if (keyCode == EventKeyboard::KeyCode::KEY_5){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::CAMAP_PUNCH_AIR; }
+	if (keyCode == EventKeyboard::KeyCode::KEY_6){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::CAMAP_SKILL; }
+	if (keyCode == EventKeyboard::KeyCode::KEY_7){}
+	if (keyCode == EventKeyboard::KeyCode::KEY_8){ stateComponent->setState(R::CharacterState::BACK); stateComponent->direction = R::Direction::LEFT; }
+	if (keyCode == EventKeyboard::KeyCode::KEY_9){ stateComponent->setState(R::CharacterState::BACK); stateComponent->direction = R::Direction::RIGHT; }
 
 	////for Karillin
 	//if (keyCode == EventKeyboard::KeyCode::KEY_1){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::KARILLIN_BEAT1; }
@@ -127,20 +127,20 @@ void HelloWorld::onKeyReleased(EventKeyboard::KeyCode keyCode, Event* event) {
 
 
 
-	// for GOKU
-	artemis::Entity &e = ECSWorld::getInstance()->getWorld()->getTagManager()->getEntity("goku");
-	StateComponent* stateComponent = (StateComponent*)e.getComponent<StateComponent>();
-	SkeletonComponent* skeletonComponent = (SkeletonComponent*)e.getComponent<SkeletonComponent>();
+	//// for GOKU
+	//artemis::Entity &e = ECSWorld::getInstance()->getWorld()->getTagManager()->getEntity("goku");
+	//StateComponent* stateComponent = (StateComponent*)e.getComponent<StateComponent>();
+	//SkeletonComponent* skeletonComponent = (SkeletonComponent*)e.getComponent<SkeletonComponent>();
 
-	if (keyCode == EventKeyboard::KeyCode::KEY_0){ skeletonComponent->node->setScaleX(-skeletonComponent->node->getScaleX()); }
-	if (keyCode == EventKeyboard::KeyCode::KEY_1){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::GOKU_BEAT1; }
-	if (keyCode == EventKeyboard::KeyCode::KEY_2){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::GOKU_BEAT2; }
-	if (keyCode == EventKeyboard::KeyCode::KEY_3){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::GOKU_BEAT3; }
-	if (keyCode == EventKeyboard::KeyCode::KEY_4){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::GOKU_KICK1; }
-	if (keyCode == EventKeyboard::KeyCode::KEY_5){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::GOKU_KICK2; }
-	if (keyCode == EventKeyboard::KeyCode::KEY_6){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::GOKU_KICK3; }
-	if (keyCode == EventKeyboard::KeyCode::KEY_7){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::GOKU_PUNCH1; }
-	if (keyCode == EventKeyboard::KeyCode::KEY_8){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::GOKU_PUNCH2; }
+	//if (keyCode == EventKeyboard::KeyCode::KEY_0){ skeletonComponent->node->setScaleX(-skeletonComponent->node->getScaleX()); }
+	//if (keyCode == EventKeyboard::KeyCode::KEY_1){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::GOKU_BEAT1; }
+	//if (keyCode == EventKeyboard::KeyCode::KEY_2){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::GOKU_BEAT2; }
+	//if (keyCode == EventKeyboard::KeyCode::KEY_3){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::GOKU_BEAT3; }
+	//if (keyCode == EventKeyboard::KeyCode::KEY_4){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::GOKU_KICK1; }
+	//if (keyCode == EventKeyboard::KeyCode::KEY_5){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::GOKU_KICK2; }
+	//if (keyCode == EventKeyboard::KeyCode::KEY_6){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::GOKU_KICK3; }
+	//if (keyCode == EventKeyboard::KeyCode::KEY_7){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::GOKU_PUNCH1; }
+	//if (keyCode == EventKeyboard::KeyCode::KEY_8){ stateComponent->direction = skeletonComponent->node->getScaleX() < 0 ? R::Direction::LEFT : R::Direction::RIGHT; stateComponent->setState(R::CharacterState::ATTACK); stateComponent->attack = R::Attack::GOKU_PUNCH2; }
 
 
 }

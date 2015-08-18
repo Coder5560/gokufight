@@ -23,6 +23,7 @@ ECSWorld::~ECSWorld()
 
 void ECSWorld::createWorld(R::Match_Type matchType){
 	this->matchType = matchType;
+	AdsManager::showAds(true);
 	if (R::Constants::musicEnable) {
 		srand(time(NULL));
 		int rad = rand() / 6+ 1;	
@@ -87,7 +88,7 @@ void ECSWorld::createWorld(R::Match_Type matchType){
 
 
 	inputSystem = new InputSystem();
-
+	introduceSystem = new IntroduceSystem();
 
 	setSystem(new GameStateSystem());
 	setSystem(inputSystem);
@@ -110,14 +111,14 @@ void ECSWorld::createWorld(R::Match_Type matchType){
 	setSystem(new CameraFollowSystem());
 	setSystem(new SkillSystem());
 	//setSystem(new DebugSystem());
-	//setSystem(new DecisionSystem());
+	setSystem(new DecisionSystem());
 	if (matchType == R::Match_Type::GOKU_BEAR_INTRODUCE){
 		//createIntroduceEntity
 		artemis::Entity &introduceEntity = world->createEntity();
 		introduceEntity.addComponent(new IntroduceComponent());
 		introduceEntity.setTag("introduceEntity");
 		introduceEntity.refresh();
-		setSystem(new IntroduceSystem());
+		setSystem(introduceSystem);
 	}
 	world->getSystemManager()->initializeAll();
 
@@ -126,7 +127,7 @@ void ECSWorld::createWorld(R::Match_Type matchType){
 	gameHud->setAnchorPoint(Vec2(.5, .5));
 	gameHud->buildComponent();
 	gameHud->setCallBack([=](Touch* touch, GameHud::EventType event, GameHud::TouchType type) {
-		ECSWorld::getInstance()->inputSystem->notifyInput(touch, event, type);
+		ECSWorld::getInstance()->notifyInput(touch, event, type);
 	});
 	RenderLayer::getInstance()->getHudLayer()->addChild(gameHud);
 	RenderLayer::getInstance()->getHudLayer()->setCameraMask((unsigned short)CameraFlag::USER1);
@@ -145,6 +146,17 @@ void ECSWorld::createWorld(R::Match_Type matchType){
 	node->addChild(text);
 	node->setTag(200);
 	node->setCameraMask((unsigned short)CameraFlag::USER1);
+}
+
+void ECSWorld::notifyInput(Touch* touch, GameHud::EventType event,
+	GameHud::TouchType touchType) {
+	if (matchType != R::Match_Type::GOKU_BEAR_INTRODUCE){
+		inputSystem->notifyInput(touch,event,touchType);
+	}
+	else{
+		introduceSystem->notifyInput(touch, event, touchType);
+	}
+
 }
 
 void ECSWorld::resetCurrentMatch(){
@@ -189,7 +201,7 @@ void ECSWorld::createCameraFollowEntity(){
 void ECSWorld::createMainCharacter(){	// create main Character
 	CharacterInfoComponent* characterInfo = new CharacterInfoComponent();
 	characterInfo->avatar = "textures/goku.png";
-	characterInfo->name = "SONGOKU";
+	characterInfo->name = "MONKEY";
 	characterInfo->isMainCharacter = true;
 	characterInfo->MAX_BLOOD = 100;
 	characterInfo->MAX_POWER = 100;
@@ -278,7 +290,7 @@ void ECSWorld::createEnemyCharacter(){
 void ECSWorld::createGiranCharacter(){
 	CharacterInfoComponent* characterInfo = new CharacterInfoComponent();
 	characterInfo->avatar = "textures/casau.png";
-	characterInfo->name = "GIRAN";
+	characterInfo->name = "LACOSTE";
 	characterInfo->MAX_BLOOD = 100;
 	characterInfo->MAX_POWER = 100;
 	characterInfo->blood = 100;
@@ -442,7 +454,7 @@ void ECSWorld::createBearIntroduceCharacter(){
 void ECSWorld::createJackiechunCharacter(){
 	CharacterInfoComponent* characterInfo = new CharacterInfoComponent();
 	characterInfo->avatar = "textures/jackiechun.png";
-	characterInfo->name = "JACKIECHUN";
+	characterInfo->name = "BLACK MONKEY";
 	characterInfo->MAX_BLOOD = 100;
 	characterInfo->MAX_POWER = 100;
 	characterInfo->blood = 100;
@@ -499,7 +511,7 @@ void ECSWorld::createJackiechunCharacter(){
 void ECSWorld::createTegiacCharacter(){
 	CharacterInfoComponent* characterInfo = new CharacterInfoComponent();
 	characterInfo->avatar = "textures/tegiac.png";
-	characterInfo->name = "YAMCHA";
+	characterInfo->name = "RHINO";
 	characterInfo->MAX_BLOOD = 100;
 	characterInfo->MAX_POWER = 100;
 	characterInfo->blood = 100;
@@ -701,7 +713,7 @@ void ECSWorld::createCamapCharacter(){
 void ECSWorld::createKarillinCharacter(){
 	CharacterInfoComponent* characterInfo = new CharacterInfoComponent();
 	characterInfo->avatar = "textures/khi.png";
-	characterInfo->name = "KARILLIN";
+	characterInfo->name = "CHIMPANZEE";
 	characterInfo->MAX_BLOOD = 100;
 	characterInfo->MAX_POWER = 100;
 	characterInfo->blood = 100;
@@ -754,7 +766,7 @@ void ECSWorld::createKarillinCharacter(){
 void ECSWorld::createPicoloCharacter(){
 	CharacterInfoComponent* characterInfo = new CharacterInfoComponent();
 	characterInfo->avatar = "textures/doi.png";
-	characterInfo->name = "PICOLO";
+	characterInfo->name = "BAT";
 	characterInfo->MAX_BLOOD = 100;
 	characterInfo->MAX_POWER = 100;
 	characterInfo->blood = 100;

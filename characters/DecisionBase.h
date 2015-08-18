@@ -94,7 +94,8 @@ public:
 	CamapDecision();
 	void decision(artemis::Entity &e);
 	void obsever(artemis::Entity &e);
-
+	bool canAvoidGokuAttack;
+	int totalAvoid;
 private:
 	DecisionBase super;
 };
@@ -104,7 +105,8 @@ public:
 	KarillinDecision();
 	void decision(artemis::Entity &e);
 	void obsever(artemis::Entity &e);
-
+	bool canAvoidGokuAttack;
+	int totalAvoid;
 private:
 	DecisionBase super;
 };

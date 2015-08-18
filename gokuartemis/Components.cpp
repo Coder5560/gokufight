@@ -123,11 +123,12 @@ void DecisionComponent::setActive(bool active){
 	}
 };
 
-StateComponent::StateComponent() : trungdonlientiep(0), doneAction(true), attack(R::Attack::NONE), defense(R::Defense::NONE), characterBase(nullptr), state(R::CharacterState::STAND), time_on_state(1), direction(R::Direction::AUTO){}
+StateComponent::StateComponent() : hitDetected(0),trungdonlientiep(0), doneAction(true), attack(R::Attack::NONE), defense(R::Defense::NONE), characterBase(nullptr), state(R::CharacterState::STAND), time_on_state(1), direction(R::Direction::AUTO){}
 
 void StateComponent::setState(R::CharacterState newState){
+	if (newState != R::CharacterState::ATTACK)	hitDetected = 0;
 	if (newState == R::CharacterState::DEFENSE)	trungdonlientiep++;
-	else if (newState == R::CharacterState::DEFENSE) trungdonlientiep = 0;
+	else if (newState == R::CharacterState::ATTACK) trungdonlientiep = 0;
 
 	this->state = newState;
 	time_on_state = 0;
