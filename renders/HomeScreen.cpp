@@ -201,6 +201,7 @@ void HomeScreen::onSoundClick(){
 }
 
 void HomeScreen::onGuildClick(){
+	goToGame(R::Match_Type::GOKU_BEAR_INTRODUCE);
 }
 
 void HomeScreen::onSelectPlayGame(){
@@ -245,12 +246,9 @@ void HomeScreen::switchToSelectScreen(){
 	text->setPosition(Vec2(getContentSize().width / 2, getContentSize().height - 100));
 	layoutSelect->addChild(text);
 
-
-
-
-
-	addCharacterItem(0, "BEAR", "select_screen/bear1.png", "select_screen/bear2.png", [=](){
-		goToGame(R::Match_Type::GOKU_BEAR);
+	
+	addCharacterItem(0, "LACOSTE", "select_screen/giran1.png", "select_screen/giran2.png", [=](){
+		goToGame(R::Match_Type::GOKU_GIRAN);
 	});
 	addCharacterItem(1, "RHINO", "select_screen/yamcha1.png", "select_screen/yamcha2.png", [=](){
 		goToGame(R::Match_Type::GOKU_TEGIAC);
@@ -258,8 +256,9 @@ void HomeScreen::switchToSelectScreen(){
 	addCharacterItem(2, "CHIMPANZEE", "select_screen/karillin1.png", "select_screen/karillin2.png", [=](){
 		goToGame(R::Match_Type::GOKU_KARILLIN);
 	});
-	addCharacterItem(3, "LACOSTE", "select_screen/giran1.png", "select_screen/giran2.png", [=](){
-		goToGame(R::Match_Type::GOKU_GIRAN);
+	
+	addCharacterItem(3, "BEAR", "select_screen/bear1.png", "select_screen/bear2.png", [=](){
+		goToGame(R::Match_Type::GOKU_BEAR);
 	});
 	addCharacterItem(4, "TURTLE", "select_screen/nam1.png", "select_screen/nam2.png", [=](){
 		goToGame(R::Match_Type::GOKU_RUA);

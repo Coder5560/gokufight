@@ -1,7 +1,7 @@
 #include "gokuartemis/ECSWorld.h"
 
 ECSWorld* ECSWorld::instance = NULL;
-ECSWorld::ECSWorld() : isIgnoreWorld(false), match(0), accumulate(0), STEP(0.015f), goku(nullptr), world(nullptr){	}
+ECSWorld::ECSWorld() : isIgnoreWorld(false), accumulate(0), STEP(0.015f), goku(nullptr), world(nullptr){	}
 ECSWorld* ECSWorld::getInstance(){
 	if (instance == NULL){
 		instance = new ECSWorld();
@@ -22,11 +22,15 @@ ECSWorld::~ECSWorld()
 
 
 void ECSWorld::createWorld(R::Match_Type matchType){
+	if (R::Constants::unlocked > 0){
+		R::Constants::remaininglife -= 1;
+	}
+	R::Constants::updateVariable();
 	this->matchType = matchType;
 	AdsManager::showAds(true);
 	if (R::Constants::musicEnable) {
 		srand(time(NULL));
-		int rad = rand() / 6+ 1;	
+		int rad = rand() / 6 + 1;
 		CocosDenshion::SimpleAudioEngine::getInstance()->setBackgroundMusicVolume(R::Constants::musicVolumn);
 		if (rad <= 2) CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("sounds/theme_2.mp3", true);
 		else if (rad <= 4) CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("sounds/theme_1.mp3", true);
@@ -88,7 +92,7 @@ void ECSWorld::createWorld(R::Match_Type matchType){
 
 
 	inputSystem = new InputSystem();
-	introduceSystem = new IntroduceSystem();
+
 
 	setSystem(new GameStateSystem());
 	setSystem(inputSystem);
@@ -102,7 +106,7 @@ void ECSWorld::createWorld(R::Match_Type matchType){
 	setSystem(new MotionSystem());
 	setSystem(new SkeletonSystem());
 	//	setSystem(new UICharacterSystem());
-	setSystem(new CharacterRenderSystem());
+	
 	setSystem(new CharacterStateSystem());
 	setSystem(new RenderSystem());
 	setSystem(new RemoveEntitySystem());
@@ -114,11 +118,15 @@ void ECSWorld::createWorld(R::Match_Type matchType){
 	setSystem(new DecisionSystem());
 	if (matchType == R::Match_Type::GOKU_BEAR_INTRODUCE){
 		//createIntroduceEntity
+		introduceSystem = new IntroduceSystem();
 		artemis::Entity &introduceEntity = world->createEntity();
 		introduceEntity.addComponent(new IntroduceComponent());
 		introduceEntity.setTag("introduceEntity");
 		introduceEntity.refresh();
 		setSystem(introduceSystem);
+	}
+	else{
+		setSystem(new CharacterRenderSystem());
 	}
 	world->getSystemManager()->initializeAll();
 
@@ -151,7 +159,7 @@ void ECSWorld::createWorld(R::Match_Type matchType){
 void ECSWorld::notifyInput(Touch* touch, GameHud::EventType event,
 	GameHud::TouchType touchType) {
 	if (matchType != R::Match_Type::GOKU_BEAR_INTRODUCE){
-		inputSystem->notifyInput(touch,event,touchType);
+		inputSystem->notifyInput(touch, event, touchType);
 	}
 	else{
 		introduceSystem->notifyInput(touch, event, touchType);
@@ -169,25 +177,30 @@ void ECSWorld::nextMatch(){
 	ignoreWorld(false);
 	RenderLayer::getInstance()->getHudLayer()->removeAllChildren();
 	RenderLayer::getInstance()->getGameLayer()->removeAllChildren();
-	match++;
-	int matchIndex = match % 6;
+	int matchIndex = R::Constants::unlocked % 8;
 	if (matchIndex == 0){
-		createWorld(R::Match_Type::GOKU_TEGIAC);
+		createWorld(R::Match_Type::GOKU_GIRAN);
 	}
 	else	if (matchIndex == 1){
-		createWorld(R::Match_Type::GOKU_CAMAP);
+		createWorld(R::Match_Type::GOKU_TEGIAC);
 	}
 	else	if (matchIndex == 2){
-		createWorld(R::Match_Type::GOKU_RUA);
+		createWorld(R::Match_Type::GOKU_KARILLIN);
 	}
 	else	if (matchIndex == 3){
-		createWorld(R::Match_Type::GOKU_JACKIECHUN);
-	}
-	else	if (matchIndex == 4){
 		createWorld(R::Match_Type::GOKU_BEAR);
 	}
+	else	if (matchIndex == 4){
+		createWorld(R::Match_Type::GOKU_RUA);
+	}
 	else	if (matchIndex == 5){
-		createWorld(R::Match_Type::GOKU_GIRAN);
+		createWorld(R::Match_Type::GOKU_CAMAP);
+	}
+	else	if (matchIndex == 6){
+		createWorld(R::Match_Type::GOKU_JACKIECHUN);
+	}
+	else	if (matchIndex == 7){
+		createWorld(R::Match_Type::GOKU_PICOLO);
 	}
 }
 
@@ -207,7 +220,10 @@ void ECSWorld::createMainCharacter(){	// create main Character
 	characterInfo->MAX_POWER = 100;
 	characterInfo->blood = 100;
 	characterInfo->power = 100;
-
+	if (matchType == R::Match_Type::GOKU_GIRAN){
+		characterInfo->SPECIAL_SKILL_POWER = 12;
+		characterInfo->NORMAL_SKILL_POWER = 5;
+	}
 	//create keletoncomponent
 	spine::SkeletonAnimation* skeletonAnimation =
 		spine::SkeletonAnimation::createWithFile("spine/Goku.json",

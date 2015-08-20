@@ -26,7 +26,10 @@ void AttackSystem::processEntity(artemis::Entity &e){
 	PosComponent* position = (PosComponent*)e.getComponent<PosComponent>();
 	WallSensorComponent* wallSensor = wallSensorMapper.get(e);
 	if (!(attack && position && wallSensor)) return;
-
+	if (attack->expire){
+		EntityUtils::getInstance()->removeEntity(e);
+		return;
+	}
 	// nếu chạm vào thành
 	if (wallSensor->onAnysurface()){
 		EntityUtils::getInstance()->removeEntity(e);

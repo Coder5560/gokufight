@@ -63,7 +63,6 @@ private:
 	
 protected:
 	bool isIgnoreWorld;
-	int match;
 	const float STEP;
 	float accumulate;
 

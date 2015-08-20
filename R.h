@@ -1,18 +1,29 @@
 #pragma once
 #include <SimpleAudioEngine.h>
+#include "cocos2d.h"
+USING_NS_CC;
 namespace R{
 
 	class Constants{
 	public :
+		static void resetVariable();
+		static void loadVariable();
+		static void updateVariable();
+
 		static const float SCALE;
 		static const int WIDTH_SCREEN;
 		static const int HEIGHT_SCREEN;
 		static const int MAX_SCREEN_WIDTH;
+		static const int MAX_LIFE;
+		static const int MAX_LEVEL;
+
 		static float musicVolumn;
 		static float soundVolumn;
 		static bool musicEnable;
 		static bool soundEnable;
+		static bool howtoplay;
 		static int unlocked;
+		static int remaininglife;
 		static int countLose;
 	};
 	enum class Match_Type{

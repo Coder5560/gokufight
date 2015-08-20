@@ -53,6 +53,7 @@ void GiranDecision::obsever(artemis::Entity &e){
 	artemis::Entity& goku = world->getTagManager()->getEntity("goku");
 	BoundComponent* gokuBound = (BoundComponent*)goku.getComponent<BoundComponent>();
 	PosComponent* gokuPosition = (PosComponent*)goku.getComponent<PosComponent>();
+	PhysicComponent* gokuPhysic = (PhysicComponent*)goku.getComponent<PhysicComponent>();
 	StateComponent* gokuState = (StateComponent*)goku.getComponent<StateComponent>();
 
 	BoundComponent* characterBound = (BoundComponent*)e.getComponent<BoundComponent>();
@@ -74,6 +75,7 @@ void GiranDecision::obsever(artemis::Entity &e){
 	bool isGokuDungyen = gokuState->state == R::CharacterState::STAND;
 	bool isGokuDichuyenSangTrai = (gokuState->state == R::CharacterState::WALK_LEFT) || (gokuState->state == R::CharacterState::LEFT);
 	bool isGokuDichuyenSangPhai = (gokuState->state == R::CharacterState::WALK_RIGHT) || (gokuState->state == R::CharacterState::RIGHT);
+	
 
 	bool isCharacterDangDichuyen = (characterState->state == R::CharacterState::LEFT || characterState->state == R::CharacterState::RIGHT || characterState->state == R::CharacterState::WALK_LEFT || characterState->state == R::CharacterState::WALK_RIGHT);
 	bool isDichuyenSangTrai = (characterState->state == R::CharacterState::WALK_LEFT) || (characterState->state == R::CharacterState::LEFT);
@@ -92,7 +94,7 @@ void GiranDecision::obsever(artemis::Entity &e){
 		// nằm trong phạm vi tấn công
 		if (!isGokuDungGanBenTrai && !isGokuDungGanBenPhai){
 			// Có thể tấn công
-			if (coTheRadon){
+			if (coTheRadon && characterState->time_on_state>= .3f){
 				if (distance > 0) {
 					characterState->direction = R::Direction::LEFT;
 					characterSkeleton->node->setScaleX(-1);
@@ -812,6 +814,7 @@ void KarillinDecision::obsever(artemis::Entity &e){
 	BoundComponent* gokuBound = (BoundComponent*)goku.getComponent<BoundComponent>();
 	PosComponent* gokuPosition = (PosComponent*)goku.getComponent<PosComponent>();
 	StateComponent* gokuState = (StateComponent*)goku.getComponent<StateComponent>();
+	PhysicComponent* gokuPhysic = (PhysicComponent*)goku.getComponent<PhysicComponent>();
 
 	BoundComponent* characterBound = (BoundComponent*)e.getComponent<BoundComponent>();
 	PosComponent* characterPosition = (PosComponent*)e.getComponent<PosComponent>();
@@ -833,6 +836,9 @@ void KarillinDecision::obsever(artemis::Entity &e){
 	bool isGokuDungyen = gokuState->state == R::CharacterState::STAND;
 	bool isGokuDichuyenSangTrai = (gokuState->state == R::CharacterState::WALK_LEFT) || (gokuState->state == R::CharacterState::LEFT);
 	bool isGokuDichuyenSangPhai = (gokuState->state == R::CharacterState::WALK_RIGHT) || (gokuState->state == R::CharacterState::RIGHT);
+	bool isGokuDichuyenRaxaBenTrai = ((gokuPosition->x < characterPosition->x) && gokuPhysic->vx < 0);
+	bool isGokuDichuyenRaxaBenPhai = ((gokuPosition->x > characterPosition->x) && gokuPhysic->vx > 0);
+	bool isGokuDichuyenLaiGan = (!isGokuDichuyenRaxaBenPhai && !isGokuDichuyenRaxaBenTrai && gokuPhysic->vx != 0);
 
 	bool isCharacterDangDichuyen = (characterState->state == R::CharacterState::LEFT || characterState->state == R::CharacterState::RIGHT || characterState->state == R::CharacterState::WALK_LEFT || characterState->state == R::CharacterState::WALK_RIGHT);
 	bool isDichuyenSangTrai = (characterState->state == R::CharacterState::WALK_LEFT) || (characterState->state == R::CharacterState::LEFT);
@@ -916,13 +922,8 @@ void KarillinDecision::obsever(artemis::Entity &e){
 		else{
 			canAvoidGokuAttack = true;
 		}
-
-
-
-
-
-
-
+		
+		// Goku đứng yên
 		if (isGokuDungyen){
 			// có thể ra chưởng tầm xa thì chiến luôn :
 			if (characterState->state != R::CharacterState::JUMP && !isCharacterDangDichuyen &&  characterInfo->hasManaForSkill(40)){
@@ -932,7 +933,6 @@ void KarillinDecision::obsever(artemis::Entity &e){
 				return;
 			}
 
-			// nếu goku đứng yên thì di chuyển lại gần.
 			if (isGokuDungBenPhaiPhamVitancong)	{
 				characterState->direction = R::Direction::RIGHT;
 				if (characterState->state == R::CharacterState::RIGHT || characterState->state == R::CharacterState::WALK_RIGHT)
@@ -949,6 +949,11 @@ void KarillinDecision::obsever(artemis::Entity &e){
 			}
 			return;
 		}
+		else{
+		// Goku không đứng yên 
+		
+		}
+
 	}
 
 }

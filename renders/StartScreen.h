@@ -21,11 +21,12 @@ public:
 	CREATE_FUNC(StartScreen);
 
 	virtual void update(float delta);
-
 	void showFlashImage();
 	void showStartLayer();
 	void onSelectPlayGame();
+	void onSelectContinueGame();
 	void switchToSelectScreen();
+	void switchToContinueGame();
 	void addCharacterItem(int index, int state, std::string name, std::string unlock, std::string lock, const std::function<void()> &callback);
 	void addCharacterItem(int index, std::string name, std::string unlock, std::string lock, const std::function<void()> &callback);
 	void goToGame(R::Match_Type matchType);
@@ -44,6 +45,7 @@ public:
 	bool layoutSelectCreated;
 	spine::SkeletonAnimation* gokuAnimation;
 	ui::ImageView* buttonPlay;
+	ui::ImageView* buttonContinue;
 };
 
 class CharacterItem : public ui::Layout{

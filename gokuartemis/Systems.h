@@ -109,7 +109,7 @@ public:
 	virtual void end();
 
 	virtual void switchToWin();
-	virtual void switchToLose();
+	virtual bool switchToLose();
 	virtual void switchToAppear();
 	virtual void switchToReady();
 	virtual void switchToFighting();
@@ -117,6 +117,7 @@ public:
 	virtual void switchToResume();
 
 	void switchToState(R::GameState state, artemis::Entity* e);
+	bool createLoseMessage;
 private:
 
 	artemis::ComponentMapper<GameStateComponent> gameStateMapper;
@@ -331,6 +332,7 @@ public:
 	bool doneInput;
 	int step;
 	Node* node;
+	ui::Text* text;
 	ui::ImageView* button;
 protected:
 	artemis::ComponentMapper<IntroduceComponent> introduceMapper;

@@ -39,13 +39,31 @@ bool AppDelegate::applicationDidFinishLaunching() {
     if(!glview) {
         glview = GLViewImpl::create("Goku Fight");
         director->setOpenGLView(glview);
-		glview->setFrameSize(R::Constants::WIDTH_SCREEN,R::Constants::HEIGHT_SCREEN-200);
+		glview->setFrameSize(R::Constants::WIDTH_SCREEN,600);
     }
 
     // turn on display FPS
     director->setDisplayStats(true);
 	director->getOpenGLView()->setDesignResolutionSize(R::Constants::WIDTH_SCREEN, R::Constants::HEIGHT_SCREEN, ResolutionPolicy::SHOW_ALL);
   
+
+	/*Size winSize = Size(R::Constants::WIDTH_SCREEN, 800);
+	Size frameSize = glview->getFrameSize();
+	float widthRate = frameSize.width / winSize.width;
+	float heightRate = frameSize.height / winSize.height;
+	if (widthRate > heightRate)
+	{
+		glview->setDesignResolutionSize(winSize.width,
+			winSize.height*heightRate / widthRate, ResolutionPolicy::FIXED_HEIGHT);
+	}
+	else
+	{
+		glview->setDesignResolutionSize(winSize.width*widthRate / heightRate, winSize.height,
+			ResolutionPolicy::FIXED_HEIGHT);
+	}*/
+
+
+
     director->setAnimationInterval(1.0 / 60);
 
     register_all_packages();

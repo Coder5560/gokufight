@@ -120,15 +120,15 @@ public :
 	void setReplayCallback(const std::function<void()> &callback);
 	void setMenuCallBack(const std::function<void()> &callback);
 	void setNextMatchCallBack(const std::function<void()> &callback);
-	
+	void setGuideCallBack(const std::function<void()> &callback);
 	std::function<void()> continueCallBack;
 	std::function<void()> menuCallBack;
 	std::function<void()> replayCallBack;
 	std::function<void()> nextMatchCallBack;
+	std::function<void()> guideCallBack;
 
 	bool isShowing;
-
-
+	
 	ui::ImageView* background;
 	ui::ImageView* btnMenu;
 	ui::ImageView* btnNext;
@@ -189,4 +189,9 @@ public:
 	ui::ImageView* btnReplay;
 
 	ui::Text* text;
+};
+
+class TextEffect : public Effects{
+
+
 };

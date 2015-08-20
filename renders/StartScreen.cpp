@@ -20,6 +20,7 @@ bool StartScreen::init() {
 	this->layoutSelectCreated = false;
 	this->setContentSize(Size(R::Constants::WIDTH_SCREEN, R::Constants::HEIGHT_SCREEN));
 	this->setSwallowsTouches(false);
+	R::Constants::loadVariable();
 	showFlashImage();
 	this->scheduleUpdate();
 
@@ -37,6 +38,9 @@ void StartScreen::update(float delta){
 			gokuAnimation->setPositionX(gokuAnimation->getPositionX() + speed*delta);
 		}
 		else{
+			/*if (R::Constants::unlocked >0){
+				buttonContinue->setVisible(true);
+			}*/
 			buttonPlay->setVisible(true);
 			gokuAnimation->setPositionX(destination);
 			gokuAnimation->setToSetupPose();
@@ -61,14 +65,22 @@ void StartScreen::showFlashImage(){
 	CallFunc* callBack = CallFunc::create([=](){
 		this->showStartLayer();
 	});
-	
+
 	Sequence* sequence = Sequence::create(fadeIn, delay, fadeOut, callBack, nullptr);
 	flashImage->runAction(sequence);
 
-	
+
 }
 
 void StartScreen::showStartLayer(){
+
+	auto userDefault = UserDefault::sharedUserDefault();
+	if (!R::Constants::howtoplay){
+		R::Constants::howtoplay = true;
+		goToGame(R::Match_Type::GOKU_BEAR_INTRODUCE);
+		return;
+	}
+
 	AdsManager::showAds(false);
 	if (R::Constants::musicEnable) {
 		CocosDenshion::SimpleAudioEngine::getInstance()->setBackgroundMusicVolume(R::Constants::musicVolumn);
@@ -116,14 +128,28 @@ void StartScreen::showStartLayer(){
 		onSelectPlayGame();
 	});
 
+
+	//buttonContinue = ui::ImageView::create("menu/btn-continue.png");
+	//buttonContinue->setScale9Enabled(true);
+	//buttonContinue->setScale(.6);
+	//buttonContinue->ignoreAnchorPointForPosition(false);
+	//buttonContinue->setPosition(Vec2(330, 340));
+	//buttonContinue->addChild(buttonContinue);
+	//buttonContinue->setTouchEnabled(true);
+
+	//buttonContinue->addClickEventListener([=](Ref* sender){
+	//	onSelectContinueGame();
+	//});
+
+
 	ui::ImageView* music = ui::ImageView::create(R::Constants::musicEnable ? "menu/music_on.png" : "menu/music_off.png");
 	music->setScale9Enabled(true);
 	music->setScale(.6);
 	music->ignoreAnchorPointForPosition(false);
 	music->setPosition(Vec2(400, 210));
 	music->setTouchEnabled(true);
-	music->addClickEventListener([this,music](Ref* sender){
-		
+	music->addClickEventListener([this, music](Ref* sender){
+
 		if (R::Constants::soundEnable) {
 			CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
 			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/button_click.mp3", false, 1, 0, 1);
@@ -140,7 +166,7 @@ void StartScreen::showStartLayer(){
 		music->setTouchEnabled(false);
 		ScaleTo* scaleIn = ScaleTo::create(.1f, .56f);
 		ScaleTo* scaleout = ScaleTo::create(.1f, .6f);
-		CallFunc* call = CallFunc::create([this,music](){
+		CallFunc* call = CallFunc::create([this, music](){
 			onMusicClick();
 			music->setTouchEnabled(true);
 			music->loadTexture(R::Constants::musicEnable ? "menu/music_on.png" : "menu/music_off.png", ui::ImageView::TextureResType::LOCAL);
@@ -156,7 +182,7 @@ void StartScreen::showStartLayer(){
 	sound->setPosition(Vec2(400, 150));
 	sound->setTouchEnabled(true);
 	sound->addClickEventListener([this, sound](Ref* sender){
-		
+
 		if (R::Constants::soundEnable) {
 			CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
 			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/button_click.mp3", false, 1, 0, 1);
@@ -207,6 +233,7 @@ void StartScreen::showStartLayer(){
 	layoutPlay->addChild(gokuAnimation);
 
 	buttonPlay->setVisible(false);
+//	buttonContinue->setVisible(false);
 	gokuAnimation->setVisible(false);
 	gokuAnimation->setPositionX(-100);
 }
@@ -218,6 +245,26 @@ void StartScreen::onSoundClick(){
 }
 
 void StartScreen::onGuildClick(){
+	goToGame(R::Match_Type::GOKU_BEAR_INTRODUCE);
+}
+void StartScreen::switchToContinueGame(){
+	// find the last gameplay and play that game
+}
+
+void StartScreen::onSelectContinueGame(){
+	//if (R::Constants::soundEnable) {
+	//	CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
+	//	CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/button_click.mp3", false, 1, 0, 1);
+	//}
+	//buttonContinue->setTouchEnabled(false);
+	//ScaleTo* scaleIn = ScaleTo::create(.1f, .56f);
+	//ScaleTo* scaleout = ScaleTo::create(.1f, .6f);
+	//CallFunc* callBack = CallFunc::create([=](){
+	//	switchToContinueGame();
+	//	// do somethng
+	//	buttonContinue->setTouchEnabled(true);
+	//});
+	//buttonContinue->runAction(Sequence::create(scaleIn, scaleout, callBack, nullptr));
 }
 
 void StartScreen::onSelectPlayGame(){
@@ -264,8 +311,8 @@ void StartScreen::switchToSelectScreen(){
 
 
 
-	addCharacterItem(0, "BEAR", "select_screen/bear1.png", "select_screen/bear2.png", [=](){
-		goToGame(R::Match_Type::GOKU_BEAR_INTRODUCE);
+	addCharacterItem(0, "LACOSTE", "select_screen/giran1.png", "select_screen/giran2.png", [=](){
+		goToGame(R::Match_Type::GOKU_GIRAN);
 	});
 	addCharacterItem(1, "RHINO", "select_screen/yamcha1.png", "select_screen/yamcha2.png", [=](){
 		goToGame(R::Match_Type::GOKU_TEGIAC);
@@ -273,8 +320,8 @@ void StartScreen::switchToSelectScreen(){
 	addCharacterItem(2, "CHIMPANZEE", "select_screen/karillin1.png", "select_screen/karillin2.png", [=](){
 		goToGame(R::Match_Type::GOKU_KARILLIN);
 	});
-	addCharacterItem(3, "LACOSTE", "select_screen/giran1.png", "select_screen/giran2.png", [=](){
-		goToGame(R::Match_Type::GOKU_GIRAN);
+	addCharacterItem(3, "BEAR", "select_screen/bear1.png", "select_screen/bear2.png", [=](){
+		goToGame(R::Match_Type::GOKU_BEAR);
 	});
 	addCharacterItem(4, "TURTLE", "select_screen/nam1.png", "select_screen/nam2.png", [=](){
 		goToGame(R::Match_Type::GOKU_RUA);
@@ -292,6 +339,7 @@ void StartScreen::switchToSelectScreen(){
 }
 
 void StartScreen::goToGame(R::Match_Type type){
+	R::Constants::updateVariable();
 	CocosDenshion::SimpleAudioEngine::getInstance()->stopBackgroundMusic(true);
 	auto scene = HelloWorld::createScene(type);
 	Director::getInstance()->replaceScene(TransitionFade::create(0.3, scene, Color3B(0, 0, 0)));
@@ -366,7 +414,7 @@ CharacterItem::CharacterItem(int state, std::string name, std::string textureUnl
 	ui::Text* _name = ui::Text::create(name, "fonts/courbd.ttf", 18);
 	_name->setPosition(Vec2(getContentSize().width / 4 + 6, getContentSize().height / 2 + 10));
 
-	ui::Text* toUnlock = ui::Text::create("TO UNLOCK", "fonts/courbd.ttf", 16);
+	ui::Text* toUnlock = ui::Text::create("LOCKED", "fonts/courbd.ttf", 16);
 	toUnlock->setPosition(Vec2(getContentSize().width / 4 + 6, getContentSize().height / 2 - 16));
 
 	ui::Text* unlocked = ui::Text::create("UNLOCKED", "fonts/courbd.ttf", 16);

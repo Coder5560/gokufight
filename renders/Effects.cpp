@@ -400,13 +400,12 @@ PauseScene::PauseScene(Node* node) : isShowing(false) {
 	btnContinue = ui::ImageView::create("menu/btn-continue.png");
 	btnContinue->setAnchorPoint(Vec2(.5f, .5f));
 
-	btnMusic = ui::ImageView::create("menu/music_on.png");
+	btnMusic = ui::ImageView::create(R::Constants::musicEnable ? "menu/music_on.png" : "menu/music_off.png");
 	btnMusic->setAnchorPoint(Vec2(.5f, .5f));
-	btnSound = ui::ImageView::create("menu/sound_on.png");
+	btnSound = ui::ImageView::create(R::Constants::soundEnable ? "menu/sound_on.png" : "menu/sound_off.png");
 	btnSound->setAnchorPoint(Vec2(.5f, .5f));
 	btnGuide = ui::ImageView::create("menu/guide.png");
 	btnGuide->setAnchorPoint(Vec2(.5f, .5f));
-
 
 	text = ui::Text::create("YOU WIN !", "fonts/courbd.ttf", 30);
 	text->setColor(Color3B::WHITE);
@@ -426,7 +425,9 @@ void PauseScene::setMenuCallBack(const std::function<void()> &callback){
 void PauseScene::setNextMatchCallBack(const std::function<void()> &callback){
 	this->nextMatchCallBack = callback;
 }
-
+void PauseScene::setGuideCallBack(const std::function<void()> &callback){
+	this->guideCallBack = callback;
+}
 
 
 void PauseScene::showPauseScene(){
@@ -504,6 +505,7 @@ void PauseScene::showPauseScene(){
 			RemoveSelf* removeSelf = RemoveSelf::create(true);
 			node->runAction(removeSelf);
 			btnGuide->setTouchEnabled(true);
+			if (guideCallBack) guideCallBack();
 		});
 		btnGuide->runAction(Sequence::create(scaleIn, scaleout, call, nullptr));
 	});

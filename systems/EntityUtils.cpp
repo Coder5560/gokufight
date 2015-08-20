@@ -832,9 +832,6 @@ void EntityUtils::createBearAttack1(artemis::Entity &attacker, AttackComponent* 
 	physicComponent->vy = -200;
 	physicComponent->friction = 0;
 
-
-
-
 	PosComponent* position = new PosComponent();
 	position->x = attackPosition->x + (isLeftDirection ? -40 : 40);
 	position->y = attackPosition->y + attackBound->y2 + 20;
@@ -858,19 +855,14 @@ void EntityUtils::createBearAttack2(artemis::Entity &attacker, AttackComponent* 
 	bool isLeftDirection = skeleton->node->getScaleX() < 0;
 	artemis::Entity &dan = (world->getEntityManager()->create());
 
-
 	PhysicComponent* physicComponent = new PhysicComponent(true);
 	physicComponent->vx = 180 * (isLeftDirection ? -1 : 1);
 	physicComponent->vy = -140;
 	physicComponent->friction = 0;
 
-
-
-
 	PosComponent* position = new PosComponent();
 	position->x = attackPosition->x;
 	position->y = attackPosition->y + attackBound->y2 + 20;
-
 
 	GravityComponent* gravity = new GravityComponent();
 	gravity->enable = false;
@@ -897,14 +889,10 @@ void EntityUtils::createGiranAttack1(artemis::Entity &attacker, AttackComponent*
 	physicComponent->vx = 20 * (isLeftDirection ? -1 : 1);
 	physicComponent->vy = -40;
 	physicComponent->friction = 0;
-
-
-
-
+	
 	PosComponent* position = new PosComponent();
 	position->x = isLeftDirection ? (attackPosition->x + attackBound->x1 - 20) : (attackPosition->x + attackBound->x2 + 20);
 	position->y = attackPosition->y + attackBound->y2 - 20;
-
 
 	GravityComponent* gravity = new GravityComponent();
 	gravity->enable = false;
@@ -918,24 +906,20 @@ void EntityUtils::createGiranAttack1(artemis::Entity &attacker, AttackComponent*
 	dan.refresh();
 }
 void EntityUtils::createGiranAttack2(artemis::Entity &attacker, AttackComponent* attackComponent){
-
 	PosComponent* attackPosition = (PosComponent*)attacker.getComponent<PosComponent>();
 	BoundComponent* attackBound = (BoundComponent*)attacker.getComponent<BoundComponent>();
 	SkeletonComponent* skeleton = (SkeletonComponent*)attacker.getComponent<SkeletonComponent>();
 	bool isLeftDirection = skeleton->node->getScaleX() < 0;
 	artemis::Entity &dan = (world->getEntityManager()->create());
 
-
 	PhysicComponent* physicComponent = new PhysicComponent(true);
 	physicComponent->vx = 100 * (isLeftDirection ? -1 : 1);
 	physicComponent->vy = 100;
 	physicComponent->friction = 0;
 
-
 	PosComponent* position = new PosComponent();
 	position->x = isLeftDirection ? (attackPosition->x + attackBound->x1 - 15) : (attackPosition->x + attackBound->x2 + 15);
 	position->y = attackPosition->y + 40;
-
 
 	GravityComponent* gravity = new GravityComponent();
 	gravity->enable = false;

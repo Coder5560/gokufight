@@ -47,7 +47,6 @@ void Giran::changeState(artemis::Entity &e){
 			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/enemy_attack.mp3", false, 1, 0, 1);
 		}
 		EntityUtils::getInstance()->createAttackEntity(e, attackComponent);
-		state->state = R::CharacterState::STAND;
 	}
 	else if (state->state == R::CharacterState::DIE){
 		if (R::Constants::soundEnable){
@@ -77,11 +76,14 @@ void Giran::actionTrungDon(artemis::Entity &e, R::Direction direction){
 	skeleton->skeleton->setToSetupPose();
 	skeleton->skeleton->setCompleteListener(nullptr);
 	skeleton->skeleton->setTimeScale(1);
+	StateComponent* stateComponent = (StateComponent*)e.getComponent<StateComponent>();
+	PosComponent* positionComponent = (PosComponent*)e.getComponent<PosComponent>();
+	stateComponent->setState(R::CharacterState::STAND);
 	if (direction == R::Direction::LEFT){
-		EntityUtils::getInstance()->push(e, 180, 240);
+		positionComponent->x -= 40;
 	}
 	else if (direction == R::Direction::RIGHT){
-		EntityUtils::getInstance()->push(e, 0, 240);
+		positionComponent->x += 40;
 	}
 }
 void Giran::actionStand(artemis::Entity &e){
@@ -160,7 +162,6 @@ void Giran::actionMoveOn(artemis::Entity &e, R::Direction direction){
 		return;
 	}
 	else {
-		// xử lý action
 		StateComponent* state = (StateComponent*)e.getComponent<StateComponent>();
 		SkeletonComponent* skeleton = (SkeletonComponent*)e.getComponent<
 			SkeletonComponent>();
