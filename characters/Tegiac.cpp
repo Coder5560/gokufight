@@ -75,20 +75,20 @@ void Tegiac::changeState(artemis::Entity &e){
 		}
 		if (R::Constants::soundEnable){
 			CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
-			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/enemy_attack.mp3", false, 1, 0, 1);
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect(R::Constants::ENEMY_ATTACK, false, 1, 0, 1);
 		}
 		EntityUtils::getInstance()->createAttackEntity(e, attackComponent);
 	}
 	else if (state->state == R::CharacterState::DIE){ 
 		if (R::Constants::soundEnable){
 			CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
-			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/enemy_death.mp3", false, 1, 0, 1);
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect(R::Constants::ENEMY_DEATH, false, 1, 0, 1);
 		}
 		actionDie(e, state->direction); }
 	else if (state->state == R::CharacterState::DEFENSE){
 		if (R::Constants::soundEnable){
 			CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn); 
-			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/hit_03.mp3",false,1,0,1);
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect(R::Constants::ENEMY_HIT3,false,1,0,1);
 		}
 		if (state->defense == R::Defense::TRUNG_DON)  actionTrungDon(e, state->direction);
 		if (state->defense == R::Defense::TRUNG_DON_NGA)  actionTrungDonNga(e, state->direction);
@@ -392,30 +392,40 @@ void Tegiac::actionBack(artemis::Entity &e, R::Direction direction){
 		Node* node = skeleton->node;
 		PosComponent* pos = (PosComponent*)(e.getComponent<PosComponent>());
 		if (direction == R::Direction::LEFT) {
-			EntityUtils::getInstance()->push(e, 140, 400);
-			EntityUtils::getInstance()->clampVelocity(e, 0, 400);
+			EntityUtils::getInstance()->push(e, 180, 300);
+			EntityUtils::getInstance()->clampVelocity(e, 0, 300);
 			skeletonAnimation->clearTracks();
 			skeletonAnimation->setAnimation(0, "Back", false);
 			skeletonAnimation->setTimeScale(1);
-			skeletonAnimation->setCompleteListener(nullptr);
+			skeletonAnimation->setCompleteListener(
+				[=](int trackIndex, int loopCount) {
+				state->setState(R::CharacterState::STAND);
+			});
 			node->setScaleX(1);
 		}
 		else if (direction == R::Direction::RIGHT) {
-			EntityUtils::getInstance()->push(e, 40, 400);
-			EntityUtils::getInstance()->clampVelocity(e, 0, 400);
+			EntityUtils::getInstance()->push(e, 0, 300);
+			EntityUtils::getInstance()->clampVelocity(e, 0, 300);
 			skeletonAnimation->clearTracks();
 			skeletonAnimation->setAnimation(0, "Back", false);
 			skeletonAnimation->setTimeScale(1);
-			skeletonAnimation->setCompleteListener(nullptr);
+			skeletonAnimation->setCompleteListener(
+				[=](int trackIndex, int loopCount) {
+				state->setState(R::CharacterState::STAND);
+			});
 			node->setScaleX(-1);
 		}
 		else if (direction == R::Direction::AUTO) {
-			EntityUtils::getInstance()->push(e, node->getScaleX() == 1 ? 140 : 40, 400);
-			EntityUtils::getInstance()->clampVelocity(e, 0, 400);
+			EntityUtils::getInstance()->push(e, node->getScaleX() == 1 ? 180 : 0, 300);
+			EntityUtils::getInstance()->clampVelocity(e, 0, 300);
 			skeletonAnimation->clearTracks();
 			skeletonAnimation->setAnimation(0, "Back", false);
 			skeletonAnimation->setTimeScale(1);
-			skeletonAnimation->setCompleteListener(nullptr);
+			skeletonAnimation->setCompleteListener(
+				[=](int trackIndex, int loopCount) {
+
+				state->setState(R::CharacterState::STAND);
+			});
 		}
 	}
 

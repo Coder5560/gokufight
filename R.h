@@ -6,6 +6,28 @@ namespace R{
 
 	class Constants{
 	public :
+		static const char* CLICK;
+	
+		static const char* ENEMY_DEATH;
+		static const char* ENEMY_ATTACK;
+		static const char* ENEMY_HIT2;
+		static const char* ENEMY_HIT3;
+		static const char* PUNCH;
+		static const char* GOKU_ATTACK;
+		static const char* GOKU_BEHIT;
+		static const char* GOKU_DEATH;
+		static const char* JUMP;
+		static const char* SKILL_1;
+		static const char* SKILL_3;
+
+		static const char* THEME_1;
+		static const char* THEME_2;
+		static const char* THEME_3;
+		static const char* BOMB;
+		static const char* MENU;
+		static const char* LANDING;
+
+
 		static void resetVariable();
 		static void loadVariable();
 		static void updateVariable();
@@ -23,6 +45,7 @@ namespace R{
 		static bool soundEnable;
 		static bool howtoplay;
 		static int unlocked;
+		static int lastPlay;
 		static int remaininglife;
 		static int countLose;
 	};

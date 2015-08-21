@@ -9,7 +9,9 @@
 #include "HelloWorldScene.h"
 #include "ui/UIPageView.h"
 #include "AdsManager.h"
+#include "renders/Effects.h"
 USING_NS_CC;
+
 class CharacterItem;
 
 class StartScreen : public cocos2d::LayerColor
@@ -43,9 +45,17 @@ public:
 
 	bool showingStartLayer;
 	bool layoutSelectCreated;
+
 	spine::SkeletonAnimation* gokuAnimation;
 	ui::ImageView* buttonPlay;
 	ui::ImageView* buttonContinue;
+	ui::ImageView* sound;
+	ui::ImageView* music;
+	ui::ImageView* guide;
+	Sprite* nameGame;
+	Sprite* background;
+	RemainingLife* remainingLife;
+
 };
 
 class CharacterItem : public ui::Layout{

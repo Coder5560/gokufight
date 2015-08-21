@@ -1,7 +1,7 @@
 #include "gokuartemis/ECSWorld.h"
 
 ECSWorld* ECSWorld::instance = NULL;
-ECSWorld::ECSWorld() : isIgnoreWorld(false), accumulate(0), STEP(0.015f), goku(nullptr), world(nullptr){	}
+ECSWorld::ECSWorld() : isReplayGame(false), isIgnoreWorld(false), accumulate(0), STEP(0.015f), goku(nullptr), world(nullptr){	}
 ECSWorld* ECSWorld::getInstance(){
 	if (instance == NULL){
 		instance = new ECSWorld();
@@ -22,45 +22,52 @@ ECSWorld::~ECSWorld()
 
 
 void ECSWorld::createWorld(R::Match_Type matchType){
-	if (R::Constants::unlocked > 0){
-		R::Constants::remaininglife -= 1;
-	}
-	R::Constants::updateVariable();
 	this->matchType = matchType;
 	AdsManager::showAds(true);
 	if (R::Constants::musicEnable) {
 		srand(time(NULL));
 		int rad = rand() / 6 + 1;
 		CocosDenshion::SimpleAudioEngine::getInstance()->setBackgroundMusicVolume(R::Constants::musicVolumn);
-		if (rad <= 2) CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("sounds/theme_2.mp3", true);
-		else if (rad <= 4) CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("sounds/theme_1.mp3", true);
-		else  CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("sounds/theme_3.mp3", true);
+		if (rad <= 2) CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic(R::Constants::THEME_2, true);
+		else if (rad <= 4) CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic(R::Constants::THEME_1, true);
+		else  CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic(R::Constants::THEME_3, true);
 	}
 	std::string str = "backgrounds/bg6.png";
 	switch (matchType){
 	case R::Match_Type::GOKU_BEAR:
+		R::Constants::lastPlay = 0;
 		str = "backgrounds/bg6.png";
 		break;
 	case R::Match_Type::GOKU_TEGIAC:
 		str = "backgrounds/bg7.png";
+		R::Constants::lastPlay = 1;
 		break;
 	case R::Match_Type::GOKU_KARILLIN:
 		str = "backgrounds/bg4.png";
+		R::Constants::lastPlay = 2;
 		break;
 	case R::Match_Type::GOKU_GIRAN:
 		str = "backgrounds/bg5.png";
+		R::Constants::lastPlay = 3;
 		break;
 	case R::Match_Type::GOKU_RUA:
 		str = "backgrounds/bg1.png";
+		R::Constants::lastPlay = 4;
 		break;
 	case R::Match_Type::GOKU_CAMAP:
 		str = "backgrounds/bg3.png";
+		R::Constants::lastPlay = 5;
 		break;
 	case R::Match_Type::GOKU_JACKIECHUN:
 		str = "backgrounds/bg2.png";
+		R::Constants::lastPlay = 6;
 		break;
 	case R::Match_Type::GOKU_PICOLO:
 		str = "backgrounds/bg8.png";
+		R::Constants::lastPlay = 7;
+		break;
+	default:
+		R::Constants::lastPlay = -1;
 		break;
 	}
 
@@ -78,9 +85,10 @@ void ECSWorld::createWorld(R::Match_Type matchType){
 	createMainCharacter();
 	createCameraFollowEntity();
 
+	GameStateComponent* gameStateComponent = new GameStateComponent();
 	//create GameState system manager
 	artemis::Entity &e = world->createEntity();
-	e.addComponent(new GameStateComponent());
+	e.addComponent(gameStateComponent);
 	e.setTag("gameState");
 	e.refresh();
 
@@ -106,7 +114,7 @@ void ECSWorld::createWorld(R::Match_Type matchType){
 	setSystem(new MotionSystem());
 	setSystem(new SkeletonSystem());
 	//	setSystem(new UICharacterSystem());
-	
+
 	setSystem(new CharacterStateSystem());
 	setSystem(new RenderSystem());
 	setSystem(new RemoveEntitySystem());
@@ -140,20 +148,30 @@ void ECSWorld::createWorld(R::Match_Type matchType){
 	RenderLayer::getInstance()->getHudLayer()->addChild(gameHud);
 	RenderLayer::getInstance()->getHudLayer()->setCameraMask((unsigned short)CameraFlag::USER1);
 
-	ui::Text* text = ui::Text::create("TOUCH TO BEGIN", "fonts/courbd.ttf", 30);
-	text->setColor(Color3B::WHITE);
-	text->enableOutline(Color4B::BLACK, 2);
-	Node* node = RenderLayer::getInstance()->createHudNode();
-	node->setContentSize(Size(R::Constants::WIDTH_SCREEN, R::Constants::HEIGHT_SCREEN));
-	text->setAnchorPoint(Vec2(.5, .5));
-	text->setPosition(Size(node->getContentSize().width / 2, node->getContentSize().height / 3));
-	auto fadeIn = FadeIn::create(.5);
-	auto fadeOut = FadeOut::create(.5);
-	text->runAction(RepeatForever::create(Sequence::create(fadeIn, fadeOut, nullptr)));
+	if (isReplayGame){
+		gameStateComponent->setGameState(R::GameState::PREPARE);
+		isReplayGame = false;
+	}
+	else{
 
-	node->addChild(text);
-	node->setTag(200);
-	node->setCameraMask((unsigned short)CameraFlag::USER1);
+		ui::Text* text = ui::Text::create("TOUCH TO BEGIN", "fonts/courbd.ttf", 30);
+		text->setColor(Color3B::WHITE);
+		text->enableOutline(Color4B::BLACK, 2);
+		Node* node = RenderLayer::getInstance()->createHudNode();
+		node->setContentSize(Size(R::Constants::WIDTH_SCREEN, R::Constants::HEIGHT_SCREEN));
+		text->setAnchorPoint(Vec2(.5, .5));
+		text->setPosition(Size(node->getContentSize().width / 2, node->getContentSize().height / 3));
+		auto fadeIn = FadeIn::create(.5);
+		auto fadeOut = FadeOut::create(.5);
+		text->runAction(RepeatForever::create(Sequence::create(fadeIn, fadeOut, nullptr)));
+		node->addChild(text);
+		node->setTag(200);
+		node->setCameraMask((unsigned short)CameraFlag::USER1);
+	}
+	if (matchType != R::Match_Type::GOKU_BEAR_INTRODUCE){ 
+		R::Constants::remaininglife -= 1; 
+	}
+	R::Constants::updateVariable();
 }
 
 void ECSWorld::notifyInput(Touch* touch, GameHud::EventType event,
@@ -173,13 +191,22 @@ void ECSWorld::resetCurrentMatch(){
 	RenderLayer::getInstance()->getGameLayer()->removeAllChildren();
 	createWorld(matchType);
 }
+
+void ECSWorld::resetCurrentMatch(bool isReplayGame){
+	ignoreWorld(false);
+	if(isReplayGame) this->isReplayGame = true;
+	RenderLayer::getInstance()->getHudLayer()->removeAllChildren();
+	RenderLayer::getInstance()->getGameLayer()->removeAllChildren();
+	createWorld(matchType);
+	
+}
 void ECSWorld::nextMatch(){
 	ignoreWorld(false);
 	RenderLayer::getInstance()->getHudLayer()->removeAllChildren();
 	RenderLayer::getInstance()->getGameLayer()->removeAllChildren();
 	int matchIndex = R::Constants::unlocked % 8;
 	if (matchIndex == 0){
-		createWorld(R::Match_Type::GOKU_GIRAN);
+		createWorld(R::Match_Type::GOKU_BEAR);
 	}
 	else	if (matchIndex == 1){
 		createWorld(R::Match_Type::GOKU_TEGIAC);
@@ -188,7 +215,7 @@ void ECSWorld::nextMatch(){
 		createWorld(R::Match_Type::GOKU_KARILLIN);
 	}
 	else	if (matchIndex == 3){
-		createWorld(R::Match_Type::GOKU_BEAR);
+		createWorld(R::Match_Type::GOKU_GIRAN);
 	}
 	else	if (matchIndex == 4){
 		createWorld(R::Match_Type::GOKU_RUA);
@@ -553,7 +580,7 @@ void ECSWorld::createTegiacCharacter(){
 
 	DecisionComponent* decisionComponent = new DecisionComponent();
 	decisionComponent->DECISION_TIME = .4;
-	decisionComponent->decisionBase = new TegiacDecision();
+	decisionComponent->decisionBase = new AITegiac();
 	decisionComponent->decisionBase->setWorld(world);
 
 	StateComponent* stateComponent = new StateComponent();

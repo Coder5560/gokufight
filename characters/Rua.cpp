@@ -60,21 +60,21 @@ void Rua::changeState(artemis::Entity &e){
 		}
 		if (R::Constants::soundEnable){
 			CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
-			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/enemy_attack.mp3", false, 1, 0, 1);
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect(R::Constants::ENEMY_ATTACK, false, 1, 0, 1);
 		}
 		EntityUtils::getInstance()->createAttackEntity(e, attackComponent);
 	}
 	else if (state->state == R::CharacterState::DIE){
 		if (R::Constants::soundEnable){
 			CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
-			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/enemy_death.mp3", false, 1, 0, 1);
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect(R::Constants::ENEMY_DEATH, false, 1, 0, 1);
 		} 
 		actionDie(e, state->direction);
 	}
 	else if (state->state == R::CharacterState::DEFENSE){
 		if (R::Constants::soundEnable){
 			CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
-			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/punch.mp3", false, 1, 0, 1);
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect(R::Constants::PUNCH, false, 1, 0, 1);
 		}
 		if (state->defense == R::Defense::TRUNG_DON)  actionTrungDon(e, state->direction);
 		if (state->defense == R::Defense::TRUNG_DON_NGA)  actionTrungDonNga(e, state->direction);

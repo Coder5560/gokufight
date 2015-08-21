@@ -286,11 +286,18 @@ void GameStateSystem::end() {
 }
 void GameStateSystem::switchToWin(){
 
-	R::Constants::unlocked++;
-	if (R::Constants::unlocked > R::Constants::MAX_LEVEL){
-		R::Constants::unlocked = R::Constants::MAX_LEVEL;
+	if (R::Constants::lastPlay == R::Constants::unlocked){
+		R::Constants::unlocked++;
+		if (R::Constants::unlocked > R::Constants::MAX_LEVEL){
+			R::Constants::unlocked = R::Constants::MAX_LEVEL;
+		}
+		R::Constants::remaininglife += 2;
 	}
-	R::Constants::remaininglife += 2;
+	else{
+		R::Constants::remaininglife += 1;
+	}
+
+
 	if (R::Constants::remaininglife > R::Constants::MAX_LIFE){
 		R::Constants::remaininglife = R::Constants::MAX_LIFE;
 	}
@@ -318,71 +325,50 @@ void GameStateSystem::switchToWin(){
 	});
 }
 bool GameStateSystem::switchToLose(){
-	if (R::Constants::remaininglife == 0){
-		if (!createLoseMessage) {
-			//Show message
-
-			ui::Layout* layout = ui::Layout::create();
-			layout->setContentSize(RenderLayer::getInstance()->getHudLayer()->getContentSize());
-			layout->setBackGroundColorType(ui::Layout::BackGroundColorType::SOLID);
-			layout->setBackGroundColor(Color3B::BLACK);
-			layout->setBackGroundColorOpacity(100);
-			layout->setTouchEnabled(true);
-
-
-			RenderLayer::getInstance()->getHudLayer()->addChild(layout);
-
-			ui::Layout* bg = ui::Layout::create();
-			bg->setBackGroundImage("textures/bgNotify.png",ui::Widget::TextureResType::LOCAL);
-			bg->setAnchorPoint(Vec2(.5, .5));
-			bg->ignoreContentAdaptWithSize(false);
-			bg->setPosition(layout->getContentSize() / 2);
-			layout->addChild(bg);
-
-
-			ui::Text* text = ui::Text::create("There is no more life. The game will be reset !", "fonts/courbd.ttf", 20);
-			text->setColor(Color3B::BLACK);
-			text->setAnchorPoint(Vec2(.5, .5));
-			bg->addChild(text);
-			text->setPosition(bg->getContentSize() / 2);
-			text->setPositionY(-40);
-			text->ignoreContentAdaptWithSize(false);
-			text->setTextAreaSize(Size(280, 180));
-
-			ui::Button* buttonPositive = ui::Button::create("textures/btnOK.png", "textures/btnOK_down.png", "textures/btnOK.png",ui::Widget::TextureResType::LOCAL);
-			buttonPositive->setScale9Enabled(true);
-			buttonPositive->setTitleText("OK");
-			buttonPositive->setTitleColor(Color3B::BLACK);
-			buttonPositive->setTitleFontName("fonts/courbd.ttf");
-			buttonPositive->setTitleFontSize(30);
-			buttonPositive->setPosition(Vec2(bg->getContentSize().width / 2, -40));
-			bg->addChild(buttonPositive);
-
-			buttonPositive->setTouchEnabled(true);
-			buttonPositive->addClickEventListener([=](Ref* sender){
-				RemoveSelf* removeSelf = RemoveSelf::create();
-				CallFunc* callback = CallFunc::create([=](){
-					R::Constants::resetVariable();
-					auto scene = HomeScreen::createScene();
-					Director::getInstance()->replaceScene(TransitionFade::create(0.3, scene, Color3B(0, 0, 0)));
-				});
-				Sequence* sequence = Sequence::create(removeSelf, callback, nullptr);
-				layout->runAction(sequence);
-			});
-			
-			layout->setCameraMask((unsigned short)CameraFlag::USER1);
-			createLoseMessage = true;
-		}
-		return true;
-	}
-
-
 	R::Constants::countLose++;
 	if (R::Constants::countLose % 3 == 0){
 		AdsManager::showAds(false);
 		AdsManager::showFullAds();
 	}
 
+
+	if (R::Constants::remaininglife == 0){
+		if (!createLoseMessage) {
+				DialogComfirm* dialogComfirm = new DialogComfirm();
+				dialogComfirm->setNegative("More lives", [=](){
+
+					DialogComfirm* subDialog = new DialogComfirm();
+					subDialog->setMessage("Invite friends to get more lives", 20);
+					subDialog->setNegative("No", nullptr);
+					subDialog->setPositive("Yes", [=](){
+						R::Constants::remaininglife += 3;
+						if (R::Constants::remaininglife > R::Constants::MAX_LIFE){
+							R::Constants::remaininglife = R::Constants::MAX_LIFE;
+						}
+						R::Constants::updateVariable();
+						auto scene = HomeScreen::createScene();
+						Director::getInstance()->replaceScene(TransitionFade::create(0.3, scene, Color3B(0, 0, 0)));
+					});
+
+				});
+
+				dialogComfirm->setPositive("Reset", [=](){
+					DialogComfirm* subDialog = new DialogComfirm();
+					subDialog->setMessage("Restart from the first levels with 5 lives", 20);
+					subDialog->setNegative("No", nullptr);
+					subDialog->setPositive("Yes", [=](){
+						R::Constants::resetVariable();
+						auto scene = HomeScreen::createScene();
+						Director::getInstance()->replaceScene(TransitionFade::create(0.3, scene, Color3B(0, 0, 0)));
+					});
+				});
+			createLoseMessage = true;
+		}
+		return true;
+	}
+
+
+	
 	Node* node = RenderLayer::getInstance()->createHudNode();
 	node->setScale(.8f);
 	LoseScene* loseScene = new LoseScene(node);
@@ -1037,7 +1023,7 @@ void BombSystem::processEntity(artemis::Entity &e){
 		if (!bomComponent->expire){
 			if (R::Constants::soundEnable) {
 				CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
-				CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/bomb.mp3", false, 1, 0, 1);
+				CocosDenshion::SimpleAudioEngine::getInstance()->playEffect(R::Constants::BOMB, false, 1, 0, 1);
 			}
 
 			bomComponent->expire = true;
@@ -1197,7 +1183,7 @@ void SpecialSkillSystem::processPicolo(artemis::Entity &e){
 		}
 	}
 
-	// trường hợp power2 
+	// trường hợp power2
 
 	if (stateComponent->state == R::CharacterState::ATTACK && stateComponent->attack == R::Attack::PICOLO_POWER2){
 		SkeletonComponent* skeleton = skeletonMapper.get(e);
@@ -1597,7 +1583,7 @@ void CharacterRenderSystem::onGameState(bool isPlay){
 			Director::getInstance()->replaceScene(TransitionFade::create(0.3, scene, Color3B(0, 0, 0)));
 		});
 		pauseScene->setReplayCallback([=](){
-			ECSWorld::getInstance()->resetCurrentMatch();
+			ECSWorld::getInstance()->resetCurrentMatch(true);
 		});
 		pauseScene->setNextMatchCallBack([=](){
 			ECSWorld::getInstance()->nextMatch();
@@ -1692,7 +1678,10 @@ IntroduceSystem::IntroduceSystem(){
 	node = RenderLayer::getInstance()->createHudNode();
 	node->setPosition(RenderLayer::getInstance()->getHudLayer()->getContentSize() / 2);
 
-	text = ui::Text::create("", "fonts/courbd.ttf", 20);
+	text = ui::Text::create("", "fonts/courbd.ttf", 24);
+	text->ignoreContentAdaptWithSize(false);
+	text->setTextHorizontalAlignment(TextHAlignment::CENTER);
+	text->setTextAreaSize(Size(RenderLayer::getInstance()->getHudLayer()->getContentSize().width - 60,200));
 	text->setColor(Color3B::WHITE);
 	text->enableOutline(Color4B::BLACK, 2);
 	text->setAnchorPoint(Vec2(.5, .5));
@@ -1719,6 +1708,7 @@ IntroduceSystem::IntroduceSystem(){
 
 void IntroduceSystem::initialize(){
 	introduceMapper.init(*world);
+	
 }
 
 void IntroduceSystem::begin(){
@@ -1767,6 +1757,7 @@ void IntroduceSystem::processEntity(artemis::Entity &e){
 			gokuState->setState(R::CharacterState::ATTACK);
 			if (subStep % 3 == 0){
 				text->setString("Double tap to use stick");
+				
 				text->setVisible(true);
 				gokuState->attack = R::Attack::GOKU_BEAT1;
 			}
@@ -1791,6 +1782,7 @@ void IntroduceSystem::processEntity(artemis::Entity &e){
 			}
 
 			if (gokuState->state == R::CharacterState::STAND){
+			
 				text->setString("Swipe right to move right");
 				text->setVisible(true);
 				gokuState->setState(R::CharacterState::RIGHT);
@@ -1994,9 +1986,12 @@ void IntroduceSystem::processEntity(artemis::Entity &e){
 }
 
 void IntroduceSystem::callBackInputDone(){
+	//node->removeFromParent();
+	//ECSWorld::getInstance()->matchType = R::Match_Type::GOKU_BEAR;
+	//ECSWorld::getInstance()->resetCurrentMatch();
 	node->removeFromParent();
-	ECSWorld::getInstance()->matchType = R::Match_Type::GOKU_GIRAN;
-	ECSWorld::getInstance()->resetCurrentMatch();
+	auto scene = HomeScreen::createScene();
+	Director::getInstance()->replaceScene(TransitionFade::create(0.3, scene, Color3B(0, 0, 0)));
 }
 
 void IntroduceSystem::notifyInput(Touch* touch, GameHud::EventType event,

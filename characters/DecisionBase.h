@@ -3,6 +3,7 @@
 #include "artemis/Artemis.h"
 #include "gokuartemis/Components.h"
 #include "RenderLayer.h"
+#include "gokuartemis/MapInfo.h"
 
 class StateComponent;
 class DecisionBase
@@ -63,7 +64,6 @@ private:
 class TegiacDecision : public DecisionBase{
 public:
 	TegiacDecision();
-	void decision(artemis::Entity &e);
 	void obsever(artemis::Entity &e);
 protected:
 	bool doSpecificSkill;

@@ -5,6 +5,7 @@
 #include "R.h"
 #include "ui/UIImageView.h"
 #include "ui/UILayout.h"
+#include "ui/UIButton.h"
 #include "spine/spine-cocos2dx.h"
 #include "artemis/Artemis.h"
 #include "gokuartemis/Components.h"
@@ -14,9 +15,14 @@ class MatchInfo;
 class HitEffect;
 class KameKameHa;
 class PauseScene;
+class RemainingLife;
+class DialogComfirm;
+class Effects;
+class HowToPlay;
 
-class Effects
-{
+	
+
+class Effects{
 public:
 	Effects();
 	~Effects();
@@ -24,7 +30,7 @@ public:
 };
 
 class HitEffect : public Effects{
-public :
+public:
 	HitEffect(Node* node);
 	void start();
 	void dismiss();
@@ -35,7 +41,7 @@ public :
 
 };
 class NotEnoughManaEffect : public Effects {
-public :
+public:
 	NotEnoughManaEffect(Node* node);
 	void start();
 	void dismiss();
@@ -56,15 +62,15 @@ public:
 };
 
 class KameKameHa : public Effects{
-public: 
-	
-	KameKameHa(Node* node,R::CharacterType whoAttack);
+public:
+
+	KameKameHa(Node* node, R::CharacterType whoAttack);
 	void setTarget(std::string target);
 	void toDan();
 	void bayDi();
 	void bienMat();
 	void update(artemis::World* world);
-	
+
 	R::CharacterType whoAttack;
 	int STATE_TODAN;
 	int STATE_DISMISS;
@@ -85,13 +91,13 @@ public:
 };
 
 class MatchInfo : public Effects{
-public :
+public:
 	MatchInfo(Node* node);
 };
 
 class PlayerInfoLeft : public Effects{
-public :
-	PlayerInfoLeft(Node* node,std::string name,std::string avatar);
+public:
+	PlayerInfoLeft(Node* node, std::string name, std::string avatar);
 	void update(float blood, float mana);
 	std::string _name;
 	std::string _avatar;
@@ -112,7 +118,7 @@ public:
 };
 
 class PauseScene : public Effects{
-public :
+public:
 	PauseScene(Node* node);
 
 	void showPauseScene();
@@ -128,7 +134,7 @@ public :
 	std::function<void()> guideCallBack;
 
 	bool isShowing;
-	
+
 	ui::ImageView* background;
 	ui::ImageView* btnMenu;
 	ui::ImageView* btnNext;
@@ -137,7 +143,7 @@ public :
 	ui::ImageView* btnMusic;
 	ui::ImageView* btnSound;
 	ui::ImageView* btnGuide;
-	
+
 	ui::Text* text;
 };
 
@@ -147,7 +153,7 @@ public:
 	Winscene(Node* node);
 
 	void showWinScene();
-	
+
 	void setReplayCallback(const std::function<void()> &callback);
 	void setMenuCallBack(const std::function<void()> &callback);
 	void setNextMatchCallBack(const std::function<void()> &callback);
@@ -195,3 +201,66 @@ class TextEffect : public Effects{
 
 
 };
+
+class RemainingLife : public Effects{
+
+public:
+	RemainingLife(Node* node);
+	~RemainingLife();
+	void show();
+	void hide();
+	void updatePosition();
+	Node* node;
+	std::vector<ui::ImageView*> hearts;
+	ui::Text* text;
+};
+
+class DialogComfirm : public Effects{
+
+public: 
+	DialogComfirm();
+	void setPositive(std::string text,const std::function<void()> &callback);
+	void setNegative(std::string text,const std::function<void()> &callback);
+	void setMessage(std::string message);
+	void setMessage(std::string message,int size);
+
+	std::function<void()> negativeCallback;
+	std::function<void()> positiveCallback;
+
+	ui::Button* negative;
+	ui::Button* positive;
+	ui::Text* text;
+
+};
+
+class HowToPlay :public Effects{
+public :
+	HowToPlay();
+
+	int step;
+	void reset();
+	void showTap(const std::function<void()> &callback);
+	void showDoubleClick(const std::function<void()> &callback);
+	void showSwipeLeft(const std::function<void()> &callback);
+	void showSwipeUp(const std::function<void()> &callback);
+	void showSwipeRight(const std::function<void()> &callback);
+	void showSwipeTopRight(const std::function<void()> &callback);
+	void showSwipeTopleft(const std::function<void()> &callback);
+	void showLongPress(const std::function<void()> &callback);
+
+	std::function<void()> tapCallback;
+	std::function<void()> doubleTapCallback;
+	std::function<void()> swpieLeftCallback;
+	std::function<void()> swipeRightCallback;
+	std::function<void()> swipeTopRightCallback;
+	std::function<void()> swipeTopLeftCallback;
+	std::function<void()> swipeUpCallback;
+	std::function<void()> longpressCallback;
+
+
+
+	ui::Layout* layout;
+	ui::ImageView* arrow;	
+};
+
+

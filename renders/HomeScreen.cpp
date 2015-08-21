@@ -8,16 +8,11 @@ Scene* HomeScreen::createScene() {
 	scene->addChild(layer);
 	return scene;
 }
-
-// on "init" you need to initialize your instance
 bool HomeScreen::init() {
-	//////////////////////////////
-	// 1. super init first
+
 	if (!LayerColor::initWithColor(Color4B::BLACK)) {
 		return false;
 	}
-
-
 
 	this->showingStartLayer = false;
 	this->layoutSelectCreated = false;
@@ -41,6 +36,9 @@ void HomeScreen::update(float delta){
 			gokuAnimation->setPositionX(gokuAnimation->getPositionX() + speed*delta);
 		}
 		else{
+			if (R::Constants::unlocked>0)
+			buttonContinue->setVisible(true);
+
 			buttonPlay->setVisible(true);
 			gokuAnimation->setPositionX(destination);
 			gokuAnimation->setToSetupPose();
@@ -55,7 +53,7 @@ void HomeScreen::update(float delta){
 void HomeScreen::showStartLayer(){
 	if (R::Constants::musicEnable) {
 		CocosDenshion::SimpleAudioEngine::getInstance()->setBackgroundMusicVolume(R::Constants::musicVolumn);
-		CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("sounds/menu.mp3", true);
+		CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic(R::Constants::MENU, true);
 	}
 
 	Sprite* background = Sprite::create("backgrounds/bg1.png");
@@ -81,7 +79,7 @@ void HomeScreen::showStartLayer(){
 	this->addChild(pageView);
 
 
-	Sprite* nameGame = Sprite::create("menu/namegame.png");
+	nameGame = Sprite::create("menu/namegame.png");
 	nameGame->ignoreAnchorPointForPosition(false);
 	nameGame->setScale(.6f);
 	nameGame->setPosition(Vec2(200, 150));
@@ -99,17 +97,30 @@ void HomeScreen::showStartLayer(){
 		onSelectPlayGame();
 	});
 
-	ui::ImageView* music = ui::ImageView::create(R::Constants::musicEnable ? "menu/music_on.png" : "menu/music_off.png");
+	buttonContinue = ui::ImageView::create("menu/btn-continue.png");
+	buttonContinue->setScale9Enabled(true);
+	buttonContinue->setScale(.6);
+	buttonContinue->ignoreAnchorPointForPosition(false);
+	buttonContinue->setPosition(Vec2(350, 350));
+	layoutPlay->addChild(buttonContinue);
+	buttonContinue->setVisible(false);
+	buttonContinue->setTouchEnabled(true);
+	buttonContinue->addClickEventListener([=](Ref* sender){
+		onSelectContinue();
+	});
+
+
+	 music = ui::ImageView::create(R::Constants::musicEnable ? "menu/music_on.png" : "menu/music_off.png");
 	music->setScale9Enabled(true);
 	music->setScale(.6);
 	music->ignoreAnchorPointForPosition(false);
 	music->setPosition(Vec2(400, 210));
 	music->setTouchEnabled(true);
-	music->addClickEventListener([this, music](Ref* sender){
+	music->addClickEventListener([=](Ref* sender){
 
 		if (R::Constants::soundEnable) {
 			CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
-			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/button_click.mp3", false, 1, 0, 1);
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect(R::Constants::CLICK, false, 1, 0, 1);
 		}
 		R::Constants::musicEnable = !R::Constants::musicEnable;
 
@@ -123,7 +134,7 @@ void HomeScreen::showStartLayer(){
 		music->setTouchEnabled(false);
 		ScaleTo* scaleIn = ScaleTo::create(.1f, .56f);
 		ScaleTo* scaleout = ScaleTo::create(.1f, .6f);
-		CallFunc* call = CallFunc::create([this, music](){
+		CallFunc* call = CallFunc::create([=](){
 			onMusicClick();
 			music->setTouchEnabled(true);
 			music->loadTexture(R::Constants::musicEnable ? "menu/music_on.png" : "menu/music_off.png", ui::ImageView::TextureResType::LOCAL);
@@ -132,24 +143,24 @@ void HomeScreen::showStartLayer(){
 	});
 	layoutPlay->addChild(music);
 
-	ui::ImageView* sound = ui::ImageView::create(R::Constants::soundEnable ? "menu/sound_on.png" : "menu/sound_off.png");
+	 sound = ui::ImageView::create(R::Constants::soundEnable ? "menu/sound_on.png" : "menu/sound_off.png");
 	sound->setScale9Enabled(true);
 	sound->setScale(.6);
 	sound->ignoreAnchorPointForPosition(false);
 	sound->setPosition(Vec2(400, 150));
 	sound->setTouchEnabled(true);
-	sound->addClickEventListener([this, sound](Ref* sender){
+	sound->addClickEventListener([=](Ref* sender){
 
 		if (R::Constants::soundEnable) {
 			CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
-			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/button_click.mp3", false, 1, 0, 1);
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect(R::Constants::CLICK, false, 1, 0, 1);
 		}
 		R::Constants::soundEnable = !R::Constants::soundEnable;
 
 		sound->setTouchEnabled(false);
 		ScaleTo* scaleIn = ScaleTo::create(.1f, .56f);
 		ScaleTo* scaleout = ScaleTo::create(.1f, .6f);
-		CallFunc* call = CallFunc::create([this, sound](){
+		CallFunc* call = CallFunc::create([=](){
 			onSoundClick();
 			sound->setTouchEnabled(true);
 			sound->loadTexture(R::Constants::soundEnable ? "menu/sound_on.png" : "menu/sound_off.png", ui::ImageView::TextureResType::LOCAL);
@@ -158,20 +169,20 @@ void HomeScreen::showStartLayer(){
 	});
 	layoutPlay->addChild(sound);
 
-	ui::ImageView* guide = ui::ImageView::create("menu/guide.png");
+	 guide = ui::ImageView::create("menu/guide.png");
 	guide->setScale9Enabled(true);
 	guide->setScale(.6);
 	guide->ignoreAnchorPointForPosition(false);
 	guide->setPosition(Vec2(400, 90));
 	guide->setTouchEnabled(true);
-	guide->addClickEventListener([this, guide](Ref* sender){
+	guide->addClickEventListener([=](Ref* sender){
 		guide->setTouchEnabled(false);
 		ScaleTo* scaleIn = ScaleTo::create(.1f, .56f);
 		ScaleTo* scaleout = ScaleTo::create(.1f, .6f);
-		CallFunc* call = CallFunc::create([this, guide](){
+		CallFunc* call = CallFunc::create([=](){
 			if (R::Constants::soundEnable) {
 				CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
-				CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/button_click.mp3", false, 1, 0, 1);
+				CocosDenshion::SimpleAudioEngine::getInstance()->playEffect(R::Constants::CLICK, false, 1, 0, 1);
 			}
 			onGuildClick();
 			guide->setTouchEnabled(true);
@@ -192,9 +203,16 @@ void HomeScreen::showStartLayer(){
 	buttonPlay->setVisible(false);
 	gokuAnimation->setVisible(false);
 	gokuAnimation->setPositionX(-100);
+
+	
+	Node* node = Node::create();
+	node->setPosition(30, getContentSize().height - 30);
+	remainingLife = new RemainingLife(node);
+	layoutPlay->addChild(node);
 }
 
 void HomeScreen::onMusicClick(){
+
 }
 
 void HomeScreen::onSoundClick(){
@@ -203,11 +221,25 @@ void HomeScreen::onSoundClick(){
 void HomeScreen::onGuildClick(){
 	goToGame(R::Match_Type::GOKU_BEAR_INTRODUCE);
 }
+void HomeScreen::onSelectContinue(){
+	if (R::Constants::soundEnable) {
+		CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
+		CocosDenshion::SimpleAudioEngine::getInstance()->playEffect(R::Constants::CLICK, false, 1, 0, 1);
+	}
+	buttonContinue->setTouchEnabled(false);
+	ScaleTo* scaleIn = ScaleTo::create(.1f, .56f);
+	ScaleTo* scaleout = ScaleTo::create(.1f, .6f);
+	CallFunc* callBack = CallFunc::create([=](){
+		switchToContinueGame();
+		buttonContinue->setTouchEnabled(true);
+	});
+	buttonContinue->runAction(Sequence::create(scaleIn, scaleout, callBack, nullptr));
+}
 
 void HomeScreen::onSelectPlayGame(){
 	if (R::Constants::soundEnable) {
 		CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
-		CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/button_click.mp3", false, 1, 0, 1);
+		CocosDenshion::SimpleAudioEngine::getInstance()->playEffect(R::Constants::CLICK, false, 1, 0, 1);
 	}
 	buttonPlay->setTouchEnabled(false);
 	ScaleTo* scaleIn = ScaleTo::create(.1f, .56f);
@@ -218,7 +250,40 @@ void HomeScreen::onSelectPlayGame(){
 	});
 	buttonPlay->runAction(Sequence::create(scaleIn, scaleout, callBack, nullptr));
 }
-
+void HomeScreen::switchToContinueGame(){
+	// find the last gameplay and play that game
+	R::Match_Type type = R::Match_Type::GOKU_BEAR;
+	switch (R::Constants::lastPlay)
+	{
+	case 0:
+		type = R::Match_Type::GOKU_BEAR;
+		break;
+	case 1:
+		type = R::Match_Type::GOKU_TEGIAC;
+		break;
+	case 2:
+		type = R::Match_Type::GOKU_KARILLIN;
+		break;
+	case 3:
+		type = R::Match_Type::GOKU_GIRAN;
+		break;
+	case 4:
+		type = R::Match_Type::GOKU_RUA;
+		break;
+	case 5:
+		type = R::Match_Type::GOKU_CAMAP;
+		break;
+	case 6:
+		type = R::Match_Type::GOKU_JACKIECHUN;
+		break;
+	case 7:
+		type = R::Match_Type::GOKU_PICOLO;
+		break;
+	default:
+		break;
+	}
+	goToGame(type);
+}
 void HomeScreen::switchToSelectScreen(){
 	/*auto scene = HelloWorld::createScene();
 	Director::getInstance()->replaceScene(scene);
@@ -228,9 +293,7 @@ void HomeScreen::switchToSelectScreen(){
 		pageView->scrollToPage(1);
 		return;
 	}
-
-
-
+	
 	layoutSelect = ui::Layout::create();
 	layoutSelect->setContentSize(getContentSize());
 	layoutSelect->setLayoutType(ui::Layout::Type::ABSOLUTE);
@@ -247,19 +310,19 @@ void HomeScreen::switchToSelectScreen(){
 	layoutSelect->addChild(text);
 
 	
-	addCharacterItem(0, "LACOSTE", "select_screen/giran1.png", "select_screen/giran2.png", [=](){
-		goToGame(R::Match_Type::GOKU_GIRAN);
-	});
+
+	addCharacterItem(0, "BEAR", "select_screen/bear1.png", "select_screen/bear2.png", [=](){
+			goToGame(R::Match_Type::GOKU_BEAR);
+		});
 	addCharacterItem(1, "RHINO", "select_screen/yamcha1.png", "select_screen/yamcha2.png", [=](){
 		goToGame(R::Match_Type::GOKU_TEGIAC);
 	});
 	addCharacterItem(2, "CHIMPANZEE", "select_screen/karillin1.png", "select_screen/karillin2.png", [=](){
 		goToGame(R::Match_Type::GOKU_KARILLIN);
 	});
-	
-	addCharacterItem(3, "BEAR", "select_screen/bear1.png", "select_screen/bear2.png", [=](){
-		goToGame(R::Match_Type::GOKU_BEAR);
-	});
+	addCharacterItem(3, "LACOSTE", "select_screen/giran1.png", "select_screen/giran2.png", [=](){
+			goToGame(R::Match_Type::GOKU_GIRAN);
+		});
 	addCharacterItem(4, "TURTLE", "select_screen/nam1.png", "select_screen/nam2.png", [=](){
 		goToGame(R::Match_Type::GOKU_RUA);
 	});
@@ -276,7 +339,41 @@ void HomeScreen::switchToSelectScreen(){
 }
 
 void HomeScreen::goToGame(R::Match_Type type){
+
 	CocosDenshion::SimpleAudioEngine::getInstance()->stopBackgroundMusic(true);
+	if (R::Constants::remaininglife == 0){
+		DialogComfirm* dialogComfirm = new DialogComfirm();
+		dialogComfirm->setNegative("More lives", [=](){
+
+			DialogComfirm* subDialog = new DialogComfirm();
+			subDialog->setMessage("Invite friends to get more lives", 20);
+			subDialog->setNegative("No", nullptr);
+			subDialog->setPositive("Yes", [=](){
+				R::Constants::remaininglife += 3;
+				if (R::Constants::remaininglife > R::Constants::MAX_LIFE){
+					R::Constants::remaininglife = R::Constants::MAX_LIFE;
+				}
+				R::Constants::updateVariable();
+				auto scene = HomeScreen::createScene();
+				Director::getInstance()->replaceScene(TransitionFade::create(0.3, scene, Color3B(0, 0, 0)));
+			});
+
+		});
+
+		dialogComfirm->setPositive("Reset", [=](){
+			DialogComfirm* subDialog = new DialogComfirm();
+			subDialog->setMessage("Restart from the first levels with 5 lives", 20);
+			subDialog->setNegative("No", nullptr);
+			subDialog->setPositive("Yes", [=](){
+				R::Constants::resetVariable();
+				auto scene = HomeScreen::createScene();
+				Director::getInstance()->replaceScene(TransitionFade::create(0.3, scene, Color3B(0, 0, 0)));
+			});
+		});
+		return;
+	}
+
+	R::Constants::updateVariable();
 	auto scene = HelloWorld::createScene(type);
 	Director::getInstance()->replaceScene(TransitionFade::create(0.3, scene, Color3B(0, 0, 0)));
 	return;
@@ -293,7 +390,7 @@ void HomeScreen::addCharacterItem(int index, int state, std::string name, std::s
 	character->addClickEventListener([character, callback](Ref* sender){
 		if (R::Constants::soundEnable) {
 			CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
-			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/button_click.mp3", false, 1, 0, 1);
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect(R::Constants::CLICK, false, 1, 0, 1);
 		}
 		character->setTouchEnabled(false);
 		ScaleTo* scaleIn = ScaleTo::create(.1f, .96f);

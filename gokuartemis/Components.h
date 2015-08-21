@@ -56,7 +56,6 @@ public:
 	float gravityX;
 	float gravityY;
 	bool enable;
-
 };
 
 
@@ -190,7 +189,8 @@ public:
 	R::Attack attack;
 	R::Defense defense;
 
-
+	int totalHit;
+	int totalAttack;
 	float time_on_state;
 	int trungdonlientiep;
 	int hitDetected;

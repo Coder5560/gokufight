@@ -334,6 +334,7 @@ public:
 	Node* node;
 	ui::Text* text;
 	ui::ImageView* button;
+//	HowToPlay* howToPlay;
 protected:
 	artemis::ComponentMapper<IntroduceComponent> introduceMapper;
 };

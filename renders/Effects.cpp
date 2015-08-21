@@ -33,7 +33,7 @@ void HitEffect::dismiss(){
 }
 
 
-KameKameHa::KameKameHa(Node* node,R::CharacterType whoAttack){
+KameKameHa::KameKameHa(Node* node, R::CharacterType whoAttack){
 	this->node = node;
 	this->whoAttack = whoAttack;
 	STATE_TODAN = 1;
@@ -117,7 +117,7 @@ void KameKameHa::update(artemis::World* world){
 		node->setPositionY(node->getPositionY() + direction* velocity.y*delta);
 	}
 	if (state == STATE_TODAN){
-		
+
 	}
 	if (state == STATE_TODAN && timeOnState > .5f){
 		bayDi();
@@ -229,7 +229,7 @@ void IntroduceMessage::start(std::string message){
 	auto fadeIn = FadeIn::create(.4);
 	auto fadeOut = FadeOut::create(.4);
 	text->runAction(RepeatForever::create(Sequence::create(fadeIn, fadeOut, nullptr)));
-	text->setPosition(Vec2(0,0));
+	text->setPosition(Vec2(0, 0));
 	node->addChild(text);
 }
 
@@ -461,7 +461,7 @@ void PauseScene::showPauseScene(){
 	btnSound->addClickEventListener([=](Ref* sender){
 		if (R::Constants::soundEnable) {
 			CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
-			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/button_click.mp3", false, 1, 0, 1);
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect(R::Constants::CLICK, false, 1, 0, 1);
 		}
 		R::Constants::soundEnable = !R::Constants::soundEnable;
 
@@ -478,7 +478,7 @@ void PauseScene::showPauseScene(){
 	btnMusic->addClickEventListener([=](Ref* sender){
 		if (R::Constants::soundEnable) {
 			CocosDenshion::SimpleAudioEngine::getInstance()->setBackgroundMusicVolume(R::Constants::musicVolumn);
-			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/button_click.mp3", false, 1, 0, 1);
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect(R::Constants::CLICK, false, 1, 0, 1);
 		}
 		R::Constants::musicEnable = !R::Constants::musicEnable;
 		if (R::Constants::musicEnable){
@@ -696,10 +696,6 @@ void LoseScene::setReplayCallback(const std::function<void()> &callback){
 void LoseScene::setMenuCallBack(const std::function<void()> &callback){
 	this->menuCallBack = callback;
 }
-
-
-
-
 void LoseScene::showLoseScene(){
 	// continue,  replay,  menu,sound, music, guide
 
@@ -745,4 +741,235 @@ void LoseScene::showLoseScene(){
 		});
 		btnReplay->runAction(Sequence::create(scaleIn, scaleout, call, nullptr));
 	});
+}
+
+
+RemainingLife::RemainingLife(Node* node){
+	this->node = node;
+	int remainingLife = R::Constants::remaininglife;
+	text = ui::Text::create("LIFE : ", "fonts/courbd.ttf", 20);
+	node->addChild(text);
+	for (int i = 0; i < R::Constants::MAX_LIFE; i++){
+		ui::ImageView* life = ui::ImageView::create("textures/heart.png");
+		if (i < remainingLife){
+			life->setColor(Color3B::RED);
+		}
+		hearts.push_back(life);
+		node->addChild(life);
+	}
+	updatePosition();
+}
+void RemainingLife::updatePosition(){
+
+	float pading = 5;
+	float width = text->getContentSize().width + (pading + hearts.at(0)->getContentSize().width)*hearts.size();
+	float height = MAX(text->getContentSize().height, hearts.at(0)->getContentSize().height);
+	CCLOG("%f %f ", text->getContentSize().width, hearts.at(0)->getContentSize().width);
+	node->setContentSize(Size(width, height + 20));
+	node->setAnchorPoint(Vec2(0, .5));
+	node->ignoreAnchorPointForPosition(false);
+
+	text->setPositionX(text->getContentSize().width / 2);
+	for (int i = 0; i < hearts.size(); i++){
+		ui::ImageView* heart = hearts.at(i);
+		heart->setPosition(Vec2(text->getContentSize().width + (i + 1)*pading + i*heart->getContentSize().width, 0));
+	}
+}
+
+
+DialogComfirm::DialogComfirm(){
+	ui::Layout* layout = ui::Layout::create();
+	layout->setContentSize(Director::getInstance()->getRunningScene()->getContentSize());
+	layout->setBackGroundColorType(ui::Layout::BackGroundColorType::SOLID);
+	layout->setBackGroundColor(Color3B::BLACK);
+	layout->setBackGroundColorOpacity(100);
+	layout->setTouchEnabled(true);
+
+	Director::getInstance()->getRunningScene()->addChild(layout);
+
+	ui::Layout* bg = ui::Layout::create();
+	bg->setBackGroundImage("textures/bgNotify.png", ui::Widget::TextureResType::LOCAL);
+	bg->setAnchorPoint(Vec2(.5, .5));
+	bg->ignoreContentAdaptWithSize(false);
+	bg->setPosition(layout->getContentSize() / 2);
+	layout->addChild(bg);
+
+
+	text = ui::Text::create("Out of lives!", "fonts/arial.ttf", 30);
+	text->setColor(Color3B::BLACK);
+	text->setAnchorPoint(Vec2(.5, .5));
+	text->setTextHorizontalAlignment(TextHAlignment::CENTER);
+	bg->addChild(text);
+	text->setPosition(bg->getContentSize() / 2);
+	text->setPositionY(-40);
+	text->ignoreContentAdaptWithSize(false);
+	text->setTextAreaSize(Size(280, 180));
+
+	positive = ui::Button::create("textures/btnOK.png", "textures/btnOK_down.png", "textures/btnOK.png", ui::Widget::TextureResType::LOCAL);
+	positive->setScale9Enabled(true);
+	positive->setTitleText("Reset");
+	positive->setTitleColor(Color3B::BLACK);
+	positive->setTitleFontName("fonts/arial.ttf");
+	positive->setTitleFontSize(20);
+	positive->setPosition(Vec2(bg->getContentSize().width / 2 - 60, -40));
+	bg->addChild(positive);
+
+	positive->setTouchEnabled(true);
+	positive->addClickEventListener([=](Ref* sender){
+		RemoveSelf* removeSelf = RemoveSelf::create();
+		CallFunc* callback = CallFunc::create([=](){
+			if (positiveCallback) positiveCallback();
+		});
+		Sequence* sequence = Sequence::create(removeSelf, callback, nullptr);
+		layout->runAction(sequence);
+	});
+
+
+	negative = ui::Button::create("textures/btnOK.png", "textures/btnOK_down.png", "textures/btnOK.png", ui::Widget::TextureResType::LOCAL);
+	negative->setScale9Enabled(true);
+	negative->setTitleText("More lives");
+	negative->setTitleColor(Color3B::BLACK);
+	negative->setTitleFontName("fonts/arial.ttf");
+	negative->setTitleFontSize(20);
+	negative->setContentSize(Size(negative->getContentSize().width + 20, negative->getContentSize().height));
+	negative->setPosition(Vec2(bg->getContentSize().width / 2 + 60, -40));
+	bg->addChild(negative);
+
+	negative->setTouchEnabled(true);
+	negative->addClickEventListener([=](Ref* sender){
+		RemoveSelf* removeSelf = RemoveSelf::create();
+		CallFunc* callback = CallFunc::create([=](){
+			if (negativeCallback) negativeCallback();
+		});
+		Sequence* sequence = Sequence::create(removeSelf, callback, nullptr);
+		layout->runAction(sequence);
+	});
+}
+
+void DialogComfirm::setMessage(std::string message){
+	text->setText(message);
+}
+
+void DialogComfirm::setMessage(std::string message, int fontSize){
+	text->setText(message);
+	text->setFontSize(fontSize);
+}
+void DialogComfirm::setNegative(std::string text, const std::function<void()> & callback){
+	negative->setTitleText(text);
+	negativeCallback = callback;
+}
+
+void DialogComfirm::setPositive(std::string text, const std::function<void()> & callback){
+	positive->setTitleText(text);
+	positiveCallback = callback;
+}
+
+HowToPlay::HowToPlay(){
+	step = 0;
+	layout = ui::Layout::create();
+	layout->setContentSize(Director::getInstance()->getRunningScene()->getContentSize());
+	layout->setTouchEnabled(true);
+	arrow = ui::ImageView::create("textures/arrow.png");
+	layout->addChild(arrow);
+	Director::getInstance()->getRunningScene()->addChild(layout);
+}
+
+
+void HowToPlay::showSwipeLeft(const std::function<void()> &callback){
+	this->swpieLeftCallback = callback;
+	arrow->setVisible(true);
+	arrow->setPosition(Vec2(layout->getContentSize().width / 2, 120));
+
+	MoveBy* moveBy = MoveBy::create(.5f, Vec2(100, 0));
+	FadeOut* fadeOut = FadeOut::create(.5f);
+	Spawn* spawn = Spawn::create(moveBy, fadeOut, nullptr);
+	CallFunc* cal = CallFunc::create([this](){
+		arrow->setOpacity(255);
+		arrow->setPosition(Vec2(layout->getContentSize().width / 2, 80));
+	});
+	arrow->runAction(RepeatForever::create(Sequence::create(spawn,DelayTime::create(.4f),cal,nullptr)));
+
+}
+
+void HowToPlay::showSwipeRight(const std::function<void()> &callback){
+	this->swipeRightCallback = callback;
+	arrow->setVisible(true);
+	arrow->setPosition(Vec2(layout->getContentSize().width / 2, 120));
+	arrow->setFlippedX(true);
+
+	MoveBy* moveBy = MoveBy::create(.5f, Vec2(-100, 0));
+	FadeOut* fadeOut = FadeOut::create(.5f);
+	Spawn* spawn = Spawn::create(moveBy, fadeOut, nullptr);
+	CallFunc* cal = CallFunc::create([this](){
+		arrow->setOpacity(255);
+		arrow->setPosition(Vec2(layout->getContentSize().width / 2, 80));
+	});
+	arrow->runAction(RepeatForever::create(Sequence::create(spawn, DelayTime::create(.4f), cal, nullptr)));
+
+}
+
+
+void HowToPlay::showSwipeUp(const std::function<void()> &callback){
+	this->swipeUpCallback = callback;
+	
+	arrow->setVisible(true);
+	arrow->setPosition(Vec2(layout->getContentSize().width / 2, 120));
+	arrow->setRotation(-90);
+
+	MoveBy* moveBy = MoveBy::create(.5f, Vec2(0, 100));
+	FadeOut* fadeOut = FadeOut::create(.5f);
+	Spawn* spawn = Spawn::create(moveBy, fadeOut, nullptr);
+	CallFunc* cal = CallFunc::create([this](){
+		arrow->setOpacity(255);
+		arrow->setPosition(Vec2(layout->getContentSize().width / 2, 80));
+	});
+	arrow->runAction(RepeatForever::create(Sequence::create(spawn, DelayTime::create(.4f), cal, nullptr)));
+
+}
+
+
+void HowToPlay::showSwipeTopleft(const std::function<void()> &callback){
+	this->swipeTopLeftCallback = callback;
+	arrow->setVisible(true);
+	arrow->setPosition(Vec2(layout->getContentSize().width / 2, 120));
+	arrow->setRotation(-135);
+
+	MoveBy* moveBy = MoveBy::create(.5f, Vec2(-100, 100));
+	FadeOut* fadeOut = FadeOut::create(.5f);
+	Spawn* spawn = Spawn::create(moveBy, fadeOut, nullptr);
+	CallFunc* cal = CallFunc::create([this](){
+		arrow->setOpacity(255);
+		arrow->setPosition(Vec2(layout->getContentSize().width / 2, 80));
+	});
+	arrow->runAction(RepeatForever::create(Sequence::create(spawn, DelayTime::create(.4f), cal, nullptr)));
+}
+
+void HowToPlay::showSwipeTopRight(const std::function<void()> &callback){
+	this->swipeTopRightCallback = callback;
+	arrow->setVisible(true);
+	arrow->setPosition(Vec2(layout->getContentSize().width / 2, 120));
+	arrow->setRotation(-45);
+
+	MoveBy* moveBy = MoveBy::create(.5f, Vec2(100, 100));
+	FadeOut* fadeOut = FadeOut::create(.5f);
+	Spawn* spawn = Spawn::create(moveBy, fadeOut, nullptr);
+	CallFunc* cal = CallFunc::create([this](){
+		arrow->setOpacity(255);
+		arrow->setPosition(Vec2(layout->getContentSize().width / 2, 80));
+	});
+	arrow->runAction(RepeatForever::create(Sequence::create(spawn, DelayTime::create(.4f), cal, nullptr)));
+
+}
+
+
+
+void HowToPlay::showTap(const std::function<void()> &callback){
+	this->tapCallback = callback;
+
+
+}
+
+void HowToPlay::reset(){
+	arrow->stopAllActions();
+	arrow->setVisible(false);
 }

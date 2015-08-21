@@ -59,20 +59,20 @@ void Jackiechun::changeState(artemis::Entity &e){
 		}
 		if (R::Constants::soundEnable){
 			CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
-			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/enemy_attack.mp3", false, 1, 0, 1);
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect(R::Constants::ENEMY_ATTACK, false, 1, 0, 1);
 		}
 		EntityUtils::getInstance()->createAttackEntity(e, attackComponent);
 	}
 	else if (state->state == R::CharacterState::DIE){
 		if (R::Constants::soundEnable){
 			CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
-			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/enemy_death.mp3", false, 1, 0, 1);
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect(R::Constants::ENEMY_DEATH, false, 1, 0, 1);
 		}
 		actionDie(e, state->direction); }
 	else if (state->state == R::CharacterState::DEFENSE){ 
 		if (R::Constants::soundEnable){
 			CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
-			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/hit_03.mp3", false, 1, 0, 1);
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect(R::Constants::ENEMY_HIT3, false, 1, 0, 1);
 		}
 		actionTrungDon(e, state->direction); }
 	else if (state->state == R::CharacterState::START){ actionStart(e,state->direction); }

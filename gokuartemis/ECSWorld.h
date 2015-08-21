@@ -14,12 +14,14 @@
 #include "Characters/Giran.h"
 #include "Characters/Bear.h"
 #include "Characters/Tegiac.h"
+#include "Characters/AITegiac.h"
 #include "Characters/Jackiechun.h"
 #include "Characters/CaMap.h"
 #include "Characters/Rua.h"
 #include "Characters/Karillin.h"
 #include "Characters/Picolo.h"
 #include "AdsManager.h"
+
 
 USING_NS_CC;
 
@@ -30,6 +32,7 @@ public:
 	static ECSWorld* instance;
 	virtual void createWorld(R::Match_Type matchType);
 	virtual void resetCurrentMatch();
+	virtual void resetCurrentMatch(bool isReplayGame);
 	virtual void nextMatch();
 	virtual void notifyInput(Touch* touch, GameHud::EventType event, GameHud::TouchType touchType);
 	artemis::World* getWorld();
@@ -62,6 +65,7 @@ private:
 	artemis::Entity* goku;
 	
 protected:
+	bool isReplayGame;
 	bool isIgnoreWorld;
 	const float STEP;
 	float accumulate;

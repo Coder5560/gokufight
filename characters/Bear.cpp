@@ -26,7 +26,7 @@ void Bear::changeState(artemis::Entity &e){
 		if (state->attack == R::Attack::BEAR_ATTACK1){
 			if (R::Constants::soundEnable) {
 				CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
-				CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/enemy_attack.mp3", false, 1, 0, 1);
+				CocosDenshion::SimpleAudioEngine::getInstance()->playEffect(R::Constants::ENEMY_ATTACK, false, 1, 0, 1);
 			}
 			actionAttack1(e, state->direction);
 			attackComponent->minX = position->x - 140;
@@ -37,7 +37,7 @@ void Bear::changeState(artemis::Entity &e){
 		else if (state->attack == R::Attack::BEAR_ATTACK2){
 			if (R::Constants::soundEnable) {
 				CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
-				CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/enemy_attack.mp3", false, 1, 0, 1);
+				CocosDenshion::SimpleAudioEngine::getInstance()->playEffect(R::Constants::ENEMY_ATTACK, false, 1, 0, 1);
 			}
 			actionAttack2(e, state->direction);
 			attackComponent->minX = position->x - 140;
@@ -51,13 +51,13 @@ void Bear::changeState(artemis::Entity &e){
 	else if (state->state == R::CharacterState::DIE){ 
 		if (R::Constants::soundEnable) {
 			CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
-			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/enemy_death.mp3", false, 1, 0, 1);
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect(R::Constants::ENEMY_DEATH, false, 1, 0, 1);
 		}
 		actionDie(e, state->direction); }
 	else if (state->state == R::CharacterState::DEFENSE){
 		if (R::Constants::soundEnable) {
 			CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
-			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/enemy_hit_2.mp3", false, 1, 0, 1);
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect(R::Constants::ENEMY_HIT2, false, 1, 0, 1);
 		}
 		actionTrungDon(e, state->direction);
 	}

@@ -8,7 +8,6 @@ DecisionBase::~DecisionBase()
 {
 }
 void DecisionBase::setWorld(artemis::World* world){
-
 	this->world = world;
 }
 void DecisionBase::obsever(artemis::Entity &e){
@@ -408,9 +407,6 @@ void JackiechunDecision::obsever(artemis::Entity &e){
 }
 
 TegiacDecision::TegiacDecision() :currentStep(0), doneSpeicalSkill(false), doSpecificSkill(false), isFarFromGoku(true), timeInRageAttack(0){ this->isActive = true; }
-void TegiacDecision::decision(artemis::Entity &e){
-	return;
-}
 void TegiacDecision::obsever(artemis::Entity &e){
 	artemis::Entity& goku = world->getTagManager()->getEntity("goku");
 	BoundComponent* gokuBound = (BoundComponent*)e.getComponent<BoundComponent>();
@@ -424,7 +420,6 @@ void TegiacDecision::obsever(artemis::Entity &e){
 
 	float distance = abs(gokuPosition->x - characterPosition->x);
 	bool gokuOnTheLeft = gokuPosition->x < characterPosition->x;
-	// start thinking
 	bool itmauhon = (gokuInfo->blood - characterInfo->blood) > 10;
 	bool cotherachuongtamxa = characterInfo->hasManaForSkill(40);
 	bool trungdon2lanlientiep = stateComponent->trungdonlientiep >= 2;

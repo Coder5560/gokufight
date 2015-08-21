@@ -10,6 +10,7 @@
 #include "ui/UIPageView.h"
 #include "renders/StartScreen.h"
 #include "renders/Effects.h"
+
 USING_NS_CC;
 class HomeScreen : public cocos2d::LayerColor
 {
@@ -23,7 +24,10 @@ public:
 
 	void showStartLayer();
 	void onSelectPlayGame();
+	void onSelectContinue();
 	void switchToSelectScreen();
+	void switchToContinueGame();
+	
 	void addCharacterItem(int index, int state, std::string name, std::string unlock, std::string lock, const std::function<void()> &callback);
 	void addCharacterItem(int index, std::string name, std::string unlock, std::string lock, const std::function<void()> &callback);
 	void goToGame(R::Match_Type matchType);
@@ -42,4 +46,13 @@ public:
 	bool layoutSelectCreated;
 	spine::SkeletonAnimation* gokuAnimation;
 	ui::ImageView* buttonPlay;
+	ui::ImageView* buttonContinue;
+
+	ui::ImageView* sound;
+	ui::ImageView* music;
+	ui::ImageView* guide;
+	Sprite* nameGame;
+	Sprite* background;
+	RemainingLife* remainingLife;
+
 };

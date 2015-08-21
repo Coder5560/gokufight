@@ -20,7 +20,7 @@ void Goku::changeState(artemis::Entity &e){
 		if (state->attack == R::Attack::GOKU_BEAT1){
 			if (R::Constants::soundEnable) {
 				CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
-				CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/goku_attack.mp3", false, 1, 0, 1);
+				CocosDenshion::SimpleAudioEngine::getInstance()->playEffect(R::Constants::GOKU_ATTACK, false, 1, 0, 1);
 			}
 			actionBeat1(e, state->direction);
 			attackComponent->minX = position->x - 60;
@@ -32,7 +32,7 @@ void Goku::changeState(artemis::Entity &e){
 		else if (state->attack == R::Attack::GOKU_BEAT2){
 			if (R::Constants::soundEnable) {
 				CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
-				CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/goku_attack.mp3", false, 1, 0, 1);
+				CocosDenshion::SimpleAudioEngine::getInstance()->playEffect(R::Constants::GOKU_ATTACK, false, 1, 0, 1);
 			}
 			actionBeat2(e, state->direction);
 			attackComponent->minX = position->x - 80;
@@ -45,7 +45,7 @@ void Goku::changeState(artemis::Entity &e){
 		else if (state->attack == R::Attack::GOKU_BEAT3){
 			if (R::Constants::soundEnable) {
 				CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
-				CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/goku_attack.mp3", false, 1, 0, 1);
+				CocosDenshion::SimpleAudioEngine::getInstance()->playEffect(R::Constants::GOKU_ATTACK, false, 1, 0, 1);
 			}
 			actionBeat3(e, state->direction);
 			attackComponent->minX = position->x - 80;
@@ -82,7 +82,7 @@ void Goku::changeState(artemis::Entity &e){
 		else if (state->attack == R::Attack::GOKU_PUNCH2){
 			if (R::Constants::soundEnable) {
 				CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
-				CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/goku_attack.mp3", false, 1, 0, 1);
+				CocosDenshion::SimpleAudioEngine::getInstance()->playEffect(R::Constants::GOKU_ATTACK, false, 1, 0, 1);
 			}
 			actionPunch2(e, state->direction);
 			attackComponent->minX = position->x - 100;
@@ -95,7 +95,7 @@ void Goku::changeState(artemis::Entity &e){
 		else if (state->attack == R::Attack::GOKU_KICK1){
 			if (R::Constants::soundEnable) {
 				CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
-				CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/goku_attack.mp3", false, 1, 0, 1);
+				CocosDenshion::SimpleAudioEngine::getInstance()->playEffect(R::Constants::GOKU_ATTACK, false, 1, 0, 1);
 			}
 			actionKick1(e, state->direction);
 			attackComponent->minX = position->x - 30;
@@ -106,7 +106,7 @@ void Goku::changeState(artemis::Entity &e){
 		else if (state->attack == R::Attack::GOKU_KICK2){
 			if (R::Constants::soundEnable) {
 				CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
-				CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/goku_attack.mp3", false, 1, 0, 1);
+				CocosDenshion::SimpleAudioEngine::getInstance()->playEffect(R::Constants::GOKU_ATTACK, false, 1, 0, 1);
 			}
 			actionKick2(e, state->direction);
 			attackComponent->minX = position->x - 30;
@@ -117,7 +117,7 @@ void Goku::changeState(artemis::Entity &e){
 		else if (state->attack == R::Attack::GOKU_KICK3){
 			if (R::Constants::soundEnable) {
 				CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
-				CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/goku_attack.mp3", false, 1, 0, 1);
+				CocosDenshion::SimpleAudioEngine::getInstance()->playEffect(R::Constants::GOKU_ATTACK, false, 1, 0, 1);
 			}
 			actionKick3(e, state->direction);
 			attackComponent->minX = position->x - 30;
@@ -133,7 +133,7 @@ void Goku::changeState(artemis::Entity &e){
 		EntityUtils::getInstance()->removeGroup("gokuattack");
 		if (R::Constants::soundEnable) {
 			CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
-			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/goku_behit.mp3", false, 1, 0, 1);
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect(R::Constants::GOKU_BEHIT, false, 1, 0, 1);
 		}
 		if (state->defense == R::Defense::TRUNG_DON) {
 			actionTrungDon(e, state->direction);
@@ -147,7 +147,7 @@ void Goku::changeState(artemis::Entity &e){
 		EntityUtils::getInstance()->removeGroup("gokuattack");
 		if (R::Constants::soundEnable) {
 			CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
-			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/enemy_death_3.mp3", false, 1, 0, 1);
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect(R::Constants::GOKU_DEATH, false, 1, 0, 1);
 		}
 		actionDie(e, state->direction);
 	}
@@ -161,7 +161,7 @@ void Goku::changeState(artemis::Entity &e){
 	else if (state->state == R::CharacterState::JUMP){
 		if (R::Constants::soundEnable) {
 			CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
-			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/jump.mp3", false, 1, 0, 1);
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect(R::Constants::JUMP, false, 1, 0, 1);
 		}
 		actionJump1(e, R::Direction::AUTO);
 	}

@@ -26,7 +26,7 @@ void CharacterStateSystem::processEntity(artemis::Entity& e){
 			if (state->time_on_state >= .5){
 				if (R::Constants::soundEnable) {
 					CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
-					CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/skill_3.mp3", false, 1, 0, 1);
+					CocosDenshion::SimpleAudioEngine::getInstance()->playEffect(R::Constants::SKILL_3, false, 1, 0, 1);
 				}
 				PosComponent* position = (PosComponent*)e.getComponent<PosComponent>();
 				AttackComponent* attackComponent = new AttackComponent();
@@ -50,7 +50,7 @@ void CharacterStateSystem::processEntity(artemis::Entity& e){
 		if (wallSensor->onFloor && (state->state == R::CharacterState::JUMP || state->state == R::CharacterState::BACK)){
 			if (R::Constants::soundEnable) {
 				CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
-				CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("sounds/landing.mp3", false, 1, 0, 1);
+				CocosDenshion::SimpleAudioEngine::getInstance()->playEffect(R::Constants::LANDING, false, 1, 0, 1);
 			}
 			state->setState(R::CharacterState::STAND);
 			return;

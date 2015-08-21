@@ -4,7 +4,6 @@
 #include "R.h"
 USING_NS_CC;
 
-class R::Constants;
 AppDelegate::AppDelegate() {
 
 }
