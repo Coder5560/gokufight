@@ -243,13 +243,42 @@ void ECSWorld::createMainCharacter(){	// create main Character
 	characterInfo->avatar = "textures/goku.png";
 	characterInfo->name = "MONKEY";
 	characterInfo->isMainCharacter = true;
+
+
+
 	characterInfo->MAX_BLOOD = 100;
 	characterInfo->MAX_POWER = 100;
 	characterInfo->blood = 100;
 	characterInfo->power = 100;
-	if (matchType == R::Match_Type::GOKU_GIRAN){
-		characterInfo->SPECIAL_SKILL_POWER = 12;
-		characterInfo->NORMAL_SKILL_POWER = 5;
+	switch (matchType){
+	case R::Match_Type::GOKU_BEAR:
+		
+		break;
+	case R::Match_Type::GOKU_TEGIAC:
+		characterInfo->SPECIAL_SKILL_POWER = 10;
+		characterInfo->NORMAL_SKILL_POWER = 1.5f;
+		break;
+	case R::Match_Type::GOKU_KARILLIN:
+		
+		break;
+	case R::Match_Type::GOKU_GIRAN:
+	
+		break;
+	case R::Match_Type::GOKU_RUA:
+		
+		break;
+	case R::Match_Type::GOKU_CAMAP:
+		
+		break;
+	case R::Match_Type::GOKU_JACKIECHUN:
+	
+		break;
+	case R::Match_Type::GOKU_PICOLO:
+		
+		break;
+	default:
+	
+		break;
 	}
 	//create keletoncomponent
 	spine::SkeletonAnimation* skeletonAnimation =
@@ -559,7 +588,8 @@ void ECSWorld::createTegiacCharacter(){
 	characterInfo->MAX_POWER = 100;
 	characterInfo->blood = 100;
 	characterInfo->power = 100;
-	characterInfo->NORMAL_SKILL_POWER = 2;
+	characterInfo->NORMAL_SKILL_POWER = 1.5f;
+	characterInfo->SPECIAL_SKILL_POWER = 4;
 	//create keletoncomponent
 	spine::SkeletonAnimation* skeletonAnimation =
 		spine::SkeletonAnimation::createWithFile("spine/Tegiac.json",
@@ -580,7 +610,7 @@ void ECSWorld::createTegiacCharacter(){
 
 	DecisionComponent* decisionComponent = new DecisionComponent();
 	decisionComponent->DECISION_TIME = .4;
-	decisionComponent->decisionBase = new AITegiac();
+	decisionComponent->decisionBase = new EnemyNormalAI();
 	decisionComponent->decisionBase->setWorld(world);
 
 	StateComponent* stateComponent = new StateComponent();

@@ -75,6 +75,8 @@ void StartScreen::showStartLayer(){
 	/*HowToPlay* howToPlay = new HowToPlay();
 	howToPlay->showSwipeTopleft([howToPlay](){
 	});*/
+
+	
 	// end test
 
 
@@ -387,7 +389,10 @@ void StartScreen::goToGame(R::Match_Type type){
 
 			DialogComfirm* subDialog = new DialogComfirm();
 			subDialog->setMessage("Invite friends to get more lives", 20);
-			subDialog->setNegative("No", nullptr);
+			subDialog->setNegative("No", [=](){
+				auto scene = HomeScreen::createScene();
+				Director::getInstance()->replaceScene(TransitionFade::create(0.3, scene, Color3B(0, 0, 0)));
+			});
 			subDialog->setPositive("Yes", [=](){
 				R::Constants::remaininglife += 3;
 				if (R::Constants::remaininglife > R::Constants::MAX_LIFE){
@@ -403,7 +408,10 @@ void StartScreen::goToGame(R::Match_Type type){
 		dialogComfirm->setPositive("Reset", [=](){
 			DialogComfirm* subDialog = new DialogComfirm();
 			subDialog->setMessage("Restart from the first levels with 5 lives", 20);
-			subDialog->setNegative("No", nullptr);
+			subDialog->setNegative("No", [=](){
+				auto scene = HomeScreen::createScene();
+				Director::getInstance()->replaceScene(TransitionFade::create(0.3, scene, Color3B(0, 0, 0)));
+			});
 			subDialog->setPositive("Yes", [=](){
 				R::Constants::resetVariable();
 				auto scene = HomeScreen::createScene();

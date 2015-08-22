@@ -51,6 +51,15 @@ void HelloWorld::onKeyReleased(EventKeyboard::KeyCode keyCode, Event* event) {
 	if (keyCode == EventKeyboard::KeyCode::KEY_BACK) {
 		Director::getInstance()->end();
 	}
+	if (keyCode == EventKeyboard::KeyCode::KEY_TAB){ 
+		utils::captureScreen([](bool success, const std::string &afterCapture){
+			std::string str = "Directory : " + afterCapture;
+			CCLOG(str.c_str());
+		}, "share.png");
+	
+	}
+
+	
 
 	artemis::Entity &e = ECSWorld::getInstance()->getWorld()->getTagManager()->getEntity("enemy");
 	StateComponent* stateComponent = (StateComponent*)e.getComponent<StateComponent>();

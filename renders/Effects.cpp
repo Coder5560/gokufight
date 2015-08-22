@@ -39,6 +39,7 @@ KameKameHa::KameKameHa(Node* node, R::CharacterType whoAttack){
 	STATE_TODAN = 1;
 	STATE_FLYING = STATE_TODAN + 1;
 	STATE_COLLISION = STATE_FLYING + 1;
+	STATE_DISMISS = STATE_COLLISION + 1;
 	timeOnState = 0;
 	state = STATE_TODAN;
 	timeHit = 0;
@@ -570,7 +571,11 @@ Winscene::Winscene(Node* node) : isShowing(false) {
 	btnReplay = ui::ImageView::create("menu/btn-replay.png");
 	btnReplay->setAnchorPoint(Vec2(.5f, .5f));
 
+	btnShare = ui::ImageView::create("menu/btn-share.png");
+	btnShare->setAnchorPoint(Vec2(.5f, .5f));
 
+	btnRate = ui::ImageView::create("menu/btn-rate.png");
+	btnRate->setAnchorPoint(Vec2(.5f, .5f));
 
 	text = ui::Text::create("YOU WIN !", "fonts/courbd.ttf", 60);
 	text->setColor(Color3B::WHITE);
@@ -589,6 +594,12 @@ void Winscene::setMenuCallBack(const std::function<void()> &callback){
 void Winscene::setNextMatchCallBack(const std::function<void()> &callback){
 	this->nextMatchCallBack = callback;
 }
+void Winscene::setShareCallBack(const std::function<void()> &callback){
+	this->shareCallBack = callback;
+}
+void Winscene::setRateCallBack(const std::function<void()> &callback){
+	this->rateCallBack = callback;
+}
 
 
 
@@ -598,26 +609,51 @@ void Winscene::showWinScene(){
 	background->setPosition(node->getContentSize() / 2);
 
 
-	btnMenu->setPosition(Vec2(node->getContentSize().width / 2, 40 + btnMenu->getContentSize().height / 2));
-	btnReplay->setPosition(Vec2(node->getContentSize().width / 2, btnMenu->getPositionY() + btnMenu->getContentSize().height + 30));
-	btnNext->setPosition(Vec2(node->getContentSize().width / 2, btnReplay->getPositionY() + btnReplay->getContentSize().height + 30));
-	text->setPosition(Vec2(node->getContentSize().width / 2, btnNext->getPositionY() + btnNext->getContentSize().height / 2 + 40 + text->getContentSize().height / 2));
+	btnShare->setPosition(Vec2(node->getContentSize().width / 2 - btnShare->getContentSize().width , 20 + btnShare->getContentSize().height / 2));
+	btnRate->setPosition(Vec2(node->getContentSize().width / 2 + btnRate->getContentSize().width, 20 + btnRate->getContentSize().height / 2));
 
+	btnMenu->setPosition(Vec2(node->getContentSize().width / 2, btnRate->getPositionY() + btnRate->getContentSize().height/2+ 30 + btnMenu->getContentSize().height / 2));
+	btnReplay->setPosition(Vec2(node->getContentSize().width / 2, btnMenu->getPositionY() + btnMenu->getContentSize().height + 20));
+	btnNext->setPosition(Vec2(node->getContentSize().width / 2, btnReplay->getPositionY() + btnReplay->getContentSize().height + 20));
+	text->setPosition(Vec2(node->getContentSize().width / 2, btnNext->getPositionY() + btnNext->getContentSize().height / 2 + 40 + text->getContentSize().height / 2));
+	
 
 	node->addChild(background);
 	node->addChild(btnMenu);
 	node->addChild(btnReplay);
 	node->addChild(btnNext);
+	node->addChild(btnShare);
+	node->addChild(btnRate);
 	node->addChild(text);
-
-
-
+	
 
 	btnMenu->setTouchEnabled(true);
 	btnReplay->setTouchEnabled(true);
 	btnNext->setTouchEnabled(true);
+	btnShare->setTouchEnabled(true);
+	btnRate->setTouchEnabled(true);
 
+	btnShare->addClickEventListener([=](Ref* sender){
+		btnShare->setTouchEnabled(false);
+		ScaleTo* scaleIn = ScaleTo::create(.1f, .96f);
+		ScaleTo* scaleout = ScaleTo::create(.1f, 1);
+		CallFunc* call = CallFunc::create([=](){
+			btnShare->setTouchEnabled(true);
+			if (shareCallBack) shareCallBack();
+		});
+		btnShare->runAction(Sequence::create(scaleIn, scaleout, call, nullptr));
+	});
 
+	btnRate->addClickEventListener([=](Ref* sender){
+		btnRate->setTouchEnabled(false);
+		ScaleTo* scaleIn = ScaleTo::create(.1f, .96f);
+		ScaleTo* scaleout = ScaleTo::create(.1f, 1);
+		CallFunc* call = CallFunc::create([=](){
+			btnRate->setTouchEnabled(true);
+			if (rateCallBack) rateCallBack();
+		});
+		btnRate->runAction(Sequence::create(scaleIn, scaleout, call, nullptr));
+	});
 
 
 
@@ -680,6 +716,11 @@ LoseScene::LoseScene(Node* node) : isShowing(false) {
 	btnReplay = ui::ImageView::create("menu/btn-replay.png");
 	btnReplay->setAnchorPoint(Vec2(.5f, .5f));
 
+	btnShare = ui::ImageView::create("menu/btn-share.png");
+	btnShare->setAnchorPoint(Vec2(.5f, .5f));
+
+	btnRate = ui::ImageView::create("menu/btn-rate.png");
+	btnRate->setAnchorPoint(Vec2(.5f, .5f));
 
 
 	text = ui::Text::create("YOU LOSE !", "fonts/courbd.ttf", 60);
@@ -696,25 +737,38 @@ void LoseScene::setReplayCallback(const std::function<void()> &callback){
 void LoseScene::setMenuCallBack(const std::function<void()> &callback){
 	this->menuCallBack = callback;
 }
+void LoseScene::setRateCallBack(const std::function<void()> &callback){
+	this->rateCallBack = callback;
+}
+void LoseScene::setShareCallBack(const std::function<void()> &callback){
+	this->shareCallBack = callback;
+}
 void LoseScene::showLoseScene(){
 	// continue,  replay,  menu,sound, music, guide
 
 	background->setPosition(node->getContentSize() / 2);
 
 
-	btnMenu->setPosition(Vec2(node->getContentSize().width / 2, 40 + btnMenu->getContentSize().height / 2));
-	btnReplay->setPosition(Vec2(node->getContentSize().width / 2, btnMenu->getPositionY() + btnMenu->getContentSize().height + 30));
+	btnShare->setPosition(Vec2(node->getContentSize().width / 2 - btnShare->getContentSize().width, 20 + btnShare->getContentSize().height / 2));
+	btnRate->setPosition(Vec2(node->getContentSize().width / 2 + btnRate->getContentSize().width, 20 + btnRate->getContentSize().height / 2));
+
+	btnMenu->setPosition(Vec2(node->getContentSize().width / 2, btnRate->getPositionY() + btnRate->getContentSize().height / 2 + 30 + btnMenu->getContentSize().height / 2));
+	btnReplay->setPosition(Vec2(node->getContentSize().width / 2, btnMenu->getPositionY() + btnMenu->getContentSize().height + 20));
 
 	text->setPosition(Vec2(node->getContentSize().width / 2, btnReplay->getPositionY() + btnReplay->getContentSize().height / 2 + 40 + text->getContentSize().height / 2));
-
 
 	node->addChild(background);
 	node->addChild(btnMenu);
 	node->addChild(btnReplay);
+	node->addChild(btnShare);
+	node->addChild(btnRate);
+
 	node->addChild(text);
 
 	btnMenu->setTouchEnabled(true);
 	btnReplay->setTouchEnabled(true);
+	btnShare->setTouchEnabled(true);
+	btnRate->setTouchEnabled(true);
 
 	btnMenu->addClickEventListener([=](Ref* sender){
 		btnMenu->setTouchEnabled(false);
@@ -741,6 +795,29 @@ void LoseScene::showLoseScene(){
 		});
 		btnReplay->runAction(Sequence::create(scaleIn, scaleout, call, nullptr));
 	});
+
+	btnShare->addClickEventListener([=](Ref* sender){
+		btnShare->setTouchEnabled(false);
+		ScaleTo* scaleIn = ScaleTo::create(.1f, .96f);
+		ScaleTo* scaleout = ScaleTo::create(.1f, 1);
+		CallFunc* call = CallFunc::create([=](){
+			btnShare->setTouchEnabled(true);
+			if (shareCallBack) shareCallBack();
+		});
+		btnShare->runAction(Sequence::create(scaleIn, scaleout, call, nullptr));
+	});
+
+	btnRate->addClickEventListener([=](Ref* sender){
+		btnRate->setTouchEnabled(false);
+		ScaleTo* scaleIn = ScaleTo::create(.1f, .96f);
+		ScaleTo* scaleout = ScaleTo::create(.1f, 1);
+		CallFunc* call = CallFunc::create([=](){
+			btnRate->setTouchEnabled(true);
+			if (rateCallBack) rateCallBack();
+		});
+		btnRate->runAction(Sequence::create(scaleIn, scaleout, call, nullptr));
+	});
+
 }
 
 

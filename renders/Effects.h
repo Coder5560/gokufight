@@ -157,11 +157,14 @@ public:
 	void setReplayCallback(const std::function<void()> &callback);
 	void setMenuCallBack(const std::function<void()> &callback);
 	void setNextMatchCallBack(const std::function<void()> &callback);
-
+	void setShareCallBack(const std::function<void()> &callback);
+	void setRateCallBack(const std::function<void()> &callback);
 
 	std::function<void()> menuCallBack;
 	std::function<void()> replayCallBack;
 	std::function<void()> nextMatchCallBack;
+	std::function<void()> shareCallBack;
+	std::function<void()> rateCallBack;
 
 	bool isShowing;
 
@@ -170,6 +173,8 @@ public:
 	ui::ImageView* btnMenu;
 	ui::ImageView* btnNext;
 	ui::ImageView* btnReplay;
+	ui::ImageView* btnShare;
+	ui::ImageView* btnRate;
 
 	ui::Text* text;
 };
@@ -182,18 +187,22 @@ public:
 	void showLoseScene();
 
 	void setReplayCallback(const std::function<void()> &callback);
-	void setMenuCallBack(const std::function<void()> &callback);
+	void setMenuCallBack(const std::function<void()> &callback); 
+	void setShareCallBack(const std::function<void()> &callback);
+	void setRateCallBack(const std::function<void()> &callback);
 
 	std::function<void()> menuCallBack;
 	std::function<void()> replayCallBack;
-	std::function<void()> nextMatchCallBack;
+	std::function<void()> shareCallBack;
+	std::function<void()> rateCallBack;
 	bool isShowing;
 
 
 	ui::ImageView* background;
 	ui::ImageView* btnMenu;
 	ui::ImageView* btnReplay;
-
+	ui::ImageView* btnShare;
+	ui::ImageView* btnRate;
 	ui::Text* text;
 };
 

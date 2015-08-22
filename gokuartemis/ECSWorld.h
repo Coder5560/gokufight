@@ -20,6 +20,7 @@
 #include "Characters/Rua.h"
 #include "Characters/Karillin.h"
 #include "Characters/Picolo.h"
+#include "Characters/EnemyNormalAI.h"
 #include "AdsManager.h"
 
 

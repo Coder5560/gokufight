@@ -11,6 +11,7 @@
 #include "ui/UIText.h"
 #include "renders/HomeScreen.h"
 #include "AdsManager.h"
+#include "FacebookManager.h"
 USING_NS_CC;
 
 class GravitySystem;
@@ -118,6 +119,7 @@ public:
 
 	void switchToState(R::GameState state, artemis::Entity* e);
 	bool createLoseMessage;
+
 private:
 
 	artemis::ComponentMapper<GameStateComponent> gameStateMapper;

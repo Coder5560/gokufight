@@ -101,6 +101,7 @@ void Tegiac::changeState(artemis::Entity &e){
 	else if (state->state == R::CharacterState::RIGHT){ actionMove(e, R::Direction::RIGHT); }
 	else if (state->state == R::CharacterState::WALK_LEFT){ actionRun(e, R::Direction::LEFT); }
 	else if (state->state == R::CharacterState::WALK_RIGHT){ actionRun(e, R::Direction::RIGHT); }
+	else if (state->state == R::CharacterState::JUMP){ actionJump(e, R::Direction::AUTO); }
 
 }
 
@@ -528,7 +529,7 @@ void Tegiac::actionJump(artemis::Entity &e, R::Direction direction){
 		spine::SkeletonAnimation* skeletonAnimation = skeleton->skeleton;
 		Node* node = skeleton->node;
 		float angle = state->direction == R::Direction::TOP ? 90 : (state->direction == R::Direction::TOP_LEFT ? 135 : (state->direction == R::Direction::TOP_RIGHT ? 45 : 90));
-		float force = state->direction == R::Direction::TOP || state->direction == R::Direction::AUTO ? 300 : 400;
+		float force = state->direction == R::Direction::TOP || state->direction == R::Direction::AUTO ? 200 : 250;
 		// xử lý action
 		EntityUtils::getInstance()->push(e, angle, force);
 		EntityUtils::getInstance()->clampVelocity(e, 0, force);
