@@ -721,10 +721,7 @@ void Karillin::actionKick3(artemis::Entity &e, R::Direction direction) {
 }
 void Karillin::actionPunch1(artemis::Entity &e, R::Direction direction) {
 	WallSensorComponent* wallSensor = (WallSensorComponent*)(e.getComponent<WallSensorComponent>());
-
 	CharacterInfoComponent* characterInfo = (CharacterInfoComponent*)e.getComponent<CharacterInfoComponent>();
-
-
 	bool dudieukien = wallSensor->onFloor && characterInfo->hasManaForSkill(40);
 	if (!dudieukien) {
 		return;
@@ -737,13 +734,11 @@ void Karillin::actionPunch1(artemis::Entity &e, R::Direction direction) {
 			SkeletonComponent>();
 		spine::SkeletonAnimation* skeletonAnimation = skeleton->skeleton;
 		Node* node = skeleton->node;
-		artemis::Entity *entity = &e;
-
-		// xử lý action
+		
 		skeletonAnimation->clearTracks();
 		skeletonAnimation->setAnimation(0, "Punch1", false);
 		skeletonAnimation->setTimeScale(1.5f);
-		skeletonAnimation->setCompleteListener([this, state, entity](int trackID, int loopCount){
+		skeletonAnimation->setCompleteListener([this, state](int trackID, int loopCount){
 			state->setState(R::CharacterState::STAND);
 		});
 	}

@@ -21,6 +21,7 @@
 #include "Characters/Karillin.h"
 #include "Characters/Picolo.h"
 #include "Characters/EnemyNormalAI.h"
+#include "Characters/KarillinAI.h"
 #include "AdsManager.h"
 
 

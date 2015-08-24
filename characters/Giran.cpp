@@ -73,14 +73,8 @@ void Giran::actionTrungDon(artemis::Entity &e, R::Direction direction){
 	skeleton->skeleton->setCompleteListener(nullptr);
 	skeleton->skeleton->setTimeScale(1);
 	StateComponent* stateComponent = (StateComponent*)e.getComponent<StateComponent>();
-	PosComponent* positionComponent = (PosComponent*)e.getComponent<PosComponent>();
 	stateComponent->setState(R::CharacterState::STAND);
-	if (direction == R::Direction::LEFT){
-		positionComponent->x -= 40;
-	}
-	else if (direction == R::Direction::RIGHT){
-		positionComponent->x += 40;
-	}
+	EntityUtils::getInstance()->stopPhysic(e);
 }
 void Giran::actionStand(artemis::Entity &e){
 	StateComponent* state = (StateComponent*)e.getComponent<StateComponent>();
@@ -128,24 +122,24 @@ void Giran::actionMove(artemis::Entity &e, R::Direction direction){
 
 		// xử lý action
 		if (state->direction == R::Direction::RIGHT) {
-			EntityUtils::getInstance()->push(e, 0, 160);
-			EntityUtils::getInstance()->clampVelocity(e, 0, 160);
+			EntityUtils::getInstance()->push(e, 0, 120);
+			EntityUtils::getInstance()->clampVelocity(e, 0, 120);
 			skeletonAnimation->clearTracks();
 			skeletonAnimation->setAnimation(0, "Move", true);
 			skeletonAnimation->setCompleteListener(nullptr);
 			node->setScaleX(1);
 		}
 		else if (state->direction == R::Direction::LEFT) {
-			EntityUtils::getInstance()->push(e, 180, 160);
-			EntityUtils::getInstance()->clampVelocity(e, 0, 160);
+			EntityUtils::getInstance()->push(e, 180, 120);
+			EntityUtils::getInstance()->clampVelocity(e, 0, 120);
 			skeletonAnimation->clearTracks();
 			skeletonAnimation->setAnimation(0, "Move", true);
 			skeletonAnimation->setCompleteListener(nullptr);
 			node->setScaleX(-1);
 		}
 		else if (state->direction == R::Direction::AUTO){
-			EntityUtils::getInstance()->push(e, node->getScaleX() > 0 ? 0 : 180, 160);
-			EntityUtils::getInstance()->clampVelocity(e, 0, 160);
+			EntityUtils::getInstance()->push(e, node->getScaleX() > 0 ? 0 : 180, 120);
+			EntityUtils::getInstance()->clampVelocity(e, 0, 120);
 			skeletonAnimation->clearTracks();
 			skeletonAnimation->setAnimation(0, "Move", true);
 			skeletonAnimation->setCompleteListener(nullptr);
@@ -165,8 +159,8 @@ void Giran::actionMoveOn(artemis::Entity &e, R::Direction direction){
 		Node* node = skeleton->node;
 		// xử lý action
 		if (state->direction == R::Direction::RIGHT) {
-			EntityUtils::getInstance()->push(e, 0, 160);
-			EntityUtils::getInstance()->clampVelocity(e, 0, 160);
+			EntityUtils::getInstance()->push(e, 0, 120);
+			EntityUtils::getInstance()->clampVelocity(e, 0, 120);
 			node->setScaleX(1);
 		}
 		else if (state->direction == R::Direction::LEFT) {
@@ -175,8 +169,8 @@ void Giran::actionMoveOn(artemis::Entity &e, R::Direction direction){
 			node->setScaleX(-1);
 		}
 		else if (state->direction == R::Direction::AUTO) {
-			EntityUtils::getInstance()->push(e, node->getScaleX() > 0 ? 0 : 180, 160);
-			EntityUtils::getInstance()->clampVelocity(e, 0, 160);
+			EntityUtils::getInstance()->push(e, node->getScaleX() > 0 ? 0 : 180, 120);
+			EntityUtils::getInstance()->clampVelocity(e, 0, 120);
 		}
 	}
 }

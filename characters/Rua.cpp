@@ -88,6 +88,7 @@ void Rua::changeState(artemis::Entity &e){
 	else if (state->state == R::CharacterState::RIGHT){ actionMove(e, R::Direction::RIGHT); }
 	else if (state->state == R::CharacterState::WALK_LEFT){ actionMove(e, R::Direction::LEFT); }
 	else if (state->state == R::CharacterState::WALK_RIGHT){ actionMove(e, R::Direction::RIGHT); }
+	else if (state->state == R::CharacterState::JUMP){ actionJump(e, R::Direction::AUTO); }
 
 }
 
@@ -147,6 +148,25 @@ void Rua::actionStand(artemis::Entity &e){
 	EntityUtils::getInstance()->stopPhysic(e);
 	state->doneAction = true;
 }
+
+void Rua::actionJump(artemis::Entity &e,R::Direction direction){
+	StateComponent* state = (StateComponent*)e.getComponent<StateComponent>();
+	SkeletonComponent* skeleton = (SkeletonComponent*)e.getComponent<SkeletonComponent>();
+
+	EntityUtils::getInstance()->push(e, 90, 120);
+	EntityUtils::getInstance()->clampVelocity(e, 0, 120);
+	skeleton->skeleton->clearTracks();
+	skeleton->skeleton->setToSetupPose();
+	skeleton->skeleton->setAnimation(0, "jumping", false);
+	skeleton->skeleton->setCompleteListener(
+		[=](int trackIndex, int loopCount) {
+		state->setState(R::CharacterState::STAND);
+	});
+	skeleton->skeleton->setTimeScale(1.5);
+	
+	state->doneAction = true;
+}
+
 void Rua::actionStandUp(artemis::Entity &e){
 	bool dudieukien = true;
 	if (!dudieukien) {
@@ -338,18 +358,18 @@ void Rua::actionMove(artemis::Entity &e, R::Direction direction){
 
 		// xử lý action
 		if (state->direction == R::Direction::RIGHT) {
-			EntityUtils::getInstance()->push(e, 0, 220);
-			EntityUtils::getInstance()->clampVelocity(e, 0, 220);
+			EntityUtils::getInstance()->push(e, 0, 120);
+			EntityUtils::getInstance()->clampVelocity(e, 0, 120);
 			node->setScaleX(1);
 		}
 		else if (state->direction == R::Direction::LEFT) {
-			EntityUtils::getInstance()->push(e, 180, 220);
-			EntityUtils::getInstance()->clampVelocity(e, 0, 220);
+			EntityUtils::getInstance()->push(e, 180, 120);
+			EntityUtils::getInstance()->clampVelocity(e, 0, 120);
 			node->setScaleX(-1);
 		}
 		else if (state->direction == R::Direction::AUTO) {
-			EntityUtils::getInstance()->push(e, node->getScaleX() > 0 ? 0 : 180, 220);
-			EntityUtils::getInstance()->clampVelocity(e, 0, 220);
+			EntityUtils::getInstance()->push(e, node->getScaleX() > 0 ? 0 : 180, 120);
+			EntityUtils::getInstance()->clampVelocity(e, 0, 120);
 		}
 	}
 }

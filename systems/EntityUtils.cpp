@@ -25,14 +25,16 @@ artemis::World* EntityUtils::getWorld(){
 void EntityUtils::createAttackEntity(artemis::Entity &attacker, AttackComponent* attackComponent){
 	CharacterInfoComponent* attackerInfo = (CharacterInfoComponent*)attacker.getComponent<CharacterInfoComponent>();
 	if (!attackerInfo->hasManaForSkill(attackComponent->manaOfAttack)){
-		StateComponent* state = (StateComponent*)attacker.getComponent<StateComponent>();
-		// show text not enough mana
-		attackerInfo->notifyNotEnoughMana();
-		PosComponent* position = (PosComponent*)attacker.getComponent<PosComponent>();
-		Node* node = RenderLayer::getInstance()->createGameNode();
-		node->setPosition(Vec2(position->x, position->y + 60));
-		NotEnoughManaEffect* effect = new NotEnoughManaEffect(node);
-		effect->start();
+		if (attackComponent->whoAttack == R::CharacterType::GOKU){
+			StateComponent* state = (StateComponent*)attacker.getComponent<StateComponent>();
+			// show text not enough mana
+			attackerInfo->notifyNotEnoughMana();
+			PosComponent* position = (PosComponent*)attacker.getComponent<PosComponent>();
+			Node* node = RenderLayer::getInstance()->createGameNode();
+			node->setPosition(Vec2(position->x, position->y + 60));
+			NotEnoughManaEffect* effect = new NotEnoughManaEffect(node);
+			effect->start();
+		}
 		return;
 	}
 	else{
@@ -58,7 +60,7 @@ void EntityUtils::createAttackEntity(artemis::Entity &attacker, AttackComponent*
 
 	}
 	if (characterType->type == R::CharacterType::KARILLIN){
-		if (state->attack == R::Attack::KARILLIN_PUNCH1) createKarilinPunch1Attack(attacker, attackComponent);
+	//	if (state->attack == R::Attack::KARILLIN_PUNCH1) createKarilinPunch1Attack(attacker, attackComponent);
 		if (state->attack == R::Attack::KARILLIN_PUNCH2) createKarilinPunch2Attack(attacker, attackComponent);
 
 		if (state->attack == R::Attack::KARILLIN_BEAT1) createKarilinBeat1Attack(attacker, attackComponent);

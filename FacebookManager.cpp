@@ -32,7 +32,7 @@ void FacebookManager::shareFacebookPhoto(std::string filePath)
 {
 }
 
-#else 
+#else
 #endif
 
 

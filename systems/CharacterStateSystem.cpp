@@ -47,14 +47,22 @@ void CharacterStateSystem::processEntity(artemis::Entity& e){
 
 		WallSensorComponent* wallSensor = (WallSensorComponent*)e.getComponent<WallSensorComponent>();
 		PhysicComponent* physic = (PhysicComponent*)e.getComponent<PhysicComponent>();
+		CharacterInfoComponent* characterInfo = (CharacterInfoComponent*)e.getComponent<CharacterInfoComponent>();
 		if (wallSensor->onFloor && (state->state == R::CharacterState::JUMP || state->state == R::CharacterState::BACK)){
 			if (R::Constants::soundEnable) {
 				CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
 				CocosDenshion::SimpleAudioEngine::getInstance()->playEffect(R::Constants::LANDING, false, 1, 0, 1);
 			}
 			state->setState(R::CharacterState::STAND);
+			
 			return;
 		}
+		if (characterInfo->isMainCharacter &&  state->jump && physic->vy == 0 && state->state != R::CharacterState::STAND){
+			state->setState(R::CharacterState::STAND);
+			state->jump = false;
+			return;
+		}
+
 	}
 	if (state->characterBase != nullptr){
 		state->characterBase->process();

@@ -255,17 +255,20 @@ void ECSWorld::createMainCharacter(){	// create main Character
 		
 		break;
 	case R::Match_Type::GOKU_TEGIAC:
-		characterInfo->SPECIAL_SKILL_POWER = 10;
+		characterInfo->SPECIAL_SKILL_POWER = 8;
 		characterInfo->NORMAL_SKILL_POWER = 1.5f;
 		break;
 	case R::Match_Type::GOKU_KARILLIN:
-		
+		characterInfo->SPECIAL_SKILL_POWER = 6;
+		characterInfo->NORMAL_SKILL_POWER = 1.5f;
 		break;
 	case R::Match_Type::GOKU_GIRAN:
-	
+		characterInfo->SPECIAL_SKILL_POWER = 10;
+		characterInfo->NORMAL_SKILL_POWER = 1.5f;
 		break;
 	case R::Match_Type::GOKU_RUA:
-		
+		characterInfo->SPECIAL_SKILL_POWER = 10;
+		characterInfo->NORMAL_SKILL_POWER = 1.5f;
 		break;
 	case R::Match_Type::GOKU_CAMAP:
 		
@@ -367,6 +370,7 @@ void ECSWorld::createGiranCharacter(){
 	characterInfo->MAX_POWER = 100;
 	characterInfo->blood = 100;
 	characterInfo->power = 100;
+	characterInfo->NORMAL_SKILL_POWER = 1;
 	//create keletoncomponent
 	spine::SkeletonAnimation* skeletonAnimation =
 		spine::SkeletonAnimation::createWithFile("spine/Giran.json",
@@ -683,6 +687,8 @@ void ECSWorld::createRuaCharacter(){
 	characterInfo->MAX_POWER = 100;
 	characterInfo->blood = 100;
 	characterInfo->power = 100;
+	characterInfo->NORMAL_SKILL_POWER = 1.5f;
+	characterInfo->SPECIAL_SKILL_POWER = 5;
 	//create keletoncomponent
 	spine::SkeletonAnimation* skeletonAnimation =
 		spine::SkeletonAnimation::createWithFile("spine/rua.json",
@@ -791,12 +797,13 @@ void ECSWorld::createKarillinCharacter(){
 	characterInfo->MAX_POWER = 100;
 	characterInfo->blood = 100;
 	characterInfo->power = 100;
+	characterInfo->NORMAL_SKILL_POWER = 1.5f;
 	//create keletoncomponent
 	spine::SkeletonAnimation* skeletonAnimation =
 		spine::SkeletonAnimation::createWithFile("spine/Karilin.json",
 		"spine/Karilin.atlas");
 	skeletonAnimation->setAnimation(0, "Stand", true);
-	skeletonAnimation->setScale(.4);
+	skeletonAnimation->setScale(.5);
 
 	Node* node = RenderLayer::getInstance()->createGameNode();
 	node->setAnchorPoint(Vec2(.5, .5));
@@ -811,7 +818,7 @@ void ECSWorld::createKarillinCharacter(){
 
 	DecisionComponent* decisionComponent = new DecisionComponent();
 	decisionComponent->DECISION_TIME = .4;
-	decisionComponent->decisionBase = new KarillinDecision();
+	decisionComponent->decisionBase = new KarillinAI();
 	decisionComponent->decisionBase->setWorld(world);
 
 	StateComponent* stateComponent = new StateComponent();

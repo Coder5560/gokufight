@@ -59,7 +59,7 @@ void Goku::changeState(artemis::Entity &e){
 				Node* node = RenderLayer::getInstance()->createGameNode();
 				node->setPosition(Vec2(position->x, position->y));
 				node->setScale(.2f);
-				KameKameHa* kame = new KameKameHa(node,R::CharacterType::GOKU);
+				KameKameHa* kame = new KameKameHa(node, R::CharacterType::GOKU);
 				kame->setTarget("enemy");
 				kame->powerOfAttack = characterInfo->SPECIAL_SKILL_POWER;
 				kame->direction = (characterSkeleton->node->getScaleX() < 0) ? -1 : 1;
@@ -129,7 +129,7 @@ void Goku::changeState(artemis::Entity &e){
 		state->state == R::CharacterState::STAND;
 	}
 	else if (state->state == R::CharacterState::DEFENSE){
-		
+
 		EntityUtils::getInstance()->removeGroup("gokuattack");
 		if (R::Constants::soundEnable) {
 			CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(R::Constants::soundVolumn);
@@ -647,7 +647,10 @@ void Goku::actionJump1(artemis::Entity &e, R::Direction direction) {
 		EntityUtils::getInstance()->clampVelocity(e, 0, force);
 		if (skeletonAnimation->getCurrent() != 0){
 			std::string animation = skeletonAnimation->getCurrent()->animation->name;
-			animation = (animation.compare("Run") != 0) ? "Jump1" : "Jump3";
+			if (state->direction == R::Direction::TOP_LEFT || state->direction == R::Direction::TOP_RIGHT)
+				animation = "Jump1";
+			else	animation = (animation.compare("Run") != 0) ? "Jump1" : "Jump3";
+
 			skeletonAnimation->clearTracks();
 			skeletonAnimation->setAnimation(0, animation, false);
 			skeletonAnimation->setCompleteListener(nullptr);
@@ -703,7 +706,7 @@ void Goku::actionJump3(artemis::Entity &e, R::Direction direction) {
 }
 void Goku::actionKick1(artemis::Entity &e, R::Direction direction) {
 	WallSensorComponent* wallSensor = (WallSensorComponent*)(e.getComponent<WallSensorComponent>());
-	bool dudieukien = wallSensor->onFloor;
+	bool dudieukien = true || wallSensor->onFloor;
 	if (!dudieukien) {
 		return;
 	}
@@ -775,10 +778,7 @@ void Goku::actionKick3(artemis::Entity &e, R::Direction direction) {
 }
 void Goku::actionPunch1(artemis::Entity &e, R::Direction direction) {
 	WallSensorComponent* wallSensor = (WallSensorComponent*)(e.getComponent<WallSensorComponent>());
-
 	CharacterInfoComponent* characterInfo = (CharacterInfoComponent*)e.getComponent<CharacterInfoComponent>();
-
-
 	bool dudieukien = wallSensor->onFloor && characterInfo->hasManaForSkill(40);
 	if (!dudieukien) {
 		return;

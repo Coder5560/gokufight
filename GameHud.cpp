@@ -1,6 +1,6 @@
 #include "GameHud.h"
 
-GameHud::GameHud(Size visibleSize) :touch(nullptr),state(HudState::HIDE), touchType(TouchType::NONE), eventType(EventType::RELEASE), timeTouch(0), isPan(false), ignoreInput(false), timeCatchEvent(0) {
+GameHud::GameHud(Size visibleSize) :touch(nullptr), state(HudState::HIDE), touchType(TouchType::NONE), eventType(EventType::RELEASE), timeTouch(0), isPan(false), ignoreInput(false), timeCatchEvent(0) {
 	this->setContentSize(visibleSize);
 	this->scheduleUpdate();
 }
@@ -29,9 +29,21 @@ void GameHud::buildComponent() {
 		Vec2 delta = touch->getDelta();
 		float length = touch->getDelta().getLength();
 		float angle = 180 * atan2f(touch->getDelta().y, touch->getDelta().x) / M_PI;
-		if (timeTouch<.2 && length >30){
+		if (timeTouch<.2 && length >60){
 			if (!isFling){
 				CCLOG("Fling");
+
+				if (135 <= angle && angle <= 225) {
+					touchType = TouchType::TOP_LEFT;
+					eventType = EventType::BEGIN;
+					notifyEvent();
+				}
+				else if ((315 <= angle && angle < 360) || angle < 45) {
+					touchType = TouchType::TOP_RIGHT;
+					eventType = EventType::BEGIN;
+					notifyEvent();
+				}
+				ignoreInput = true;
 				isFling = true;
 
 			}
@@ -40,7 +52,7 @@ void GameHud::buildComponent() {
 			return;
 		}
 
-		
+
 		if (angle < 0) angle += 360;
 		if (isPan && length>4) {
 			if (157 <= angle && angle <= 202) {
@@ -67,7 +79,7 @@ void GameHud::buildComponent() {
 		}
 
 		if (!isPan && length > 6) {
-			if (22 <= angle && angle <= 77) {
+			if (22 <= angle && angle <= 80) {
 				if (length > 20) {
 					touchType = TOP_RIGHT;
 				}
@@ -75,7 +87,7 @@ void GameHud::buildComponent() {
 					touchType = RIGHT;
 				}
 			}
-			else if (77 <= angle && angle <= 112) {
+			else if (80 <= angle && angle <= 110) {
 				touchType = TouchType::TOP;
 
 			}
@@ -125,9 +137,11 @@ void GameHud::buildComponent() {
 			else {
 
 				// notify longpress
-				touchType = TouchType::LONG_PRESS;
-				eventType = EventType::BEGIN;
-				notifyEvent();
+				if (eventType != EventType::END){
+					touchType = TouchType::LONG_PRESS;
+					eventType = EventType::BEGIN;
+					notifyEvent();
+				}
 			}
 		}
 		else {
@@ -163,12 +177,12 @@ void GameHud::update(float delta) {
 	}
 }
 void GameHud::setCallBack(
-	const std::function<void(Touch* touch,GameHud::EventType, GameHud::TouchType)> &callBack) {
+	const std::function<void(Touch* touch, GameHud::EventType, GameHud::TouchType)> &callBack) {
 	this->callBack = callBack;
 }
 void GameHud::notifyEvent() {
 	if (callBack) {
-		callBack(touch,eventType, touchType);
+		callBack(touch, eventType, touchType);
 	}
 }
 

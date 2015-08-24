@@ -195,6 +195,7 @@ public:
 	int trungdonlientiep;
 	int hitDetected;
 	bool doneAction;
+	bool jump;
 };
 
 class CharacterTypeComponent : public artemis::Component{

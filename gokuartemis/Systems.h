@@ -117,6 +117,8 @@ public:
 	virtual void switchToPause();
 	virtual void switchToResume();
 
+	virtual bool checkLives();
+
 	void switchToState(R::GameState state, artemis::Entity* e);
 	bool createLoseMessage;
 
@@ -308,6 +310,7 @@ public:
 	virtual void initialize();
 	virtual void processEntity(artemis::Entity &e);
 	virtual void onGameState(bool isPlaying);
+	virtual bool checkLives();
 protected:
 	artemis::ComponentMapper<CharacterUIComponent> characterUIMapper;
 	
