@@ -100,11 +100,9 @@ void ECSWorld::createWorld(R::Match_Type matchType){
 
 
 	inputSystem = new InputSystem();
-
-
-	setSystem(new GameStateSystem());
 	setSystem(inputSystem);
-
+	
+	
 	setSystem(new SpecialSkillSystem());
 	setSystem(new PhysicSystem());
 	setSystem(new GravitySystem());
@@ -114,16 +112,17 @@ void ECSWorld::createWorld(R::Match_Type matchType){
 	setSystem(new MotionSystem());
 	setSystem(new SkeletonSystem());
 	//	setSystem(new UICharacterSystem());
-
-	setSystem(new CharacterStateSystem());
 	setSystem(new RenderSystem());
-	setSystem(new RemoveEntitySystem());
 	setSystem(new CatFollowGokuSystem());
 	setSystem(new BombSystem());
 	setSystem(new CameraFollowSystem());
 	setSystem(new SkillSystem());
 	//setSystem(new DebugSystem());
 	setSystem(new DecisionSystem());
+	setSystem(new GameStateSystem());
+	setSystem(new CharacterStateSystem());
+	setSystem(new RemoveEntitySystem());
+		
 	if (matchType == R::Match_Type::GOKU_BEAR_INTRODUCE){
 		//createIntroduceEntity
 		introduceSystem = new IntroduceSystem();
@@ -271,7 +270,8 @@ void ECSWorld::createMainCharacter(){	// create main Character
 		characterInfo->NORMAL_SKILL_POWER = 1.5f;
 		break;
 	case R::Match_Type::GOKU_CAMAP:
-		
+		characterInfo->SPECIAL_SKILL_POWER = 6;
+		characterInfo->NORMAL_SKILL_POWER = 1.5f;
 		break;
 	case R::Match_Type::GOKU_JACKIECHUN:
 	
@@ -743,6 +743,8 @@ void ECSWorld::createCamapCharacter(){
 	characterInfo->MAX_POWER = 100;
 	characterInfo->blood = 100;
 	characterInfo->power = 100;
+	characterInfo->NORMAL_SKILL_POWER = 1.5f;
+	
 	//create keletoncomponent
 	spine::SkeletonAnimation* skeletonAnimation =
 		spine::SkeletonAnimation::createWithFile("spine/Camap.json",
@@ -762,7 +764,7 @@ void ECSWorld::createCamapCharacter(){
 
 	DecisionComponent* decisionComponent = new DecisionComponent();
 	decisionComponent->DECISION_TIME = .4;
-	decisionComponent->decisionBase = new CamapDecision();
+	decisionComponent->decisionBase = new EnemyAttackAI();
 	decisionComponent->decisionBase->setWorld(world);
 
 	StateComponent* stateComponent = new StateComponent();

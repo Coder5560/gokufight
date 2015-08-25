@@ -439,14 +439,7 @@ bool GameStateSystem::switchToLose() {
 		enemyState->setState(R::CharacterState::STAND);
 	}
 
-	R::Constants::countLose++;
-	if (R::Constants::countLose % 3 == 0) {
-		AdsManager::showAds(false);
-		AdsManager::showFullAds();
-		R::Constants::countLose = 0;
-	}
-
-
+	
 	Node* node = RenderLayer::getInstance()->createHudNode();
 	node->setScale(.8f);
 	LoseScene* loseScene = new LoseScene(node);
@@ -482,6 +475,15 @@ bool GameStateSystem::switchToLose() {
 			//	if (isSuccess) FacebookManager::shareFacebookPhoto(filename);
 		}, "share.png");
 	});
+
+	R::Constants::countLose++;
+	if (R::Constants::countLose % 3 == 0) {
+		AdsManager::showAds(false);
+		AdsManager::showFullAds();
+		R::Constants::countLose = 0;
+	}
+
+
 	return false;
 }
 void GameStateSystem::switchToAppear() {
@@ -1769,7 +1771,7 @@ void SpecialSkillSystem::processGoku(artemis::Entity &e) {
 		for (int i = 0; i < attachment->verticesCount / 2; i++) {
 			vec[i] = Vec2(worldVertices[i * 2], worldVertices[i * 2 + 1]);
 		}
-		drawnode->drawPolygon(vec, 4, ccc4f(1, 1, 0, 1), 1, ccc4f(1, 1, 0, 1));
+		drawnode->drawPolygon(vec, 4, ccc4f(1, 1, 0, 0), .4f, ccc4f(1, 1, 0, 1));
 		//	RenderLayer::getInstance()->getHudLayer()->addChild(polygon);
 
 		artemis::Entity &enemy = world->getTagManager()->getEntity("enemy");

@@ -59,26 +59,27 @@ void R::Constants::loadVariable() {
 	lastPlay = userDefault->getIntegerForKey("lastPlay");
 	remaininglife = userDefault->getIntegerForKey("remaininglife");
 
-	//if (!howtoplay) {
-	//	musicEnable = true;
-	//	soundEnable = true;
-	//	unlocked = 0;
-	//	remaininglife = 5;
-	//	howtoplay = true;
-	//	lastPlay = 1;
-	//}
+	if (!howtoplay) {
+		musicEnable = true;
+		soundEnable = true;
+		unlocked = 0;
+		remaininglife = 5;
+		howtoplay = true;
+		lastPlay = 1;
+	}
 
-	// begin test
+	/*// begin test
 	 musicEnable = false;
 	 soundEnable = false;
 	 unlocked = 6;
 	 remaininglife = 5;
 	 howtoplay = true;
 	 lastPlay = 5;
-	 // end test
+	 // end test*/
 }
 
 void R::Constants::updateVariable() {
+	
 	auto userDefault = UserDefault::sharedUserDefault();
 	userDefault->setBoolForKey("musicEnable", musicEnable);
 	userDefault->setBoolForKey("soundEnable", soundEnable);

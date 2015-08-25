@@ -82,6 +82,7 @@ void Jackiechun::changeState(artemis::Entity &e){
 	else if (state->state == R::CharacterState::RIGHT){ actionMove(e, R::Direction::RIGHT); }
 	else if (state->state == R::CharacterState::WALK_LEFT){ actionRun(e, R::Direction::LEFT); }
 	else if (state->state == R::CharacterState::WALK_RIGHT){ actionRun(e, R::Direction::RIGHT); }
+	else if (state->state == R::CharacterState::JUMP){ actionJump(e, R::Direction::RIGHT); }
 
 }
 

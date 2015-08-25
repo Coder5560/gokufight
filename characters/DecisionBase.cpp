@@ -697,6 +697,7 @@ void CamapDecision::obsever(artemis::Entity &e){
 	StateComponent* characterState = (StateComponent*)e.getComponent<StateComponent>();
 	SkeletonComponent* characterSkeleton = (SkeletonComponent*)e.getComponent<SkeletonComponent>();
 	CharacterInfoComponent* characterInfo = (CharacterInfoComponent*)e.getComponent<CharacterInfoComponent>();
+
 	if (characterState->state == R::CharacterState::DEFENSE){
 		return;
 	}

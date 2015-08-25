@@ -71,6 +71,7 @@ void CaMap::changeState(artemis::Entity &e){
 	else if (state->state == R::CharacterState::RIGHT){ actionMove(e, R::Direction::RIGHT); }
 	else if (state->state == R::CharacterState::WALK_LEFT){ actionMove(e, R::Direction::LEFT); }
 	else if (state->state == R::CharacterState::WALK_RIGHT){ actionMove(e, R::Direction::RIGHT); }
+	else if (state->state == R::CharacterState::JUMP){ actionJump(e, R::Direction::RIGHT); }
 
 }
 
@@ -310,8 +311,8 @@ void CaMap::actionBack(artemis::Entity &e, R::Direction direction){
 		Node* node = skeleton->node;
 		PosComponent* pos = (PosComponent*)(e.getComponent<PosComponent>());
 		if (direction == R::Direction::LEFT) {
-			EntityUtils::getInstance()->push(e, 140, 400);
-			EntityUtils::getInstance()->clampVelocity(e, 0, 400);
+			EntityUtils::getInstance()->push(e, 180, 250);
+			EntityUtils::getInstance()->clampVelocity(e, 0, 250);
 			skeletonAnimation->clearTracks();
 			skeletonAnimation->setAnimation(0, "Back", false);
 			skeletonAnimation->setTimeScale(1);
@@ -319,8 +320,8 @@ void CaMap::actionBack(artemis::Entity &e, R::Direction direction){
 			node->setScaleX(1);
 		}
 		else if (direction == R::Direction::RIGHT) {
-			EntityUtils::getInstance()->push(e, 40, 400);
-			EntityUtils::getInstance()->clampVelocity(e, 0, 400);
+			EntityUtils::getInstance()->push(e, 0, 250);
+			EntityUtils::getInstance()->clampVelocity(e, 0, 250);
 			skeletonAnimation->clearTracks();
 			skeletonAnimation->setAnimation(0, "Back", false);
 			skeletonAnimation->setTimeScale(1);
@@ -328,8 +329,8 @@ void CaMap::actionBack(artemis::Entity &e, R::Direction direction){
 			node->setScaleX(-1);
 		}
 		else if (direction == R::Direction::AUTO) {
-			EntityUtils::getInstance()->push(e, node->getScaleX() == 1 ? 140 : 40, 400);
-			EntityUtils::getInstance()->clampVelocity(e, 0, 400);
+			EntityUtils::getInstance()->push(e, node->getScaleX() == 1 ? 250 : 0, 250);
+			EntityUtils::getInstance()->clampVelocity(e, 0, 250);
 			skeletonAnimation->clearTracks();
 			skeletonAnimation->setAnimation(0, "Back", false);
 			skeletonAnimation->setTimeScale(1);
@@ -353,34 +354,32 @@ void CaMap::actionMove(artemis::Entity &e, R::Direction direction){
 		spine::SkeletonAnimation* skeletonAnimation = skeleton->skeleton;
 		Node* node = skeleton->node;
 
+		std::string strAnimation = "Run";
+		if (skeletonAnimation->getCurrent() != 0){
+			std::string animation = skeletonAnimation->getCurrent()->animation->name;
+			if (animation.compare(strAnimation) != 0){
+				skeletonAnimation->clearTracks();
+				skeletonAnimation->setAnimation(0, strAnimation, true);
+				skeletonAnimation->setCompleteListener(nullptr);
+			}
+		}
+
 		// xử lý action
 		if (state->direction == R::Direction::RIGHT) {
 			EntityUtils::getInstance()->push(e, 0, 120);
 			EntityUtils::getInstance()->clampVelocity(e, 0, 120);
-			skeletonAnimation->clearTracks();
-			skeletonAnimation->setAnimation(0, "Run", true);
-			skeletonAnimation->setCompleteListener(nullptr);
 			node->setScaleX(1);
 		}
 		else if (state->direction == R::Direction::LEFT) {
 			EntityUtils::getInstance()->push(e, 180, 120);
 			EntityUtils::getInstance()->clampVelocity(e, 0, 120);
-			skeletonAnimation->clearTracks();
-			skeletonAnimation->setAnimation(0, "Run", true);
-			skeletonAnimation->setCompleteListener(nullptr);
 			node->setScaleX(-1);
 		}
 		else if (state->direction == R::Direction::AUTO){
 			EntityUtils::getInstance()->push(e, node->getScaleX() > 0 ? 0 : 180, 120);
 			EntityUtils::getInstance()->clampVelocity(e, 0, 120);
-			skeletonAnimation->clearTracks();
-			skeletonAnimation->setAnimation(0, "Run", true);
-			skeletonAnimation->setCompleteListener(nullptr);
 		}
 	}
-
-
-
 }
 // thằng này có 2 loại Jump, 1 loại jump bình thường, một loại xoay vòng
 void CaMap::actionJump(artemis::Entity &e, R::Direction direction){
@@ -397,7 +396,7 @@ void CaMap::actionJump(artemis::Entity &e, R::Direction direction){
 		spine::SkeletonAnimation* skeletonAnimation = skeleton->skeleton;
 		Node* node = skeleton->node;
 		float angle = state->direction == R::Direction::TOP ? 90 : (state->direction == R::Direction::TOP_LEFT ? 135 : (state->direction == R::Direction::TOP_RIGHT ? 45 : 90));
-		float force = state->direction == R::Direction::TOP || state->direction == R::Direction::AUTO ? 300 : 400;
+		float force = state->direction == R::Direction::TOP || state->direction == R::Direction::AUTO ? 200 : 250;
 		// xử lý action
 		EntityUtils::getInstance()->push(e, angle, force);
 		EntityUtils::getInstance()->clampVelocity(e, 0, force);
@@ -427,7 +426,7 @@ void CaMap::actionSkill(artemis::Entity &e, R::Direction direction){
 		// xử lý action
 		skeletonAnimation->clearTracks();
 		skeletonAnimation->setAnimation(0, "Skill", false);
-		skeletonAnimation->setTimeScale(1.5f);
+		skeletonAnimation->setTimeScale(2.0f);
 		skeletonAnimation->setCompleteListener([=](int trackID, int loopCount) {
 			state->setState(R::CharacterState::STAND);
 		});
