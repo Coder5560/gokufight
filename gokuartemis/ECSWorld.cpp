@@ -22,6 +22,7 @@ ECSWorld::~ECSWorld()
 
 
 void ECSWorld::createWorld(R::Match_Type matchType){
+	ignoreWorld(false);
 	this->matchType = matchType;
 	AdsManager::showAds(true);
 	if (R::Constants::musicEnable) {
@@ -115,13 +116,14 @@ void ECSWorld::createWorld(R::Match_Type matchType){
 	setSystem(new RenderSystem());
 	setSystem(new CatFollowGokuSystem());
 	setSystem(new BombSystem());
-	setSystem(new CameraFollowSystem());
+	
 	setSystem(new SkillSystem());
 	//setSystem(new DebugSystem());
 	setSystem(new DecisionSystem());
 	setSystem(new GameStateSystem());
 	setSystem(new CharacterStateSystem());
 	setSystem(new RemoveEntitySystem());
+	setSystem(new CameraFollowSystem());
 		
 	if (matchType == R::Match_Type::GOKU_BEAR_INTRODUCE){
 		//createIntroduceEntity
@@ -663,18 +665,13 @@ void ECSWorld::createEnemyAssistant(){
 	characterSkeleton->isCreated = true;
 
 
-
-
 	artemis::Entity &character = (world->getEntityManager()->create());
 	character.addComponent(new CharacterTypeComponent(R::CharacterType::CAT));
 	character.addComponent(new PosComponent(3 * Director::getInstance()->getVisibleSize().width / 4, Director::getInstance()->getVisibleSize().height / 2));
 	character.addComponent(characterSkeleton);
 	character.addComponent(new CatFollowComponent());
 	character.setTag("meo");
-
 	character.refresh();
-
-
 }
 
 
@@ -743,7 +740,7 @@ void ECSWorld::createCamapCharacter(){
 	characterInfo->MAX_POWER = 100;
 	characterInfo->blood = 100;
 	characterInfo->power = 100;
-	characterInfo->NORMAL_SKILL_POWER = 1.5f;
+	characterInfo->NORMAL_SKILL_POWER = 2.5f;
 	
 	//create keletoncomponent
 	spine::SkeletonAnimation* skeletonAnimation =
@@ -820,7 +817,7 @@ void ECSWorld::createKarillinCharacter(){
 
 	DecisionComponent* decisionComponent = new DecisionComponent();
 	decisionComponent->DECISION_TIME = .4;
-	decisionComponent->decisionBase = new KarillinAI();
+	decisionComponent->decisionBase = new EnemyDefenseAI();
 	decisionComponent->decisionBase->setWorld(world);
 
 	StateComponent* stateComponent = new StateComponent();

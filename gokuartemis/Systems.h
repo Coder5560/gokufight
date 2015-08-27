@@ -12,6 +12,7 @@
 #include "renders/HomeScreen.h"
 #include "AdsManager.h"
 #include "FacebookManager.h"
+#include "CppJavaMethodManager.h"
 USING_NS_CC;
 
 class GravitySystem;
@@ -310,16 +311,19 @@ public:
 	virtual void initialize();
 	virtual void processEntity(artemis::Entity &e);
 	virtual void onGameState(bool isPlaying);
+	virtual void pauseGame();
+	virtual void resumeGame();
+
 	virtual bool checkLives();
 protected:
 	artemis::ComponentMapper<CharacterUIComponent> characterUIMapper;
-	
+	RemainingLife* remainingLife;
 	PlayerInfoLeft* infoLeft;
 	PlayerInfoRight* infoRight;
 	bool isPlaying;
 	ui::ImageView*	pauseIcon;
-	ui::Text* text;
 	bool isCreated;
+	bool isTouch;
 };
 
 class IntroduceSystem : public artemis::EntityProcessingSystem{

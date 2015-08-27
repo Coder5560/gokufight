@@ -53,7 +53,7 @@ void PhysicSystem::processEntity(artemis::Entity &e) {
 }
 void PhysicSystem::push(artemis::Entity &entity, float rotation, float force) {
 	PhysicComponent* physic = static_cast<PhysicComponent*>(physicMapper.get(
-		entity));
+			entity));
 	if (physic) {
 		float radianAngle = rotation * M_PI / 180;
 		float plusVx = force * cos(radianAngle);
@@ -74,7 +74,7 @@ void PhysicSystem::stopPhysic(artemis::Entity& e) {
 }
 
 void PhysicSystem::clampVelocity(artemis::Entity& e, float minSpeed,
-	float maxSpeed) {
+		float maxSpeed) {
 	PhysicComponent* physic = static_cast<PhysicComponent*>(physicMapper.get(e));
 	if (physic) {
 		Vec2 vTmp = Vec2(physic->vx, physic->vy);
@@ -96,7 +96,7 @@ void PhysicSystem::clampVelocity(artemis::Entity& e, float minSpeed,
 }
 
 WallSensorSystem::WallSensorSystem() :
-mapInfo(nullptr) {
+		mapInfo(nullptr) {
 
 	addComponentType<PosComponent>();
 	addComponentType<WallSensorComponent>();
@@ -117,10 +117,10 @@ void WallSensorSystem::begin() {
 }
 
 void WallSensorSystem::processEntity(artemis::Entity &e) {
-	PosComponent* position = (PosComponent*)(pom.get(e));
-	WallSensorComponent* wallSensor = (WallSensorComponent*)(wm.get(e));
-	BoundComponent* bound = (BoundComponent*)(bm.get(e));
-	PhysicComponent* physic = (PhysicComponent*)(physicMapper.get(e));
+	PosComponent* position = (PosComponent*) (pom.get(e));
+	WallSensorComponent* wallSensor = (WallSensorComponent*) (wm.get(e));
+	BoundComponent* bound = (BoundComponent*) (bm.get(e));
+	PhysicComponent* physic = (PhysicComponent*) (physicMapper.get(e));
 	if (!wallSensor)
 		return;
 	float px = position->x + world->getDelta() * physic->vx;
@@ -129,19 +129,19 @@ void WallSensorSystem::processEntity(artemis::Entity &e) {
 	//float py = position->y;
 
 	bool onFloor = mapInfo->checkCollide(px + bound->getCenterX(),
-		py + bound->y1 - 1);
+			py + bound->y1 - 1);
 	bool onCelling = mapInfo->checkCollide(px + bound->getCenterX(),
-		py + bound->y2 + 1);
+			py + bound->y2 + 1);
 	bool onWallLeft = mapInfo->checkCollide(px + bound->x1 - 1,
-		py + bound->getCenterY());
+			py + bound->getCenterY());
 	bool onWallRight = mapInfo->checkCollide(px + bound->x2 + 1,
-		py + bound->getCenterY());
+			py + bound->getCenterY());
 
 	wallSensor->onVerticalSurface = onWallLeft || onWallRight;
 	wallSensor->onFloor = onFloor;
 	wallSensor->onHorizontalSurface = onCelling || onFloor;
 	wallSensor->wallAngle = onFloor ? 90 : onCelling ? -90 : onWallRight ? 0 :
-		onWallLeft ? 180 : 90;
+							onWallLeft ? 180 : 90;
 
 	if (physic->vr != 0) {
 		//entityrotation = physic->vr*world->getDelta();
@@ -149,29 +149,25 @@ void WallSensorSystem::processEntity(artemis::Entity &e) {
 
 	if (physic->friction != 0) {
 		float adjustedFriction = physic->friction
-			* (wallSensor->onFloor ? .5 : .2);
+				* (wallSensor->onFloor ? .5 : .2);
 		if (abs(physic->vx) > 1) {
 			if (physic->isMoving) {
-			}
-			else {
+			} else {
 				physic->vx = physic->vx
-					- (physic->vx * world->getDelta() * adjustedFriction);
+						- (physic->vx * world->getDelta() * adjustedFriction);
 			}
-		}
-		else {
+		} else {
 			physic->vx = 0;
 		}
 		if (abs(physic->vy) > .5) {
-		}
-		else {
+		} else {
 			physic->vy = 0;
 		}
 
 		if (abs(physic->vr) > 1) {
 			physic->vr = physic->vr
-				- (physic->vr * world->getDelta() * adjustedFriction);
-		}
-		else {
+					- (physic->vr * world->getDelta() * adjustedFriction);
+		} else {
 			physic->vr = 0;
 		}
 	}
@@ -203,8 +199,8 @@ void MotionSystem::begin() {
 }
 
 void MotionSystem::processEntity(artemis::Entity &e) {
-	PhysicComponent* physic = (PhysicComponent*)(pym.get(e));
-	PosComponent* position = (PosComponent*)(psm.get(e));
+	PhysicComponent* physic = (PhysicComponent*) (pym.get(e));
+	PosComponent* position = (PosComponent*) (psm.get(e));
 	if (physic && position) {
 		position->x += physic->vx * world->getDelta();
 		position->y += physic->vy * world->getDelta();
@@ -250,8 +246,7 @@ void GameStateSystem::processEntity(artemis::Entity &e) {
 			if (switchToLose())
 				return;
 		}
-	}
-	else {
+	} else {
 		if (gameState->gameState == R::GameState::ANIMATING_TO_FIGHT) {
 			if (gameState->time_on_state > 1) {
 				gameState->setGameState(R::GameState::FIGHTING);
@@ -263,17 +258,16 @@ void GameStateSystem::processEntity(artemis::Entity &e) {
 		if (gameState->gameState == R::GameState::PREPARE) {
 			artemis::Entity &goku = world->getTagManager()->getEntity("goku");
 			WallSensorComponent* wallSensor =
-				(WallSensorComponent*)goku.getComponent<WallSensorComponent>();
+					(WallSensorComponent*) goku.getComponent<WallSensorComponent>();
 			StateComponent* stateComponent =
-				(StateComponent*)goku.getComponent<StateComponent>();
+					(StateComponent*) goku.getComponent<StateComponent>();
 			if (wallSensor->onFloor
-				&& stateComponent->state == R::CharacterState::STAND
-				&& stateComponent->time_on_state > .1) {
+					&& stateComponent->state == R::CharacterState::STAND
+					&& stateComponent->time_on_state > .1) {
 				gameState->setGameState(R::GameState::ANIMATING_TO_FIGHT);
 				return;
-			}
-			else if (wallSensor->onFloor
-				&& stateComponent->state != R::CharacterState::STAND) {
+			} else if (wallSensor->onFloor
+					&& stateComponent->state != R::CharacterState::STAND) {
 				stateComponent->direction = R::Direction::RIGHT;
 				stateComponent->setState(R::CharacterState::STAND);
 			}
@@ -284,11 +278,11 @@ void GameStateSystem::processEntity(artemis::Entity &e) {
 			artemis::Entity &enemy = world->getTagManager()->getEntity("enemy");
 
 			CharacterInfoComponent* gokuInfo =
-				(CharacterInfoComponent*)goku.getComponent<
-				CharacterInfoComponent>();
+					(CharacterInfoComponent*) goku.getComponent<
+							CharacterInfoComponent>();
 			CharacterInfoComponent* enemyInfo =
-				(CharacterInfoComponent*)enemy.getComponent<
-				CharacterInfoComponent>();
+					(CharacterInfoComponent*) enemy.getComponent<
+							CharacterInfoComponent>();
 
 			if (gokuInfo->blood <= 0) {
 				gameState->setGameState(R::GameState::LOSE);
@@ -317,8 +311,7 @@ void GameStateSystem::switchToWin() {
 			R::Constants::unlocked = R::Constants::MAX_LEVEL;
 		}
 		R::Constants::remaininglife += 2;
-	}
-	else {
+	} else {
 		R::Constants::remaininglife += 1;
 	}
 
@@ -327,15 +320,15 @@ void GameStateSystem::switchToWin() {
 	}
 	R::Constants::updateVariable();
 	artemis::Entity &goku = world->getTagManager()->getEntity("goku");
-	StateComponent* gokuState = (StateComponent*)goku.getComponent<
-		StateComponent>();
+	StateComponent* gokuState = (StateComponent*) goku.getComponent<
+			StateComponent>();
 	if (gokuState->state != R::CharacterState::WIN) {
 		gokuState->setState(R::CharacterState::WIN);
 	}
 
 	artemis::Entity &enemy = world->getTagManager()->getEntity("enemy");
-	StateComponent* enemyState = (StateComponent*)enemy.getComponent<
-		StateComponent>();
+	StateComponent* enemyState = (StateComponent*) enemy.getComponent<
+			StateComponent>();
 	if (enemyState->state != R::CharacterState::DIE) {
 		enemyState->setState(R::CharacterState::DIE);
 	}
@@ -344,14 +337,15 @@ void GameStateSystem::switchToWin() {
 	node->setScale(.8f);
 	Winscene* winScene = new Winscene(node);
 	node->setPosition(
-		RenderLayer::getInstance()->getHudLayer()->getContentSize() / 2);
+			RenderLayer::getInstance()->getHudLayer()->getContentSize() / 2);
 	winScene->showWinScene();
-	node->setCameraMask((unsigned short)CameraFlag::USER1);
+	node->setCameraMask((unsigned short) CameraFlag::USER1);
 	winScene->setMenuCallBack(
-		[=]() {
-		auto scene = HomeScreen::createScene();
-		Director::getInstance()->replaceScene(TransitionFade::create(0.3, scene, Color3B(0, 0, 0)));
-	});
+			[=]() {
+				ECSWorld::getInstance()->ignoreWorld(true);
+				auto scene = HomeScreen::createScene();
+				Director::getInstance()->replaceScene(TransitionFade::create(1, scene, Color3B(0, 0, 0)));
+			});
 	winScene->setReplayCallback([=]() {
 		ECSWorld::getInstance()->resetCurrentMatch();
 	});
@@ -359,66 +353,72 @@ void GameStateSystem::switchToWin() {
 		ECSWorld::getInstance()->nextMatch();
 	});
 	winScene->setRateCallBack(
-		[=]() {
-		Application::getInstance()->openURL("https://play.google.com/store/apps/details?id=com.bgate.monkeyfightih");
+			[=]() {
+				Application::getInstance()->openURL("https://play.google.com/store/apps/details?id=com.bgate.monkeyfightih");
 
-	});
+			});
 	winScene->setShareCallBack(
-		[=]() {
-		winScene->node->setVisible(false);
-		Director::getInstance()->getRenderer()->render();
-		utils::captureScreen([=](bool isSuccess, const std::string &filename) {
-			winScene->node->setVisible(true);
-			//		if (isSuccess) FacebookManager::shareFacebookPhoto(filename);
-		}, "share.png");
+			[=]() {
+				winScene->node->setVisible(false);
+				Director::getInstance()->getRenderer()->render();
+				utils::captureScreen([=](bool isSuccess, const std::string &filename) {
+							winScene->node->setVisible(true);
+							if (isSuccess) FacebookManager::shareFacebookPhoto(filename);
+						}, "share.png");
 
-	});
+			});
 
 }
-bool GameStateSystem::checkLives(){
+bool GameStateSystem::checkLives() {
 	if (R::Constants::remaininglife == 0) {
-		DialogComfirm* dialogComfirm = new DialogComfirm();
+		DialogComfirmInGame* dialogComfirm = new DialogComfirmInGame();
 		dialogComfirm->setNegative("More lives",
-			[=]() {
-			R::Constants::remaininglife += 3;
-			if (R::Constants::remaininglife > R::Constants::MAX_LIFE) {
-				R::Constants::remaininglife = R::Constants::MAX_LIFE;
-			}
-			R::Constants::updateVariable();
-			auto scene = HomeScreen::createScene();
-			Director::getInstance()->replaceScene(TransitionFade::create(0.3, scene, Color3B(0, 0, 0)));
-			/*	DialogComfirm* subDialog = new DialogComfirm();
-			subDialog->setMessage("Invite friends to get more lives", 20);
-			subDialog->setNegative("No", [=]() {
-			auto scene = HomeScreen::createScene();
-			Director::getInstance()->replaceScene(TransitionFade::create(0.3, scene, Color3B(0, 0, 0)));
-			});
-			subDialog->setPositive("Yes", [=]() {
-			R::Constants::remaininglife += 3;
-			if (R::Constants::remaininglife > R::Constants::MAX_LIFE) {
-			R::Constants::remaininglife = R::Constants::MAX_LIFE;
-			}
-			R::Constants::updateVariable();
-			auto scene = HomeScreen::createScene();
-			Director::getInstance()->replaceScene(TransitionFade::create(0.3, scene, Color3B(0, 0, 0)));
-			});*/
+				[=]() {
+					DialogComfirmInGame* subDialog = new DialogComfirmInGame();
+					subDialog->setMessage("Invite friends to get more lives", 20);
+					subDialog->setNegative("No", [=]() {
+								ECSWorld::getInstance()->ignoreWorld(true);
+								auto scene = HomeScreen::createScene();
+								Director::getInstance()->replaceScene(TransitionFade::create(1, scene, Color3B(0, 0, 0)));
+							});
+					subDialog->setPositive("Yes", [this]() {
+								FacebookManager::inviteFriends(JavaCppBridge::put([this](int result) {
+													if (result == 1) {
+														R::Constants::remaininglife += 3;
+														if (R::Constants::remaininglife > R::Constants::MAX_LIFE) {
+															R::Constants::remaininglife = R::Constants::MAX_LIFE;
+														}
+														R::Constants::updateVariable();
+														ECSWorld::getInstance()->ignoreWorld(true);
+														auto scene = HomeScreen::createScene();
+														Director::getInstance()->replaceScene(TransitionFade::create(1, scene, Color3B(0, 0, 0)));
+													}
+													else {
+														ECSWorld::getInstance()->ignoreWorld(true);
+														auto scene = HomeScreen::createScene();
+														Director::getInstance()->replaceScene(TransitionFade::create(1, scene, Color3B(0, 0, 0)));
+													}
+												}));
+							});
 
-		});
+				});
 
 		dialogComfirm->setPositive("Reset",
-			[=]() {
-			DialogComfirm* subDialog = new DialogComfirm();
-			subDialog->setMessage("Restart from the first levels with 5 lives", 20);
-			subDialog->setNegative("No", [=]() {
-				auto scene = HomeScreen::createScene();
-				Director::getInstance()->replaceScene(TransitionFade::create(0.3, scene, Color3B(0, 0, 0)));
-			});
-			subDialog->setPositive("Yes", [=]() {
-				R::Constants::resetVariable();
-				auto scene = HomeScreen::createScene();
-				Director::getInstance()->replaceScene(TransitionFade::create(0.3, scene, Color3B(0, 0, 0)));
-			});
-		});
+				[=]() {
+					DialogComfirm* subDialog = new DialogComfirm();
+					subDialog->setMessage("Restart from the first levels with 5 lives", 20);
+					subDialog->setNegative("No", [=]() {
+								ECSWorld::getInstance()->ignoreWorld(true);
+								auto scene = HomeScreen::createScene();
+								Director::getInstance()->replaceScene(TransitionFade::create(1, scene, Color3B(0, 0, 0)));
+							});
+					subDialog->setPositive("Yes", [=]() {
+								ECSWorld::getInstance()->ignoreWorld(true);
+								R::Constants::resetVariable();
+								auto scene = HomeScreen::createScene();
+								Director::getInstance()->replaceScene(TransitionFade::create(1, scene, Color3B(0, 0, 0)));
+							});
+				});
 		return true;
 	}
 	return false;
@@ -426,55 +426,53 @@ bool GameStateSystem::checkLives(){
 bool GameStateSystem::switchToLose() {
 
 	artemis::Entity &goku = world->getTagManager()->getEntity("goku");
-	StateComponent* gokuState = (StateComponent*)goku.getComponent<
-		StateComponent>();
+	StateComponent* gokuState = (StateComponent*) goku.getComponent<
+			StateComponent>();
 	if (gokuState->state != R::CharacterState::DIE) {
 		gokuState->setState(R::CharacterState::DIE);
 	}
 
 	artemis::Entity &enemy = world->getTagManager()->getEntity("enemy");
-	StateComponent* enemyState = (StateComponent*)enemy.getComponent<
-		StateComponent>();
+	StateComponent* enemyState = (StateComponent*) enemy.getComponent<
+			StateComponent>();
 	if (enemyState->state != R::CharacterState::STAND) {
 		enemyState->setState(R::CharacterState::STAND);
 	}
 
-	
 	Node* node = RenderLayer::getInstance()->createHudNode();
 	node->setScale(.8f);
 	LoseScene* loseScene = new LoseScene(node);
 
 	node->setPosition(
-		RenderLayer::getInstance()->getHudLayer()->getContentSize() / 2);
+			RenderLayer::getInstance()->getHudLayer()->getContentSize() / 2);
 	loseScene->showLoseScene();
-	node->setCameraMask((unsigned short)CameraFlag::USER1);
+	node->setCameraMask((unsigned short) CameraFlag::USER1);
 
 	loseScene->setMenuCallBack(
-		[=]() {
-		auto scene = HomeScreen::createScene();
-		Director::getInstance()->replaceScene(TransitionFade::create(0.3, scene, Color3B(0, 0, 0)));
-	});
+			[=]() {
+				ECSWorld::getInstance()->ignoreWorld(true);
+				auto scene = HomeScreen::createScene();
+				Director::getInstance()->replaceScene(TransitionFade::create(1, scene, Color3B(0, 0, 0)));
+			});
 	loseScene->setReplayCallback([=]() {
-		if (!checkLives()){
+		if (!checkLives()) {
 			ECSWorld::getInstance()->resetCurrentMatch();
 		}
 	});
 
 	loseScene->setRateCallBack(
-		[=]() {
-		Application::getInstance()->openURL("https://play.google.com/store/apps/details?id=com.bgate.monkeyfightih");
-
-	});
+			[=]() {
+				Application::getInstance()->openURL("https://play.google.com/store/apps/details?id=com.bgate.monkeyfightih");
+			});
 	loseScene->setShareCallBack(
-		[=]() {
-
-		loseScene->node->setVisible(false);
-		Director::getInstance()->getRenderer()->render();
-		utils::captureScreen([=](bool isSuccess, const std::string &filename) {
-			loseScene->node->setVisible(true);
-			//	if (isSuccess) FacebookManager::shareFacebookPhoto(filename);
-		}, "share.png");
-	});
+			[=]() {
+				loseScene->node->setVisible(false);
+				Director::getInstance()->getRenderer()->render();
+				utils::captureScreen([=](bool isSuccess, const std::string &filename) {
+							loseScene->node->setVisible(true);
+							if (isSuccess) FacebookManager::shareFacebookPhoto(filename);
+						}, "share.png");
+			});
 
 	R::Constants::countLose++;
 	if (R::Constants::countLose % 3 == 0) {
@@ -482,7 +480,6 @@ bool GameStateSystem::switchToLose() {
 		AdsManager::showFullAds();
 		R::Constants::countLose = 0;
 	}
-
 
 	return false;
 }
@@ -492,42 +489,41 @@ void GameStateSystem::switchToAppear() {
 	artemis::Entity& enemy = world->getTagManager()->getEntity("enemy");
 
 	PosComponent* gokuPosition =
-		(PosComponent*)goku.getComponent<PosComponent>();
-	PosComponent* enemyPosition = (PosComponent*)enemy.getComponent<
-		PosComponent>();
+			(PosComponent*) goku.getComponent<PosComponent>();
+	PosComponent* enemyPosition = (PosComponent*) enemy.getComponent<
+			PosComponent>();
 	float worldWidth = R::Constants::MAX_SCREEN_WIDTH
-		/ RenderLayer::getInstance()->getGameLayer()->getScale();
+			/ RenderLayer::getInstance()->getGameLayer()->getScale();
 	float worldHeight = R::Constants::HEIGHT_SCREEN / 2;
 	float viewWidth = R::Constants::WIDTH_SCREEN;
 
 	if (ECSWorld::getInstance()->matchType
-		== R::Match_Type::GOKU_BEAR_INTRODUCE) {
+			== R::Match_Type::GOKU_BEAR_INTRODUCE) {
 		gokuPosition->x = worldWidth / 2 - 40;
 		gokuPosition->y = 3 * worldHeight / 4;
 		enemyPosition->x = 2 * worldWidth;
 		enemyPosition->y = 3 * worldHeight / 4;
 
-	}
-	else {
+	} else {
 		gokuPosition->x = worldWidth / 2 - 140;
 		gokuPosition->y = 3 * worldHeight / 4;
 		enemyPosition->x = worldWidth / 2 + 40;
 		enemyPosition->y = 3 * worldHeight / 4;
 	}
 
-	SkeletonComponent* gokuSkeleton = (SkeletonComponent*)goku.getComponent<
-		SkeletonComponent>();
-	SkeletonComponent* enemySkeleton = (SkeletonComponent*)enemy.getComponent<
-		SkeletonComponent>();
+	SkeletonComponent* gokuSkeleton = (SkeletonComponent*) goku.getComponent<
+			SkeletonComponent>();
+	SkeletonComponent* enemySkeleton = (SkeletonComponent*) enemy.getComponent<
+			SkeletonComponent>();
 
 	gokuSkeleton->node->setVisible(true);
 	enemySkeleton->node->setVisible(true);
 	enemySkeleton->node->setScaleX(-1);
 
-	PhysicComponent* gokuPhysic = (PhysicComponent*)goku.getComponent<
-		PhysicComponent>();
-	PhysicComponent* enemyPhysic = (PhysicComponent*)enemy.getComponent<
-		PhysicComponent>();
+	PhysicComponent* gokuPhysic = (PhysicComponent*) goku.getComponent<
+			PhysicComponent>();
+	PhysicComponent* enemyPhysic = (PhysicComponent*) enemy.getComponent<
+			PhysicComponent>();
 
 	gokuPhysic->vy = -200;
 	enemyPhysic->vy = -300;
@@ -542,30 +538,30 @@ void GameStateSystem::switchToReady() {
 		node->removeFromParentAndCleanup(true);
 	}
 	artemis::Entity &goku = world->getTagManager()->getEntity("goku");
-	StateComponent* stateComponent = (StateComponent*)goku.getComponent<
-		StateComponent>();
+	StateComponent* stateComponent = (StateComponent*) goku.getComponent<
+			StateComponent>();
 	stateComponent->direction = R::Direction::RIGHT;
 	stateComponent->setState(R::CharacterState::START);
 
 	artemis::Entity &character = world->getTagManager()->getEntity("enemy");
-	PosComponent* characterPosition = (PosComponent*)character.getComponent<
-		PosComponent>();
+	PosComponent* characterPosition = (PosComponent*) character.getComponent<
+			PosComponent>();
 	StateComponent* characterstateComponent =
-		(StateComponent*)character.getComponent<StateComponent>();
+			(StateComponent*) character.getComponent<StateComponent>();
 	characterstateComponent->direction = R::Direction::LEFT;
 	characterstateComponent->setState(R::CharacterState::START);
 	CharacterTypeComponent* characterType =
-		(CharacterTypeComponent*)character.getComponent<
-		CharacterTypeComponent>();
+			(CharacterTypeComponent*) character.getComponent<
+					CharacterTypeComponent>();
 
 	if (characterType->type == R::CharacterType::TEGIAC) {
 		artemis::Entity &meo = world->getTagManager()->getEntity("meo");
-		PosComponent* meoPosition = (PosComponent*)meo.getComponent<
-			PosComponent>();
+		PosComponent* meoPosition = (PosComponent*) meo.getComponent<
+				PosComponent>();
 		meoPosition->x = characterPosition->x + 500;
 		meoPosition->y = characterPosition->y / 2 + 100;
-		CatFollowComponent* catFollow = (CatFollowComponent*)meo.getComponent<
-			CatFollowComponent>();
+		CatFollowComponent* catFollow = (CatFollowComponent*) meo.getComponent<
+				CatFollowComponent>();
 		catFollow->setState(R::CatFollowState::FOLLOW_ENEMY);
 	}
 
@@ -597,9 +593,9 @@ void MapCollisionSystem::begin() {
 
 void MapCollisionSystem::processEntity(artemis::Entity &e) {
 
-	PhysicComponent* physic = (PhysicComponent*)(physicMapper.get(e));
-	PosComponent* position = (PosComponent*)(posMapper.get(e));
-	BoundComponent* bound = (BoundComponent*)(boundMapper.get(e));
+	PhysicComponent* physic = (PhysicComponent*) (physicMapper.get(e));
+	PosComponent* position = (PosComponent*) (posMapper.get(e));
+	BoundComponent* bound = (BoundComponent*) (boundMapper.get(e));
 
 	if (physic->vx != 0 || physic->vy != 0) {
 
@@ -607,22 +603,22 @@ void MapCollisionSystem::processEntity(artemis::Entity &e) {
 		float py = position->y + physic->vy * world->getDelta();
 
 		bool collideCenterRight = mapInfo->checkCollide(px + bound->x2,
-			py + bound->getCenterY());
+				py + bound->getCenterY());
 		bool collideCenterLeft = mapInfo->checkCollide(px + bound->x1,
-			py + bound->getCenterY());
+				py + bound->getCenterY());
 		bool collideCenterUp = mapInfo->checkCollide(px + bound->getCenterX(),
-			py + bound->y2);
+				py + bound->y2);
 		bool collideCenterDown = mapInfo->checkCollide(px + bound->getCenterX(),
-			py + bound->y1);
+				py + bound->y1);
 
 		if ((physic->vx > 0 && collideCenterRight)
-			|| (physic->vx < 0 && collideCenterLeft)) {
+				|| (physic->vx < 0 && collideCenterLeft)) {
 			if (physic->dismissWhenCollideWithWall) {
 				EntityUtils::getInstance()->removeEntity(e);
 				return;
 			}
 			physic->vx =
-				(physic->bounce > 0) ? -physic->vx * physic->bounce : 0;
+					(physic->bounce > 0) ? -physic->vx * physic->bounce : 0;
 		}
 
 		if (physic->vy < 0 && collideCenterDown) {
@@ -631,7 +627,7 @@ void MapCollisionSystem::processEntity(artemis::Entity &e) {
 				return;
 			}
 			physic->vy =
-				(physic->bounce > 0) ? -physic->vy * physic->bounce : 0;
+					(physic->bounce > 0) ? -physic->vy * physic->bounce : 0;
 
 		}
 	}
@@ -651,14 +647,14 @@ void InputSystem::initialize() {
 
 }
 void InputSystem::notifyInput(Touch* touch, GameHud::EventType event,
-	GameHud::TouchType touchType) {
+		GameHud::TouchType touchType) {
 
 	GameStateComponent* gameState =
-		(GameStateComponent*)world->getTagManager()->getEntity("gameState").getComponent<
-		GameStateComponent>();
+			(GameStateComponent*) world->getTagManager()->getEntity("gameState").getComponent<
+					GameStateComponent>();
 	if (gameState->gameState == R::GameState::NONE) {
 		if (event == GameHud::EventType::BEGIN
-			&& touchType == GameHud::TouchType::TAP) {
+				&& touchType == GameHud::TouchType::TAP) {
 			gameState->setGameState(R::GameState::PREPARE);
 		}
 		return;
@@ -667,7 +663,7 @@ void InputSystem::notifyInput(Touch* touch, GameHud::EventType event,
 	if (gameState->gameState == R::GameState::WIN) {
 		return;
 		if (event == GameHud::EventType::BEGIN
-			&& touchType == GameHud::TouchType::TAP) {
+				&& touchType == GameHud::TouchType::TAP) {
 			ECSWorld::getInstance()->nextMatch();
 		}
 
@@ -676,83 +672,73 @@ void InputSystem::notifyInput(Touch* touch, GameHud::EventType event,
 	if (gameState->gameState == R::GameState::LOSE) {
 		return;
 		if (event == GameHud::EventType::BEGIN
-			&& touchType == GameHud::TouchType::TAP) {
+				&& touchType == GameHud::TouchType::TAP) {
 			ECSWorld::getInstance()->resetCurrentMatch();
 
 		}
 	}
 
 	artemis::Entity &goku = world->getTagManager()->getEntity("goku");
-	StateComponent* stateComponent = (StateComponent*)goku.getComponent<
-		StateComponent>();
+	StateComponent* stateComponent = (StateComponent*) goku.getComponent<
+			StateComponent>();
 	bool dangtrungdon = stateComponent->state == R::CharacterState::DEFENSE
-		&& (stateComponent->time_on_state < .2f
-		|| stateComponent->defense == R::Defense::TRUNG_DON_NGA);
+			&& (stateComponent->time_on_state < .2f
+					|| stateComponent->defense == R::Defense::TRUNG_DON_NGA);
 
 	if (gameState->gameState == R::GameState::FIGHTING) {
 		artemis::Entity &enemy = world->getTagManager()->getEntity("enemy");
-		PosComponent* gokuPosition = (PosComponent*)goku.getComponent<
-			PosComponent>();
-		PosComponent* enemyPosition = (PosComponent*)enemy.getComponent<
-			PosComponent>();
+		PosComponent* gokuPosition = (PosComponent*) goku.getComponent<
+				PosComponent>();
+		PosComponent* enemyPosition = (PosComponent*) enemy.getComponent<
+				PosComponent>();
 
 		switch (event) {
 		case GameHud::EventType::BEGIN:
 
 			if (touchType == GameHud::TouchType::TAP) {
 				_tapCount++;
-			}
-			else if (dangtrungdon) {
+			} else if (dangtrungdon) {
 				return;
-			}
-			else if (touchType == GameHud::TouchType::LONG_PRESS) {
+			} else if (touchType == GameHud::TouchType::LONG_PRESS) {
 				if (stateComponent->state != R::CharacterState::ATTACK) {
 					stateComponent->setState(R::CharacterState::ATTACK);
 					stateComponent->attack = R::Attack::GOKU_PUNCH1;
 				}
 
-			}
-			else if (touchType == GameHud::TouchType::LEFT) {
+			} else if (touchType == GameHud::TouchType::LEFT) {
 				if (dangtrungdon) {
 					break;
 				}
 				stateComponent->setState(R::CharacterState::LEFT);
 				stateComponent->direction = R::Direction::LEFT;
-			}
-			else if (touchType == GameHud::TouchType::RIGHT) {
+			} else if (touchType == GameHud::TouchType::RIGHT) {
 				if (dangtrungdon) {
 					break;
 				}
 				stateComponent->setState(R::CharacterState::RIGHT);
 				stateComponent->direction = R::Direction::RIGHT;
-			}
-			else if (touchType == GameHud::TouchType::TOP) {
+			} else if (touchType == GameHud::TouchType::TOP) {
 				stateComponent->setState(R::CharacterState::JUMP);
-			}
-			else if (touchType == GameHud::TouchType::TOP_LEFT) {
+			} else if (touchType == GameHud::TouchType::TOP_LEFT) {
 				stateComponent->direction = R::Direction::TOP_LEFT;
 				stateComponent->setState(R::CharacterState::JUMP);
-			}
-			else if (touchType == GameHud::TouchType::TOP_RIGHT) {
+			} else if (touchType == GameHud::TouchType::TOP_RIGHT) {
 				stateComponent->direction = R::Direction::TOP_RIGHT;
 				stateComponent->setState(R::CharacterState::JUMP);
-			}
-			else if (touchType == GameHud::TouchType::BOTTOM_LEFT) {
+			} else if (touchType == GameHud::TouchType::BOTTOM_LEFT) {
 				if (stateComponent->state != R::CharacterState::ATTACK) {
 					stateComponent->attack = R::Attack::GOKU_KICK1;
 					stateComponent->setState(R::CharacterState::ATTACK);
 					stateComponent->direction = R::Direction::LEFT;
 				}
-			}
-			else if (touchType == GameHud::TouchType::BOTTOM_RIGHT) {
+			} else if (touchType == GameHud::TouchType::BOTTOM_RIGHT) {
 				if (stateComponent->state != R::CharacterState::ATTACK) {
 					stateComponent->attack = R::Attack::GOKU_KICK1;
 					stateComponent->setState(R::CharacterState::ATTACK);
 					stateComponent->direction = R::Direction::RIGHT;
 				}
 
-			}
-			else if (touchType == GameHud::TouchType::BOTTOM) {
+			} else if (touchType == GameHud::TouchType::BOTTOM) {
 				if (stateComponent->state != R::CharacterState::ATTACK) {
 					stateComponent->attack = R::Attack::GOKU_KICK1;
 					stateComponent->setState(R::CharacterState::ATTACK);
@@ -770,8 +756,7 @@ void InputSystem::notifyInput(Touch* touch, GameHud::EventType event,
 			if (touchType == GameHud::TouchType::LEFT) {
 				stateComponent->setState(R::CharacterState::WALK_LEFT);
 				stateComponent->direction = R::Direction::LEFT;
-			}
-			else if (touchType == GameHud::TouchType::RIGHT) {
+			} else if (touchType == GameHud::TouchType::RIGHT) {
 				stateComponent->setState(R::CharacterState::WALK_RIGHT);
 				stateComponent->direction = R::Direction::RIGHT;
 			}
@@ -782,8 +767,7 @@ void InputSystem::notifyInput(Touch* touch, GameHud::EventType event,
 			if (stateComponent->state != R::CharacterState::JUMP) {
 				if (touchType == GameHud::TouchType::LEFT) {
 					stateComponent->setState(R::CharacterState::STAND);
-				}
-				else if (touchType == GameHud::TouchType::RIGHT) {
+				} else if (touchType == GameHud::TouchType::RIGHT) {
 					stateComponent->setState(R::CharacterState::STAND);
 				}
 			}
@@ -809,11 +793,11 @@ void InputSystem::processInputTap(int tapCount) {
 	_tapCount = 0;
 
 	artemis::Entity &goku = world->getTagManager()->getEntity("goku");
-	StateComponent* stateComponent = (StateComponent*)goku.getComponent<
-		StateComponent>();
+	StateComponent* stateComponent = (StateComponent*) goku.getComponent<
+			StateComponent>();
 	if ((stateComponent->state == R::CharacterState::STAND
-		|| stateComponent->state == R::CharacterState::DEFENSE)
-		&& stateComponent->time_on_state > .1f) {
+			|| stateComponent->state == R::CharacterState::DEFENSE)
+			&& stateComponent->time_on_state > .1f) {
 		stateComponent->setState(R::CharacterState::ATTACK);
 		if (tapCount == 1) {
 			srand(time(NULL));
@@ -864,8 +848,8 @@ void SkeletonSystem::begin() {
 }
 
 void SkeletonSystem::processEntity(artemis::Entity &e) {
-	SkeletonComponent* skeleton = (SkeletonComponent*)skeletonMapper.get(e);
-	PosComponent* position = (PosComponent*)positionMapper.get(e);
+	SkeletonComponent* skeleton = (SkeletonComponent*) skeletonMapper.get(e);
+	PosComponent* position = (PosComponent*) positionMapper.get(e);
 	if (skeleton) {
 		if (!skeleton->isCreated)
 			return;
@@ -888,14 +872,14 @@ void UICharacterSystem::initialize() {
 	characterInfoMapper.init(*world);
 }
 void UICharacterSystem::createNodeForCharacter(
-	CharacterInfoComponent* characterInfo) {
+		CharacterInfoComponent* characterInfo) {
 	NodeInfo* node = new NodeInfo();
 	node->createNode(characterInfo);
 	renderObjects.insert(
-		std::pair<std::string, NodeInfo*>(characterInfo->avatar, node));
+			std::pair<std::string, NodeInfo*>(characterInfo->avatar, node));
 }
 void UICharacterSystem::processNodeForCharacter(
-	CharacterInfoComponent* characterInfo) {
+		CharacterInfoComponent* characterInfo) {
 	if (renderObjects.count(characterInfo->avatar) != 0) {
 		renderObjects[characterInfo->avatar]->process(characterInfo);
 	}
@@ -903,11 +887,10 @@ void UICharacterSystem::processNodeForCharacter(
 
 void UICharacterSystem::processEntity(artemis::Entity &e) {
 	CharacterInfoComponent* characterInfo =
-		(CharacterInfoComponent*)characterInfoMapper.get(e);
+			(CharacterInfoComponent*) characterInfoMapper.get(e);
 	if (renderObjects.count(characterInfo->avatar) == 0) {
 		createNodeForCharacter(characterInfo);
-	}
-	else {
+	} else {
 		processNodeForCharacter(characterInfo);
 	}
 }
@@ -930,8 +913,7 @@ void DebugSystem::processEntity(artemis::Entity &e) {
 	PosComponent* position = posMapper.get(e);
 	BoundComponent* bound = boundMapper.get(e);
 	if (position) {
-	}
-	else {
+	} else {
 		return;
 	}
 	auto rectNode = DrawNode::create();
@@ -949,7 +931,7 @@ void DebugSystem::processEntity(artemis::Entity &e) {
 	rectNode->drawLine(rectangle[3] * 2, rectangle[0] * 2, white);
 
 	RenderLayer::getInstance()->getHudLayer()->getChildByTag(100)->addChild(
-		rectNode);
+			rectNode);
 }
 
 RemoveEntitySystem::RemoveEntitySystem() {
@@ -983,28 +965,27 @@ void DelaySystem::processEntity(artemis::Entity &e) {
 }
 
 SkeletonCollisonSystem::SkeletonCollisonSystem() :
-collisionPoint(Vec2::ZERO) {
+		collisionPoint(Vec2::ZERO) {
 }
 void SkeletonCollisonSystem::initialize() {
 }
 void SkeletonCollisonSystem::processEntity(artemis::Entity &e) {
-	if (((CharacterTypeComponent*)e.getComponent<CharacterTypeComponent>())->type
-		== R::CharacterType::GOKU) {
+	if (((CharacterTypeComponent*) e.getComponent<CharacterTypeComponent>())->type
+			== R::CharacterType::GOKU) {
 
-	}
-	else {
+	} else {
 
 	}
 }
 bool SkeletonCollisonSystem::checkCollision(artemis::Entity &attacker,
-	artemis::Entity &defenser) {
+		artemis::Entity &defenser) {
 	bool isCollision = false;
 
 	return isCollision;
 }
 
 CatFollowGokuSystem::CatFollowGokuSystem() :
-prepareAttack(false), readyToAttack(false) {
+		prepareAttack(false), readyToAttack(false) {
 	addComponentType<PosComponent>();
 	addComponentType<SkeletonComponent>();
 	addComponentType<CatFollowComponent>();
@@ -1017,10 +998,10 @@ void CatFollowGokuSystem::initialize() {
 void CatFollowGokuSystem::processEntity(artemis::Entity &e) {
 	artemis::Entity &goku = world->getTagManager()->getEntity("goku");
 	PosComponent* gokuPosition =
-		(PosComponent*)goku.getComponent<PosComponent>();
+			(PosComponent*) goku.getComponent<PosComponent>();
 	artemis::Entity &enemy = world->getTagManager()->getEntity("enemy");
-	PosComponent* enemyPosition = (PosComponent*)enemy.getComponent<
-		PosComponent>();
+	PosComponent* enemyPosition = (PosComponent*) enemy.getComponent<
+			PosComponent>();
 
 	PosComponent* meoPosition = positionMapper.get(e);
 	SkeletonComponent* meoAnimation = skeletonMapper.get(e);
@@ -1028,25 +1009,24 @@ void CatFollowGokuSystem::processEntity(artemis::Entity &e) {
 	catFollow->timeOnState += world->getDelta();
 
 	GameStateComponent* gameState =
-		(GameStateComponent*)(world->getTagManager()->getEntity(
-		"gameState").getComponent<GameStateComponent>());
+			(GameStateComponent*) (world->getTagManager()->getEntity(
+					"gameState").getComponent<GameStateComponent>());
 	if (gameState->gameState != R::GameState::FIGHTING) {
 		return;
 	}
 	if (catFollow->state == R::CatFollowState::NONE) {
 		return;
-	}
-	else if (catFollow->state == R::CatFollowState::ATTACK_GOKU) {
+	} else if (catFollow->state == R::CatFollowState::ATTACK_GOKU) {
 
 		if (!prepareAttack) {
 			// create attack
 			meoAnimation->skeleton->setAnimation(0, "throw", false);
 			meoAnimation->skeleton->setCompleteListener(
-				[=](int trackID, int loopcount) {
-				if (!readyToAttack) {
-					readyToAttack = true;
-				}
-			});
+					[=](int trackID, int loopcount) {
+						if (!readyToAttack) {
+							readyToAttack = true;
+						}
+					});
 			prepareAttack = true;
 		}
 
@@ -1059,19 +1039,17 @@ void CatFollowGokuSystem::processEntity(artemis::Entity &e) {
 			prepareAttack = false;
 		}
 
-	}
-	else if (catFollow->state == R::CatFollowState::FOLLOW_ENEMY) {
+	} else if (catFollow->state == R::CatFollowState::FOLLOW_ENEMY) {
 		float ratio = .98f;
 		if (abs(enemyPosition->x - meoPosition->x) > 10) {
 			meoPosition->x = ratio * meoPosition->x
-				+ (1 - ratio) * enemyPosition->x;
+					+ (1 - ratio) * enemyPosition->x;
 			meoPosition->y = 200;
 			meoAnimation->node->setPosition(
-				Vec2(meoPosition->x, meoPosition->y));
+					Vec2(meoPosition->x, meoPosition->y));
 			if (gokuPosition->x > meoPosition->x) {
 				meoAnimation->node->setScaleX(1);
-			}
-			else {
+			} else {
 				meoAnimation->node->setScaleX(-1);
 			}
 		}
@@ -1079,23 +1057,20 @@ void CatFollowGokuSystem::processEntity(artemis::Entity &e) {
 		if (catFollow->timeOnState >= catFollow->nextTimeAttack) {
 			catFollow->setState(R::CatFollowState::FOLLOW_GOKU);
 		}
-	}
-	else if (catFollow->state == R::CatFollowState::FOLLOW_GOKU) {
+	} else if (catFollow->state == R::CatFollowState::FOLLOW_GOKU) {
 		if (abs(gokuPosition->x - meoPosition->x) > 10) {
 			float ratio = .98f;
 			meoPosition->x = ratio * meoPosition->x
-				+ (1 - ratio) * gokuPosition->x;
+					+ (1 - ratio) * gokuPosition->x;
 			meoPosition->y = 200;
 			meoAnimation->node->setPosition(
-				Vec2(meoPosition->x, meoPosition->y));
+					Vec2(meoPosition->x, meoPosition->y));
 			if (gokuPosition->x > meoPosition->x) {
 				meoAnimation->node->setScaleX(1);
-			}
-			else {
+			} else {
 				meoAnimation->node->setScaleX(-1);
 			}
-		}
-		else {
+		} else {
 			if (catFollow->timeOnState >= catFollow->nextTimeAttack / 2) {
 				catFollow->setState(R::CatFollowState::ATTACK_GOKU);
 			}
@@ -1103,15 +1078,15 @@ void CatFollowGokuSystem::processEntity(artemis::Entity &e) {
 	}
 }
 void CatFollowGokuSystem::createBomAtack(PosComponent* positionComponent,
-	bool isLeftDirection) {
+		bool isLeftDirection) {
 
 	CharacterInfoComponent* characterInfo = new CharacterInfoComponent();
 	characterInfo->avatar = "textures/bomb.png";
 
 	//create keletoncomponent
 	spine::SkeletonAnimation* skeletonAnimation =
-		spine::SkeletonAnimation::createWithFile("spine/bomb.json",
-		"spine/bomb.atlas");
+			spine::SkeletonAnimation::createWithFile("spine/bomb.json",
+					"spine/bomb.atlas");
 	skeletonAnimation->setAnimation(0, "bomb", false);
 	skeletonAnimation->setScale(.3);
 	skeletonAnimation->setVisible(false);
@@ -1131,7 +1106,7 @@ void CatFollowGokuSystem::createBomAtack(PosComponent* positionComponent,
 	characterSkeleton->isCreated = true;
 
 	Vec2 position = Vec2(positionComponent->x + (isLeftDirection ? -20 : 20),
-		positionComponent->y);
+			positionComponent->y);
 
 	artemis::Entity &character = (world->getEntityManager()->create());
 	character.addComponent(new CharacterTypeComponent(R::CharacterType::BOMB));
@@ -1156,7 +1131,7 @@ void BombSystem::initialize() {
 void BombSystem::processEntity(artemis::Entity &e) {
 	artemis::Entity &goku = world->getTagManager()->getEntity("goku");
 	PosComponent* gokuPosition =
-		(PosComponent*)goku.getComponent<PosComponent>();
+			(PosComponent*) goku.getComponent<PosComponent>();
 	PosComponent* bombPosition = positionMapper.get(e);
 	BomComponent* bomComponent = bombMapper.get(e);
 	MapInfo* map = new MapInfo();
@@ -1164,23 +1139,22 @@ void BombSystem::processEntity(artemis::Entity &e) {
 	if (!map->checkCollide(bombPosition->x, bombPosition->y - 20)) {
 		bombPosition->y -= 200 * world->getDelta();
 		skeletonComponent->node->setPosition(
-			Vec2(bombPosition->x, bombPosition->y));
-	}
-	else {
+				Vec2(bombPosition->x, bombPosition->y));
+	} else {
 		if (!bomComponent->expire) {
 			if (R::Constants::soundEnable) {
 				CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(
-					R::Constants::soundVolumn);
+						R::Constants::soundVolumn);
 				CocosDenshion::SimpleAudioEngine::getInstance()->playEffect(
-					R::Constants::BOMB, false, 1, 0, 1);
+						R::Constants::BOMB, false, 1, 0, 1);
 			}
 
 			bomComponent->expire = true;
 			skeletonComponent->node->removeAllChildren();
 
 			spine::SkeletonAnimation* animation =
-				spine::SkeletonAnimation::createWithFile("spine/bomb.json",
-				"spine/bomb.atlas", .3f);
+					spine::SkeletonAnimation::createWithFile("spine/bomb.json",
+							"spine/bomb.atlas", .3f);
 			animation->setAnimation(0, "bomb", false);
 			Node* node = RenderLayer::getInstance()->createGameNode();
 			node->setPosition(bombPosition->x, bombPosition->y);
@@ -1198,16 +1172,15 @@ void BombSystem::processEntity(artemis::Entity &e) {
 			if (node->getPosition().distanceSquared(_pos1) < 500) {
 
 				CharacterInfoComponent* gokuInfo =
-					(CharacterInfoComponent*)goku.getComponent<
-					CharacterInfoComponent>();
+						(CharacterInfoComponent*) goku.getComponent<
+								CharacterInfoComponent>();
 				gokuInfo->blood -= bomComponent->powerOfAttack;
 
-				StateComponent* gokuState = (StateComponent*)goku.getComponent<
-					StateComponent>();
+				StateComponent* gokuState = (StateComponent*) goku.getComponent<
+						StateComponent>();
 				if (gokuInfo->blood <= 0) {
 					gokuState->setState(R::CharacterState::DIE);
-				}
-				else {
+				} else {
 					gokuState->setState(R::CharacterState::DEFENSE);
 					gokuState->defense = R::Defense::TRUNG_DON_NGA;
 				}
@@ -1229,21 +1202,21 @@ void CameraFollowSystem::initialize() {
 void CameraFollowSystem::processEntity(artemis::Entity &e) {
 	if (world->getTagManager()->isSubscribed("goku")) {
 		artemis::Entity &e = world->getTagManager()->getEntity("goku");
-		PosComponent* pos = (PosComponent*)e.getComponent<PosComponent>();
+		PosComponent* pos = (PosComponent*) e.getComponent<PosComponent>();
 
 		artemis::Entity &enemy = world->getTagManager()->getEntity("enemy");
-		PosComponent* enemyPosition = (PosComponent*)enemy.getComponent<
-			PosComponent>();
+		PosComponent* enemyPosition = (PosComponent*) enemy.getComponent<
+				PosComponent>();
 
 		artemis::Entity &gameState = world->getTagManager()->getEntity(
-			"gameState");
+				"gameState");
 		GameStateComponent* gameStateComponent =
-			(GameStateComponent*)gameState.getComponent<GameStateComponent>();
+				(GameStateComponent*) gameState.getComponent<GameStateComponent>();
 		auto defaulcamera = Camera::getDefaultCamera();
 		float cameraX = defaulcamera->getPositionX();
 		float minX = R::Constants::WIDTH_SCREEN / 2;
 		float maxX = R::Constants::MAX_SCREEN_WIDTH
-			- R::Constants::WIDTH_SCREEN / 2;
+				- R::Constants::WIDTH_SCREEN / 2;
 		//		if (gameStateComponent->gameState == R::GameState::WIN
 		//				|| gameStateComponent->gameState == R::GameState::LOSE) {
 		//			cameraX = pos->x / 2 + enemyPosition->x / 2;
@@ -1275,7 +1248,7 @@ void CameraFollowSystem::processEntity(artemis::Entity &e) {
 		cameraX = (cameraX > maxX) ? maxX : cameraX;
 		defaulcamera->setPositionX(cameraX);
 		//	}
-
+		CCLOG("CameraFollow");
 	}
 }
 
@@ -1300,8 +1273,7 @@ void SpecialSkillSystem::begin() {
 		node->setName("drawnode");
 		node->setContentSize(layer->getContentSize());
 		layer->addChild(node);
-	}
-	else {
+	} else {
 		layer->getChildByName("drawnode")->removeAllChildren();
 	}
 }
@@ -1324,39 +1296,39 @@ void SpecialSkillSystem::processPicolo(artemis::Entity &e) {
 	StateComponent* stateComponent = stateMapper.get(e);
 	// trường hợp power1
 	if (stateComponent->state == R::CharacterState::ATTACK
-		&& stateComponent->attack == R::Attack::PICOLO_POWER1) {
+			&& stateComponent->attack == R::Attack::PICOLO_POWER1) {
 		SkeletonComponent* skeleton = skeletonMapper.get(e);
 		spine::SkeletonAnimation* animation = skeleton->skeleton;
 		spBone* bone = animation->findBone("c-effect2");
 		if (bone) {
 			float x = skeleton->node->getPositionX()
-				+ skeleton->node->getScaleX()
-				* (bone->skeleton->x + bone->worldX);
+					+ skeleton->node->getScaleX()
+							* (bone->skeleton->x + bone->worldX);
 			float y = skeleton->node->getPositionY()
-				+ skeleton->node->getScaleY()
-				* (bone->skeleton->y + bone->worldY);
+					+ skeleton->node->getScaleY()
+							* (bone->skeleton->y + bone->worldY);
 			//CCDrawNode* drawnode = CCDrawNode::create();
 			//drawnode->drawDot(Vec2(x, y), 5, Color4F::BLUE);
 			//RenderLayer::getInstance()->getGameLayer()->getChildByName("drawnode")->addChild(drawnode);
 			artemis::Entity& goku = world->getTagManager()->getEntity("goku");
-			PosComponent* position = (PosComponent*)goku.getComponent<
-				PosComponent>();
-			BoundComponent* bound = (BoundComponent*)goku.getComponent<
-				BoundComponent>();
+			PosComponent* position = (PosComponent*) goku.getComponent<
+					PosComponent>();
+			BoundComponent* bound = (BoundComponent*) goku.getComponent<
+					BoundComponent>();
 
 			Rect rect1 = Rect(position->x + bound->x1, position->y + bound->y1,
-				bound->getWidth(), bound->getHeight());
+					bound->getWidth(), bound->getHeight());
 			Rect rect2 = Rect(x - 5, y - 5, 10, 10);
 			if (rect1.intersectsCircle(Vec2(x, y), 10)) {
-				StateComponent* gokuState = (StateComponent*)goku.getComponent<
-					StateComponent>();
+				StateComponent* gokuState = (StateComponent*) goku.getComponent<
+						StateComponent>();
 				if (gokuState->state != R::CharacterState::DEFENSE) {
 					gokuState->setState(R::CharacterState::DEFENSE);
 					gokuState->defense = R::Defense::TRUNG_DON_NGA;
 					PosComponent* attackPosition = positionMapper.get(e);
 					gokuState->direction =
-						(attackPosition->x > position->x) ?
-						R::Direction::LEFT : R::Direction::RIGHT;
+							(attackPosition->x > position->x) ?
+									R::Direction::LEFT : R::Direction::RIGHT;
 				}
 			}
 		}
@@ -1365,39 +1337,39 @@ void SpecialSkillSystem::processPicolo(artemis::Entity &e) {
 	// trường hợp power2
 
 	if (stateComponent->state == R::CharacterState::ATTACK
-		&& stateComponent->attack == R::Attack::PICOLO_POWER2) {
+			&& stateComponent->attack == R::Attack::PICOLO_POWER2) {
 		SkeletonComponent* skeleton = skeletonMapper.get(e);
 		spine::SkeletonAnimation* animation = skeleton->skeleton;
 		spBone* bone = animation->findBone("circle-effect");
 		if (bone) {
 			float x = skeleton->node->getPositionX()
-				+ skeleton->node->getScaleX()
-				* (bone->skeleton->x + bone->worldX);
+					+ skeleton->node->getScaleX()
+							* (bone->skeleton->x + bone->worldX);
 			float y = skeleton->node->getPositionY()
-				+ skeleton->node->getScaleY()
-				* (bone->skeleton->y + bone->worldY);
+					+ skeleton->node->getScaleY()
+							* (bone->skeleton->y + bone->worldY);
 			//CCDrawNode* drawnode = CCDrawNode::create();
 			//drawnode->drawDot(Vec2(x, y), 5, Color4F::BLUE);
 			//RenderLayer::getInstance()->getGameLayer()->getChildByName("drawnode")->addChild(drawnode);
 			artemis::Entity& goku = world->getTagManager()->getEntity("goku");
-			PosComponent* position = (PosComponent*)goku.getComponent<
-				PosComponent>();
-			BoundComponent* bound = (BoundComponent*)goku.getComponent<
-				BoundComponent>();
+			PosComponent* position = (PosComponent*) goku.getComponent<
+					PosComponent>();
+			BoundComponent* bound = (BoundComponent*) goku.getComponent<
+					BoundComponent>();
 
 			Rect rect1 = Rect(position->x + bound->x1, position->y + bound->y1,
-				bound->getWidth(), bound->getHeight());
+					bound->getWidth(), bound->getHeight());
 			Rect rect2 = Rect(x - 5, y - 5, 10, 10);
 			if (rect1.intersectsCircle(Vec2(x, y), 10)) {
-				StateComponent* gokuState = (StateComponent*)goku.getComponent<
-					StateComponent>();
+				StateComponent* gokuState = (StateComponent*) goku.getComponent<
+						StateComponent>();
 				if (gokuState->state != R::CharacterState::DEFENSE) {
 					gokuState->setState(R::CharacterState::DEFENSE);
 					gokuState->defense = R::Defense::TRUNG_DON_NGA;
 					PosComponent* attackPosition = positionMapper.get(e);
 					gokuState->direction =
-						(attackPosition->x > position->x) ?
-						R::Direction::LEFT : R::Direction::RIGHT;
+							(attackPosition->x > position->x) ?
+									R::Direction::LEFT : R::Direction::RIGHT;
 				}
 			}
 		}
@@ -1408,33 +1380,33 @@ void SpecialSkillSystem::processCamap(artemis::Entity &e) {
 	StateComponent* stateComponent = stateMapper.get(e);
 	// trường hợp Skill
 	if (stateComponent->state == R::CharacterState::ATTACK
-		&& stateComponent->attack == R::Attack::CAMAP_SKILL) {
+			&& stateComponent->attack == R::Attack::CAMAP_SKILL) {
 		SkeletonComponent* skeleton = skeletonMapper.get(e);
 		spine::SkeletonAnimation* animation = skeleton->skeleton;
 		spBone* bone = animation->findBone("bone8");
 		CharacterInfoComponent* attackInfo =
-			(CharacterInfoComponent*)e.getComponent<CharacterInfoComponent>();
+				(CharacterInfoComponent*) e.getComponent<CharacterInfoComponent>();
 
 		if (bone) {
 			artemis::Entity& goku = world->getTagManager()->getEntity("goku");
-			PosComponent* position = (PosComponent*)goku.getComponent<
-				PosComponent>();
-			BoundComponent* bound = (BoundComponent*)goku.getComponent<
-				BoundComponent>();
-			StateComponent* gokuState = (StateComponent*)goku.getComponent<
-				StateComponent>();
+			PosComponent* position = (PosComponent*) goku.getComponent<
+					PosComponent>();
+			BoundComponent* bound = (BoundComponent*) goku.getComponent<
+					BoundComponent>();
+			StateComponent* gokuState = (StateComponent*) goku.getComponent<
+					StateComponent>();
 			if (stateComponent->hitDetected >= 1)
 				return;
 
 			float x = skeleton->node->getPositionX()
-				+ skeleton->node->getScaleX()
-				* (bone->skeleton->x + bone->worldX);
+					+ skeleton->node->getScaleX()
+							* (bone->skeleton->x + bone->worldX);
 			float y = skeleton->node->getPositionY()
-				+ skeleton->node->getScaleY()
-				* (bone->skeleton->y + bone->worldY);
+					+ skeleton->node->getScaleY()
+							* (bone->skeleton->y + bone->worldY);
 
 			Rect rect1 = Rect(position->x + bound->x1, position->y + bound->y1,
-				bound->getWidth(), bound->getHeight());
+					bound->getWidth(), bound->getHeight());
 
 			if (rect1.intersectsCircle(Vec2(x, y), 10)) {
 
@@ -1442,29 +1414,28 @@ void SpecialSkillSystem::processCamap(artemis::Entity &e) {
 
 				if (gokuState->state != R::CharacterState::DEFENSE) {
 					CharacterInfoComponent* gokuInfo =
-						(CharacterInfoComponent*)goku.getComponent<
-						CharacterInfoComponent>();
+							(CharacterInfoComponent*) goku.getComponent<
+									CharacterInfoComponent>();
 					gokuInfo->blood -= attackInfo->SPECIAL_SKILL_POWER;
 
 					if (gokuInfo->blood <= 0) {
 						gokuState->setState(R::CharacterState::DIE);
-					}
-					else {
+					} else {
 						gokuState->setState(R::CharacterState::DEFENSE);
 						gokuState->defense = R::Defense::TRUNG_DON_NGA;
 					}
 					PosComponent* attackPosition = positionMapper.get(e);
 					gokuState->direction =
-						(attackPosition->x > position->x) ?
-						R::Direction::LEFT : R::Direction::RIGHT;
+							(attackPosition->x > position->x) ?
+									R::Direction::LEFT : R::Direction::RIGHT;
 
 					Node* hitNode =
-						RenderLayer::getInstance()->createGameNode();
+							RenderLayer::getInstance()->createGameNode();
 					hitNode->setPosition(
-						Vec2(
-						x
-						+ ((attackPosition->x > position->x) ?
-						(-20) : 20), y));
+							Vec2(
+									x
+											+ ((attackPosition->x > position->x) ?
+													(-20) : 20), y));
 					HitEffect* hitEffect = new HitEffect(hitNode);
 					hitEffect->setHitStyle(R::CharacterType::CAMAP);
 					hitEffect->start();
@@ -1474,61 +1445,60 @@ void SpecialSkillSystem::processCamap(artemis::Entity &e) {
 	}
 	// trường hợp PunchAir
 	if (stateComponent->state == R::CharacterState::ATTACK
-		&& stateComponent->attack == R::Attack::CAMAP_PUNCH_AIR) {
+			&& stateComponent->attack == R::Attack::CAMAP_PUNCH_AIR) {
 		SkeletonComponent* skeleton = skeletonMapper.get(e);
 		spine::SkeletonAnimation* animation = skeleton->skeleton;
 		spBone* bone = animation->findBone("bone7");
 		CharacterInfoComponent* attackInfo =
-			(CharacterInfoComponent*)e.getComponent<CharacterInfoComponent>();
+				(CharacterInfoComponent*) e.getComponent<CharacterInfoComponent>();
 
 		if (bone) {
 
 			artemis::Entity& goku = world->getTagManager()->getEntity("goku");
-			PosComponent* position = (PosComponent*)goku.getComponent<
-				PosComponent>();
-			BoundComponent* bound = (BoundComponent*)goku.getComponent<
-				BoundComponent>();
-			StateComponent* gokuState = (StateComponent*)goku.getComponent<
-				StateComponent>();
+			PosComponent* position = (PosComponent*) goku.getComponent<
+					PosComponent>();
+			BoundComponent* bound = (BoundComponent*) goku.getComponent<
+					BoundComponent>();
+			StateComponent* gokuState = (StateComponent*) goku.getComponent<
+					StateComponent>();
 
 			if (stateComponent->hitDetected >= 1)
 				return;
 			float x = skeleton->node->getPositionX()
-				+ skeleton->node->getScaleX()
-				* (bone->skeleton->x + bone->worldX);
+					+ skeleton->node->getScaleX()
+							* (bone->skeleton->x + bone->worldX);
 			float y = skeleton->node->getPositionY()
-				+ skeleton->node->getScaleY()
-				* (bone->skeleton->y + bone->worldY);
+					+ skeleton->node->getScaleY()
+							* (bone->skeleton->y + bone->worldY);
 
 			Rect rect1 = Rect(position->x + bound->x1, position->y + bound->y1,
-				bound->getWidth(), bound->getHeight());
+					bound->getWidth(), bound->getHeight());
 
 			if (rect1.intersectsCircle(Vec2(x, y), 10)) {
 				stateComponent->hitDetected++;
 				if (gokuState->state != R::CharacterState::DEFENSE) {
 					CharacterInfoComponent* gokuInfo =
-						(CharacterInfoComponent*)goku.getComponent<
-						CharacterInfoComponent>();
+							(CharacterInfoComponent*) goku.getComponent<
+									CharacterInfoComponent>();
 					gokuInfo->blood -= attackInfo->SPECIAL_SKILL_POWER;
 					if (gokuInfo->blood <= 0) {
 						gokuState->setState(R::CharacterState::DIE);
-					}
-					else {
+					} else {
 						gokuState->setState(R::CharacterState::DEFENSE);
 						gokuState->defense = R::Defense::TRUNG_DON_NGA;
 					}
 					PosComponent* attackPosition = positionMapper.get(e);
 					gokuState->direction =
-						(attackPosition->x > position->x) ?
-						R::Direction::LEFT : R::Direction::RIGHT;
+							(attackPosition->x > position->x) ?
+									R::Direction::LEFT : R::Direction::RIGHT;
 
 					Node* hitNode =
-						RenderLayer::getInstance()->createGameNode();
+							RenderLayer::getInstance()->createGameNode();
 					hitNode->setPosition(
-						Vec2(
-						x
-						+ ((attackPosition->x > position->x) ?
-						(-20) : 20), y));
+							Vec2(
+									x
+											+ ((attackPosition->x > position->x) ?
+													(-20) : 20), y));
 					HitEffect* hitEffect = new HitEffect(hitNode);
 					hitEffect->setHitStyle(R::CharacterType::CAMAP);
 					hitEffect->start();
@@ -1540,59 +1510,58 @@ void SpecialSkillSystem::processCamap(artemis::Entity &e) {
 
 	// trường hợp Punch1
 	if (stateComponent->state == R::CharacterState::ATTACK
-		&& stateComponent->attack == R::Attack::CAMAP_PUNCH1) {
+			&& stateComponent->attack == R::Attack::CAMAP_PUNCH1) {
 		SkeletonComponent* skeleton = skeletonMapper.get(e);
 		spine::SkeletonAnimation* animation = skeleton->skeleton;
 		spBone* bone = animation->findBone("bone7");
 		CharacterInfoComponent* attackInfo =
-			(CharacterInfoComponent*)e.getComponent<CharacterInfoComponent>();
+				(CharacterInfoComponent*) e.getComponent<CharacterInfoComponent>();
 		if (bone) {
 			artemis::Entity& goku = world->getTagManager()->getEntity("goku");
-			PosComponent* position = (PosComponent*)goku.getComponent<
-				PosComponent>();
-			BoundComponent* bound = (BoundComponent*)goku.getComponent<
-				BoundComponent>();
-			StateComponent* gokuState = (StateComponent*)goku.getComponent<
-				StateComponent>();
+			PosComponent* position = (PosComponent*) goku.getComponent<
+					PosComponent>();
+			BoundComponent* bound = (BoundComponent*) goku.getComponent<
+					BoundComponent>();
+			StateComponent* gokuState = (StateComponent*) goku.getComponent<
+					StateComponent>();
 			if (stateComponent->hitDetected >= 1)
 				return;
 
 			float x = skeleton->node->getPositionX()
-				+ skeleton->node->getScaleX()
-				* (bone->skeleton->x + bone->worldX);
+					+ skeleton->node->getScaleX()
+							* (bone->skeleton->x + bone->worldX);
 			float y = skeleton->node->getPositionY()
-				+ skeleton->node->getScaleY()
-				* (bone->skeleton->y + bone->worldY);
+					+ skeleton->node->getScaleY()
+							* (bone->skeleton->y + bone->worldY);
 			Rect rect1 = Rect(position->x + bound->x1, position->y + bound->y1,
-				bound->getWidth(), bound->getHeight());
+					bound->getWidth(), bound->getHeight());
 
 			if (rect1.intersectsCircle(Vec2(x, y), 15)) {
 				stateComponent->hitDetected++;
 				if (gokuState->state != R::CharacterState::DEFENSE) {
 					CharacterInfoComponent* gokuInfo =
-						(CharacterInfoComponent*)goku.getComponent<
-						CharacterInfoComponent>();
+							(CharacterInfoComponent*) goku.getComponent<
+									CharacterInfoComponent>();
 					gokuInfo->blood -= attackInfo->NORMAL_SKILL_POWER;
 
 					if (gokuInfo->blood <= 0) {
 						gokuState->setState(R::CharacterState::DIE);
-					}
-					else {
+					} else {
 						gokuState->setState(R::CharacterState::DEFENSE);
 						gokuState->defense = R::Defense::TRUNG_DON_NGA;
 					}
 					PosComponent* attackPosition = positionMapper.get(e);
 					gokuState->direction =
-						(attackPosition->x > position->x) ?
-						R::Direction::LEFT : R::Direction::RIGHT;
+							(attackPosition->x > position->x) ?
+									R::Direction::LEFT : R::Direction::RIGHT;
 
 					Node* hitNode =
-						RenderLayer::getInstance()->createGameNode();
+							RenderLayer::getInstance()->createGameNode();
 					hitNode->setPosition(
-						Vec2(
-						x
-						+ ((attackPosition->x > position->x) ?
-						(-20) : 20), y));
+							Vec2(
+									x
+											+ ((attackPosition->x > position->x) ?
+													(-20) : 20), y));
 					HitEffect* hitEffect = new HitEffect(hitNode);
 					hitEffect->setHitStyle(R::CharacterType::CAMAP);
 					hitEffect->start();
@@ -1604,59 +1573,58 @@ void SpecialSkillSystem::processCamap(artemis::Entity &e) {
 
 	// trường hợp Punch3 - normal
 	if (stateComponent->state == R::CharacterState::ATTACK
-		&& (stateComponent->attack == R::Attack::CAMAP_PUNCH3
-		|| stateComponent->attack == R::Attack::CAMAP_PUNCH2)) {
+			&& (stateComponent->attack == R::Attack::CAMAP_PUNCH3
+					|| stateComponent->attack == R::Attack::CAMAP_PUNCH2)) {
 		SkeletonComponent* skeleton = skeletonMapper.get(e);
 		spine::SkeletonAnimation* animation = skeleton->skeleton;
 		spBone* bone = animation->findBone("bone15");
 		CharacterInfoComponent* attackInfo =
-			(CharacterInfoComponent*)e.getComponent<CharacterInfoComponent>();
+				(CharacterInfoComponent*) e.getComponent<CharacterInfoComponent>();
 		if (bone) {
 			artemis::Entity& goku = world->getTagManager()->getEntity("goku");
-			PosComponent* position = (PosComponent*)goku.getComponent<
-				PosComponent>();
-			BoundComponent* bound = (BoundComponent*)goku.getComponent<
-				BoundComponent>();
-			StateComponent* gokuState = (StateComponent*)goku.getComponent<
-				StateComponent>();
+			PosComponent* position = (PosComponent*) goku.getComponent<
+					PosComponent>();
+			BoundComponent* bound = (BoundComponent*) goku.getComponent<
+					BoundComponent>();
+			StateComponent* gokuState = (StateComponent*) goku.getComponent<
+					StateComponent>();
 			if (stateComponent->hitDetected >= 1)
 				return;
 
 			float x = skeleton->node->getPositionX()
-				+ skeleton->node->getScaleX()
-				* (bone->skeleton->x + bone->worldX);
+					+ skeleton->node->getScaleX()
+							* (bone->skeleton->x + bone->worldX);
 			float y = skeleton->node->getPositionY()
-				+ skeleton->node->getScaleY()
-				* (bone->skeleton->y + bone->worldY);
+					+ skeleton->node->getScaleY()
+							* (bone->skeleton->y + bone->worldY);
 			Rect rect1 = Rect(position->x + bound->x1, position->y + bound->y1,
-				bound->getWidth(), bound->getHeight());
+					bound->getWidth(), bound->getHeight());
 
 			if (rect1.intersectsCircle(Vec2(x, y), 10)) {
 				stateComponent->hitDetected++;
 				if (gokuState->state != R::CharacterState::DEFENSE) {
 					CharacterInfoComponent* gokuInfo =
-						(CharacterInfoComponent*)goku.getComponent<
-						CharacterInfoComponent>();
+							(CharacterInfoComponent*) goku.getComponent<
+									CharacterInfoComponent>();
 					gokuInfo->blood -= attackInfo->NORMAL_SKILL_POWER;
 					if (gokuInfo->blood <= 0) {
 						gokuState->setState(R::CharacterState::DIE);
-					}
-					else {
+					} else {
 						gokuState->setState(R::CharacterState::DEFENSE);
 						gokuState->defense = R::Defense::TRUNG_DON;
 					}
 					PosComponent* attackPosition = positionMapper.get(e);
 					gokuState->direction =
-						(attackPosition->x > position->x) ?
-						R::Direction::LEFT : R::Direction::RIGHT;
+							(attackPosition->x > position->x) ?
+									R::Direction::LEFT : R::Direction::RIGHT;
 
 					Node* hitNode =
-						RenderLayer::getInstance()->createGameNode();
+							RenderLayer::getInstance()->createGameNode();
 					hitNode->setPosition(
-						Vec2(
-						x
-						+ ((attackPosition->x > position->x) ?
-						(-20) : 20), y));
+							Vec2(
+									x
+											+ ((attackPosition->x > position->x) ?
+													(-20) : 20), y));
 					HitEffect* hitEffect = new HitEffect(hitNode);
 					hitEffect->setHitStyle(R::CharacterType::CAMAP);
 					hitEffect->start();
@@ -1668,58 +1636,57 @@ void SpecialSkillSystem::processCamap(artemis::Entity &e) {
 
 	// trường hợp kick2
 	if (stateComponent->state == R::CharacterState::ATTACK
-		&& stateComponent->attack == R::Attack::CAMAP_KICK2) {
+			&& stateComponent->attack == R::Attack::CAMAP_KICK2) {
 		SkeletonComponent* skeleton = skeletonMapper.get(e);
 		spine::SkeletonAnimation* animation = skeleton->skeleton;
 		spBone* bone = animation->findBone("bone9");
 		CharacterInfoComponent* attackInfo =
-			(CharacterInfoComponent*)e.getComponent<CharacterInfoComponent>();
+				(CharacterInfoComponent*) e.getComponent<CharacterInfoComponent>();
 		if (bone) {
 			artemis::Entity& goku = world->getTagManager()->getEntity("goku");
-			PosComponent* position = (PosComponent*)goku.getComponent<
-				PosComponent>();
-			BoundComponent* bound = (BoundComponent*)goku.getComponent<
-				BoundComponent>();
-			StateComponent* gokuState = (StateComponent*)goku.getComponent<
-				StateComponent>();
+			PosComponent* position = (PosComponent*) goku.getComponent<
+					PosComponent>();
+			BoundComponent* bound = (BoundComponent*) goku.getComponent<
+					BoundComponent>();
+			StateComponent* gokuState = (StateComponent*) goku.getComponent<
+					StateComponent>();
 			if (stateComponent->hitDetected >= 1)
 				return;
 			float x = skeleton->node->getPositionX()
-				+ skeleton->node->getScaleX()
-				* (bone->skeleton->x + bone->worldX);
+					+ skeleton->node->getScaleX()
+							* (bone->skeleton->x + bone->worldX);
 			float y = skeleton->node->getPositionY()
-				+ skeleton->node->getScaleY()
-				* (bone->skeleton->y + bone->worldY);
+					+ skeleton->node->getScaleY()
+							* (bone->skeleton->y + bone->worldY);
 
 			Rect rect1 = Rect(position->x + bound->x1, position->y + bound->y1,
-				bound->getWidth(), bound->getHeight());
+					bound->getWidth(), bound->getHeight());
 
 			if (rect1.intersectsCircle(Vec2(x, y), 30)) {
 				stateComponent->hitDetected++;
 				if (gokuState->state != R::CharacterState::DEFENSE) {
 					CharacterInfoComponent* gokuInfo =
-						(CharacterInfoComponent*)goku.getComponent<
-						CharacterInfoComponent>();
+							(CharacterInfoComponent*) goku.getComponent<
+									CharacterInfoComponent>();
 					gokuInfo->blood -= attackInfo->NORMAL_SKILL_POWER;
 					if (gokuInfo->blood <= 0) {
 						gokuState->setState(R::CharacterState::DIE);
-					}
-					else {
+					} else {
 						gokuState->setState(R::CharacterState::DEFENSE);
 						gokuState->defense = R::Defense::TRUNG_DON;
 					}
 					PosComponent* attackPosition = positionMapper.get(e);
 					gokuState->direction =
-						(attackPosition->x > position->x) ?
-						R::Direction::LEFT : R::Direction::RIGHT;
+							(attackPosition->x > position->x) ?
+									R::Direction::LEFT : R::Direction::RIGHT;
 
 					Node* hitNode =
-						RenderLayer::getInstance()->createGameNode();
+							RenderLayer::getInstance()->createGameNode();
 					hitNode->setPosition(
-						Vec2(
-						x
-						+ ((attackPosition->x > position->x) ?
-						(-30) : 30), y));
+							Vec2(
+									x
+											+ ((attackPosition->x > position->x) ?
+													(-30) : 30), y));
 					HitEffect* hitEffect = new HitEffect(hitNode);
 					hitEffect->setHitStyle(R::CharacterType::CAMAP);
 					hitEffect->start();
@@ -1732,24 +1699,24 @@ void SpecialSkillSystem::processCamap(artemis::Entity &e) {
 
 void SpecialSkillSystem::processGoku(artemis::Entity &e) {
 	StateComponent* stateComponent = stateMapper.get(e);
-	SkeletonComponent* skeletonComponent = (SkeletonComponent*)e.getComponent<
-		SkeletonComponent>();
+	SkeletonComponent* skeletonComponent = (SkeletonComponent*) e.getComponent<
+			SkeletonComponent>();
 	if (stateComponent->state == R::CharacterState::ATTACK
-		&& (stateComponent->attack == R::Attack::GOKU_BEAT1
-		|| stateComponent->attack == R::Attack::GOKU_BEAT2
-		|| stateComponent->attack == R::Attack::GOKU_BEAT3
-		|| stateComponent->attack == R::Attack::GOKU_PUNCH2)) {
+			&& (stateComponent->attack == R::Attack::GOKU_BEAT1
+					|| stateComponent->attack == R::Attack::GOKU_BEAT2
+					|| stateComponent->attack == R::Attack::GOKU_BEAT3
+					|| stateComponent->attack == R::Attack::GOKU_PUNCH2)) {
 
 		CCDrawNode* drawnode = CCDrawNode::create();
 		RenderLayer::getInstance()->getGameLayer()->getChildByName("drawnode")->addChild(
-			drawnode);
+				drawnode);
 		spBoundingBoxAttachment* attachment =
-			(spBoundingBoxAttachment*)skeletonComponent->skeleton->getAttachment(
-			"stickbound", "collision");
+				(spBoundingBoxAttachment*) skeletonComponent->skeleton->getAttachment(
+						"stickbound", "collision");
 
 		spBone* bone = skeletonComponent->skeleton->findBone("bone19");
 		float scaleX = skeletonComponent->node->getScaleX()
-			* skeletonComponent->skeleton->getScaleX();
+				* skeletonComponent->skeleton->getScaleX();
 		float scaleY = skeletonComponent->skeleton->getScaleY();
 		int i;
 		float px, py;
@@ -1759,11 +1726,11 @@ void SpecialSkillSystem::processGoku(artemis::Entity &e) {
 			px = vertices[i];
 			py = vertices[i + 1];
 			worldVertices[i] = (bone->skeleton->x + bone->worldX
-				+ px * bone->m00 + py * bone->m01) * scaleX
-				+ skeletonComponent->node->getPositionX();
+					+ px * bone->m00 + py * bone->m01) * scaleX
+					+ skeletonComponent->node->getPositionX();
 			worldVertices[i + 1] = (bone->skeleton->y + bone->worldY
-				+ px * bone->m10 + py * bone->m11) * scaleY
-				+ skeletonComponent->node->getPositionY();
+					+ px * bone->m10 + py * bone->m11) * scaleY
+					+ skeletonComponent->node->getPositionY();
 		}
 
 		//creating red polygon with thin black border
@@ -1771,29 +1738,30 @@ void SpecialSkillSystem::processGoku(artemis::Entity &e) {
 		for (int i = 0; i < attachment->verticesCount / 2; i++) {
 			vec[i] = Vec2(worldVertices[i * 2], worldVertices[i * 2 + 1]);
 		}
-		drawnode->drawPolygon(vec, 4, ccc4f(1, 1, 0, 0), .4f, ccc4f(1, 1, 0, 1));
+		drawnode->drawPolygon(vec, 4, ccc4f(1, 1, 0, 0), .4f,
+				ccc4f(1, 1, 0, 1));
 		//	RenderLayer::getInstance()->getHudLayer()->addChild(polygon);
 
 		artemis::Entity &enemy = world->getTagManager()->getEntity("enemy");
 		PosComponent* position =
-			(PosComponent*)enemy.getComponent<PosComponent>();
-		BoundComponent* bound = (BoundComponent*)enemy.getComponent<
-			BoundComponent>();
+				(PosComponent*) enemy.getComponent<PosComponent>();
+		BoundComponent* bound = (BoundComponent*) enemy.getComponent<
+				BoundComponent>();
 
 		if (EntityUtils::getInstance()->intersectSegment(
-			attachment->verticesCount, worldVertices,
-			position->x + bound->x1, position->x + bound->x2,
-			position->y + bound->y1, position->y + bound->y2)) {
+				attachment->verticesCount, worldVertices,
+				position->x + bound->x1, position->x + bound->x2,
+				position->y + bound->y1, position->y + bound->y2)) {
 
 		}
 
 	}
 
 	if (stateComponent->state == R::CharacterState::ATTACK
-		&& (stateComponent->attack == R::Attack::GOKU_BEAT1
-		|| stateComponent->attack == R::Attack::GOKU_BEAT2
-		|| stateComponent->attack == R::Attack::GOKU_BEAT3
-		|| stateComponent->attack == R::Attack::GOKU_PUNCH2)) {
+			&& (stateComponent->attack == R::Attack::GOKU_BEAT1
+					|| stateComponent->attack == R::Attack::GOKU_BEAT2
+					|| stateComponent->attack == R::Attack::GOKU_BEAT3
+					|| stateComponent->attack == R::Attack::GOKU_PUNCH2)) {
 		SkeletonComponent* skeleton = skeletonMapper.get(e);
 		spine::SkeletonAnimation* skeletonAnimation = skeleton->skeleton;
 		spTrackEntry* trackEntry = skeletonAnimation->getCurrent(0);
@@ -1805,51 +1773,57 @@ void SpecialSkillSystem::processGoku(artemis::Entity &e) {
 CharacterRenderSystem::CharacterRenderSystem() {
 	addComponentType<CharacterUIComponent>();
 	isCreated = false;
+	isTouch = false;
 }
-bool CharacterRenderSystem::checkLives(){
+bool CharacterRenderSystem::checkLives() {
 	if (R::Constants::remaininglife == 0) {
-		DialogComfirm* dialogComfirm = new DialogComfirm();
+		DialogComfirmInGame* dialogComfirm = new DialogComfirmInGame();
 		dialogComfirm->setNegative("More lives",
-			[=]() {
-			R::Constants::remaininglife += 3;
-			if (R::Constants::remaininglife > R::Constants::MAX_LIFE) {
-				R::Constants::remaininglife = R::Constants::MAX_LIFE;
-			}
-			R::Constants::updateVariable();
-			auto scene = HomeScreen::createScene();
-			Director::getInstance()->replaceScene(TransitionFade::create(0.3, scene, Color3B(0, 0, 0)));
-			/*	DialogComfirm* subDialog = new DialogComfirm();
-			subDialog->setMessage("Invite friends to get more lives", 20);
-			subDialog->setNegative("No", [=]() {
-			auto scene = HomeScreen::createScene();
-			Director::getInstance()->replaceScene(TransitionFade::create(0.3, scene, Color3B(0, 0, 0)));
-			});
-			subDialog->setPositive("Yes", [=]() {
-			R::Constants::remaininglife += 3;
-			if (R::Constants::remaininglife > R::Constants::MAX_LIFE) {
-			R::Constants::remaininglife = R::Constants::MAX_LIFE;
-			}
-			R::Constants::updateVariable();
-			auto scene = HomeScreen::createScene();
-			Director::getInstance()->replaceScene(TransitionFade::create(0.3, scene, Color3B(0, 0, 0)));
-			});*/
+				[=]() {
+					DialogComfirmInGame* subDialog = new DialogComfirmInGame();
+					subDialog->setMessage("Invite friends to get more lives", 20);
+					subDialog->setNegative("No", [=]() {
+								ECSWorld::getInstance()->ignoreWorld(true);
+								auto scene = HomeScreen::createScene();
+								Director::getInstance()->replaceScene(TransitionFade::create(1, scene, Color3B(0, 0, 0)));
+							});
+					subDialog->setPositive("Yes", [this]() {
+								FacebookManager::inviteFriends(JavaCppBridge::put([this](int result) {
+													if (result == 1) {
+														R::Constants::remaininglife += 3;
+														if (R::Constants::remaininglife > R::Constants::MAX_LIFE) {
+															R::Constants::remaininglife = R::Constants::MAX_LIFE;
+														}
+														R::Constants::updateVariable();
+														ECSWorld::getInstance()->ignoreWorld(true);
+														auto scene = HomeScreen::createScene();
+														Director::getInstance()->replaceScene(TransitionFade::create(1, scene, Color3B(0, 0, 0)));
+													}
+													else {
+														ECSWorld::getInstance()->ignoreWorld(true);
+														auto scene = HomeScreen::createScene();
+														Director::getInstance()->replaceScene(TransitionFade::create(1, scene, Color3B(0, 0, 0)));
+													}
+												}));
+							});
 
-		});
-
+				});
 		dialogComfirm->setPositive("Reset",
-			[=]() {
-			DialogComfirm* subDialog = new DialogComfirm();
-			subDialog->setMessage("Restart from the first levels with 5 lives", 20);
-			subDialog->setNegative("No", [=]() {
-				auto scene = HomeScreen::createScene();
-				Director::getInstance()->replaceScene(TransitionFade::create(0.3, scene, Color3B(0, 0, 0)));
-			});
-			subDialog->setPositive("Yes", [=]() {
-				R::Constants::resetVariable();
-				auto scene = HomeScreen::createScene();
-				Director::getInstance()->replaceScene(TransitionFade::create(0.3, scene, Color3B(0, 0, 0)));
-			});
-		});
+				[=]() {
+					DialogComfirmInGame* subDialog = new DialogComfirmInGame();
+					subDialog->setMessage("Restart from the first levels with 5 lives", 20);
+					subDialog->setNegative("No", [=]() {
+								ECSWorld::getInstance()->ignoreWorld(true);
+								auto scene = HomeScreen::createScene();
+								Director::getInstance()->replaceScene(TransitionFade::create(1, scene, Color3B(0, 0, 0)));
+							});
+					subDialog->setPositive("Yes", [=]() {
+								ECSWorld::getInstance()->ignoreWorld(true);
+								R::Constants::resetVariable();
+								auto scene = HomeScreen::createScene();
+								Director::getInstance()->replaceScene(TransitionFade::create(1, scene, Color3B(0, 0, 0)));
+							});
+				});
 		return true;
 	}
 	return false;
@@ -1857,11 +1831,10 @@ bool CharacterRenderSystem::checkLives(){
 void CharacterRenderSystem::initialize() {
 	characterUIMapper.init(*world);
 }
-
 void CharacterRenderSystem::onGameState(bool isPlay) {
 	artemis::Entity &e = world->getTagManager()->getEntity("gameState");
-	GameStateComponent* gameState = (GameStateComponent*)e.getComponent<
-		GameStateComponent>();
+	GameStateComponent* gameState = (GameStateComponent*) e.getComponent<
+			GameStateComponent>();
 	if (gameState->gameState != R::GameState::FIGHTING)
 		return;
 
@@ -1871,81 +1844,85 @@ void CharacterRenderSystem::onGameState(bool isPlay) {
 		pauseIcon->setTouchEnabled(true);
 	}
 	if (pauseIcon)
-		pauseIcon->loadTexture(
-		!isPlaying ? "textures/play.png" : "textures/pause.png",
-		ui::Widget::TextureResType::LOCAL);
-	if (isPlaying) {
-		ECSWorld::getInstance()->ignoreWorld(false);
-		RenderLayer::getInstance()->getGameLayer()->resumeSchedulerAndActions();
-		RenderLayer::getInstance()->getGameLayer()->scheduleUpdate();
-
-		cocos2d::Vector<Node*> childrens =
-			RenderLayer::getInstance()->getGameLayer()->getChildren();
-		for (int i = 0; i < childrens.size(); i++) {
-			Node* node = childrens.at(i);
-			node->scheduleUpdate();
-			node->resumeSchedulerAndActions();
-			if (node && node->getChildrenCount() != 0) {
-				cocos2d::Vector<Node*> subChildrens = node->getChildren();
-				for (int index = 0; index < subChildrens.size(); index++) {
-					Node* subNode = subChildrens.at(index);
-					subNode->scheduleUpdate();
-					subNode->resumeSchedulerAndActions();
-				}
-			}
-		}
-
+	{
+		pauseIcon->loadTexture(	!isPlaying ? "textures/play.png" : "textures/pause.png",ui::Widget::TextureResType::LOCAL);
+		pauseIcon->setCameraMask((unsigned short) CameraFlag::USER1);
 	}
-	else {
-		ECSWorld::getInstance()->ignoreWorld(true);
-		RenderLayer::getInstance()->getGameLayer()->pauseSchedulerAndActions();
-		RenderLayer::getInstance()->getGameLayer()->unscheduleUpdate();
-		cocos2d::Vector<Node*> childrens =
+
+	if (isPlaying) {
+		resumeGame();
+	} else {
+		pauseGame();
+	}
+}
+void CharacterRenderSystem::pauseGame() {
+	ECSWorld::getInstance()->ignoreWorld(true);
+	RenderLayer::getInstance()->getGameLayer()->pauseSchedulerAndActions();
+	RenderLayer::getInstance()->getGameLayer()->unscheduleUpdate();
+	cocos2d::Vector<Node*> childrens =
 			RenderLayer::getInstance()->getGameLayer()->getChildren();
-		for (int i = 0; i < childrens.size(); i++) {
-			childrens.at(i)->unscheduleUpdate();
-			childrens.at(i)->pauseSchedulerAndActions();
-			Node* node = childrens.at(i);
-			if (node && node->getChildrenCount() != 0) {
-				cocos2d::Vector<Node*> subChildrens = node->getChildren();
-				for (int index = 0; index < subChildrens.size(); index++) {
-					Node* subNode = subChildrens.at(index);
-					subNode->unscheduleUpdate();
-					subNode->pauseSchedulerAndActions();
-				}
+	for (int i = 0; i < childrens.size(); i++) {
+		childrens.at(i)->unscheduleUpdate();
+		childrens.at(i)->pauseSchedulerAndActions();
+		Node* node = childrens.at(i);
+		if (node && node->getChildrenCount() != 0) {
+			cocos2d::Vector<Node*> subChildrens = node->getChildren();
+			for (int index = 0; index < subChildrens.size(); index++) {
+				Node* subNode = subChildrens.at(index);
+				subNode->unscheduleUpdate();
+				subNode->pauseSchedulerAndActions();
 			}
 		}
+	}
 
-		Node* node = RenderLayer::getInstance()->createHudNode();
-		node->setScale(.8f);
-		PauseScene* pauseScene = new PauseScene(node);
-		node->setPosition(
-			RenderLayer::getInstance()->getHudLayer()->getContentSize()
-			/ 2);
-		pauseScene->showPauseScene();
-		node->setCameraMask((unsigned short)CameraFlag::USER1);
-		pauseScene->setContinueCallBack([=]() {
-			onGameState(true);
-		});
-		pauseScene->setMenuCallBack(
+	Node* node = RenderLayer::getInstance()->createHudNode();
+	node->setScale(.8f);
+	PauseScene* pauseScene = new PauseScene(node);
+	node->setPosition(
+			RenderLayer::getInstance()->getHudLayer()->getContentSize() / 2);
+	pauseScene->showPauseScene();
+	node->setCameraMask((unsigned short) CameraFlag::USER1);
+	pauseScene->setContinueCallBack([=]() {
+		onGameState(true);
+	});
+	pauseScene->setMenuCallBack(
 			[=]() {
-			onGameState(true);
-			auto scene = HomeScreen::createScene();
-			Director::getInstance()->replaceScene(TransitionFade::create(0.3, scene, Color3B(0, 0, 0)));
-		});
-		pauseScene->setReplayCallback([=]() {
-			if (!checkLives()){
-				ECSWorld::getInstance()->resetCurrentMatch(true);
+				ECSWorld::getInstance()->ignoreWorld(true);
+				auto scene = HomeScreen::createScene();
+				Director::getInstance()->replaceScene(TransitionFade::create(1, scene, Color3B(0, 0, 0)));
+			});
+	pauseScene->setReplayCallback([=]() {
+		if (!checkLives()) {
+			ECSWorld::getInstance()->resetCurrentMatch(true);
+		}
+	});
+	pauseScene->setNextMatchCallBack([=]() {
+		ECSWorld::getInstance()->nextMatch();
+	});
+	pauseScene->setGuideCallBack([=]() {
+		ECSWorld::getInstance()->matchType = R::Match_Type::GOKU_BEAR_INTRODUCE;
+		ECSWorld::getInstance()->resetCurrentMatch();
+	});
+}
+void CharacterRenderSystem::resumeGame() {
+	ECSWorld::getInstance()->ignoreWorld(false);
+	RenderLayer::getInstance()->getGameLayer()->resumeSchedulerAndActions();
+	RenderLayer::getInstance()->getGameLayer()->scheduleUpdate();
+
+	cocos2d::Vector<Node*> childrens =
+			RenderLayer::getInstance()->getGameLayer()->getChildren();
+	for (int i = 0; i < childrens.size(); i++) {
+		Node* node = childrens.at(i);
+		node->scheduleUpdate();
+		node->resumeSchedulerAndActions();
+		if (node && node->getChildrenCount() != 0) {
+			cocos2d::Vector<Node*> subChildrens = node->getChildren();
+			for (int index = 0; index < subChildrens.size(); index++) {
+				Node* subNode = subChildrens.at(index);
+				subNode->scheduleUpdate();
+				subNode->resumeSchedulerAndActions();
 			}
-		});
-		pauseScene->setNextMatchCallBack([=]() {
-			ECSWorld::getInstance()->nextMatch();
-		});
-		pauseScene->setGuideCallBack(
-			[=]() {
-			ECSWorld::getInstance()->matchType = R::Match_Type::GOKU_BEAR_INTRODUCE;
-			ECSWorld::getInstance()->resetCurrentMatch();
-		});
+		}
 	}
 }
 
@@ -1954,47 +1931,84 @@ void CharacterRenderSystem::begin() {
 		artemis::Entity &goku = world->getTagManager()->getEntity("goku");
 		artemis::Entity &enemy = world->getTagManager()->getEntity("enemy");
 		CharacterInfoComponent* gokuInfo =
-			(CharacterInfoComponent*)goku.getComponent<
-			CharacterInfoComponent>();
+				(CharacterInfoComponent*) goku.getComponent<
+						CharacterInfoComponent>();
 		CharacterInfoComponent* enemyInfo =
-			(CharacterInfoComponent*)enemy.getComponent<
-			CharacterInfoComponent>();
+				(CharacterInfoComponent*) enemy.getComponent<
+						CharacterInfoComponent>();
 
 		infoLeft = new PlayerInfoLeft(
-			RenderLayer::getInstance()->createHudNode(), gokuInfo->name,
-			gokuInfo->avatar);
+				RenderLayer::getInstance()->createHudNode(), gokuInfo->name,
+				gokuInfo->avatar);
 		infoRight = new PlayerInfoRight(
-			RenderLayer::getInstance()->createHudNode(), enemyInfo->name,
-			enemyInfo->avatar);
+				RenderLayer::getInstance()->createHudNode(), enemyInfo->name,
+				enemyInfo->avatar);
 		infoLeft->node->setPosition(
-			Vec2(10, R::Constants::HEIGHT_SCREEN - 120));
+				Vec2(10, R::Constants::HEIGHT_SCREEN - 120));
 		infoRight->node->setPosition(
-			Vec2(260, R::Constants::HEIGHT_SCREEN - 120));
-		infoLeft->node->setCameraMask((unsigned short)CameraFlag::USER1);
-		infoRight->node->setCameraMask((unsigned short)CameraFlag::USER1);
+				Vec2(260, R::Constants::HEIGHT_SCREEN - 120));
+		infoLeft->node->setCameraMask((unsigned short) CameraFlag::USER1);
+		infoRight->node->setCameraMask((unsigned short) CameraFlag::USER1);
 		isCreated = true;
 
 		pauseIcon = ui::ImageView::create("textures/pause.png");
+		pauseIcon->setScale9Enabled(true);
+		pauseIcon->setScale(.8);
+		pauseIcon->ignoreAnchorPointForPosition(false);
+		pauseIcon->setPosition(
+				Vec2(R::Constants::WIDTH_SCREEN / 2,
+						R::Constants::HEIGHT_SCREEN - 110));
 		pauseIcon->setTouchEnabled(true);
+
+		/*	EventListenerTouchOneByOne* listenerForPauseIcon =
+		 EventListenerTouchOneByOne::create();
+		 listenerForPauseIcon->onTouchBegan =
+		 [this](Touch* touch, Event* event) {
+		 cocos2d::log("Touch Begin");
+		 isTouch = false;
+		 if(pauseIcon->getBoundingBox().containsPoint(touch->getLocation())) {
+		 cocos2d::log("Touch Begin inside");
+		 isTouch = true;
+		 return true;
+		 }
+		 return false;
+
+		 };
+		 listenerForPauseIcon->onTouchMoved =[this](Touch* touch, Event* event) {if(touch->getDelta().length() >10) {
+		 isTouch = false;
+		 }
+		 };
+
+		 listenerForPauseIcon->onTouchEnded =
+		 [this](Touch* touch, Event* event) {
+		 if(isTouch) onGameState(!isPlaying);
+		 };
+		 Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(
+		 listenerForPauseIcon, pauseIcon);
+		 */
 		pauseIcon->addClickEventListener([=](Ref* sender) {
 			onGameState(!isPlaying);
 		});
-		pauseIcon->setPosition(
-			Vec2(R::Constants::WIDTH_SCREEN / 2,
-			R::Constants::HEIGHT_SCREEN - 110));
 		RenderLayer::getInstance()->getHudLayer()->addChild(pauseIcon);
-		pauseIcon->setCameraMask((unsigned short)CameraFlag::USER1);
-		pauseIcon->setScale(.6f);
+		pauseIcon->setCameraMask((unsigned short) CameraFlag::USER1);
 
-		text = ui::Text::create("VS", "fonts/courbd.ttf", 24);
-		text->setPosition(
-			Vec2(R::Constants::WIDTH_SCREEN / 2,
-			R::Constants::HEIGHT_SCREEN - 110));
-		text->setColor(Color3B::BLACK);
-		text->enableOutline(Color4B::WHITE, 2);
-		//RenderLayer::getInstance()->getHudLayer()->addChild(text);
-		//text->setCameraMask((unsigned short)CameraFlag::USER1);
+		Node* nodeLife = RenderLayer::getInstance()->createHudNode();
+		remainingLife = new RemainingLife(nodeLife);
 
+		remainingLife->text->setString("");
+		remainingLife->updatePosition();
+		nodeLife->setScale(.6f);
+		nodeLife->setPosition(
+				Vec2(
+						infoLeft->board_bg->getPositionX()
+								- infoLeft->board_bg->getContentSize().width / 2
+								+ 50,
+						infoLeft->node->getPositionY()
+								+ infoLeft->board_bg->getContentSize().height
+								+ remainingLife->node->getContentSize().height
+										/ 2));
+
+		nodeLife->setCameraMask((unsigned short) CameraFlag::USER1);
 	}
 }
 
@@ -2003,20 +2017,25 @@ void CharacterRenderSystem::processEntity(artemis::Entity &e) {
 		artemis::Entity &goku = world->getTagManager()->getEntity("goku");
 		artemis::Entity &enemy = world->getTagManager()->getEntity("enemy");
 		CharacterInfoComponent* gokuInfo =
-			(CharacterInfoComponent*)goku.getComponent<
-			CharacterInfoComponent>();
+				(CharacterInfoComponent*) goku.getComponent<
+						CharacterInfoComponent>();
 		CharacterInfoComponent* enemyInfo =
-			(CharacterInfoComponent*)enemy.getComponent<CharacterInfoComponent>();
+				(CharacterInfoComponent*) enemy.getComponent<
+						CharacterInfoComponent>();
 		gokuInfo->power += .05;
-		gokuInfo->power = (gokuInfo->power < gokuInfo->MAX_POWER) ? gokuInfo->power : gokuInfo->MAX_POWER;
+		gokuInfo->power =
+				(gokuInfo->power < gokuInfo->MAX_POWER) ?
+						gokuInfo->power : gokuInfo->MAX_POWER;
 
 		enemyInfo->power += .05;
-		enemyInfo->power = (enemyInfo->power < enemyInfo->MAX_POWER) ? enemyInfo->power : enemyInfo->MAX_POWER;
+		enemyInfo->power =
+				(enemyInfo->power < enemyInfo->MAX_POWER) ?
+						enemyInfo->power : enemyInfo->MAX_POWER;
 
 		infoLeft->update(gokuInfo->blood / gokuInfo->MAX_BLOOD,
-			gokuInfo->power / gokuInfo->MAX_POWER);
+				gokuInfo->power / gokuInfo->MAX_POWER);
 		infoRight->update(enemyInfo->blood / enemyInfo->MAX_BLOOD,
-			enemyInfo->power / enemyInfo->MAX_POWER);
+				enemyInfo->power / enemyInfo->MAX_POWER);
 	}
 }
 
@@ -2036,28 +2055,28 @@ IntroduceSystem::IntroduceSystem() {
 		ScaleTo* scaleout = ScaleTo::create(.1f, .6f);
 
 		CallFunc* call = CallFunc::create([=]() {
-			button->setTouchEnabled(true);
-			callBackInputDone();
-		});
+					button->setTouchEnabled(true);
+					callBackInputDone();
+				});
 		button->runAction(Sequence::create(scaleIn, scaleout, call, nullptr));
 	});
 	button->setPosition(Vec2(360, 140));
 	button->setVisible(false);
 
 	RenderLayer::getInstance()->getHudLayer()->addChild(button);
-	button->setCameraMask((unsigned short)CameraFlag::USER1);
+	button->setCameraMask((unsigned short) CameraFlag::USER1);
 
 	node = RenderLayer::getInstance()->createHudNode();
 	node->setPosition(
-		RenderLayer::getInstance()->getHudLayer()->getContentSize() / 2);
+			RenderLayer::getInstance()->getHudLayer()->getContentSize() / 2);
 
 	text = ui::Text::create("", "fonts/courbd.ttf", 24);
 	text->ignoreContentAdaptWithSize(false);
 	text->setTextHorizontalAlignment(TextHAlignment::CENTER);
 	text->setTextAreaSize(
-		Size(
-		RenderLayer::getInstance()->getHudLayer()->getContentSize().width
-		- 60, 200));
+			Size(
+					RenderLayer::getInstance()->getHudLayer()->getContentSize().width
+							- 60, 200));
 	text->setColor(Color3B::WHITE);
 	text->enableOutline(Color4B::BLACK, 2);
 	text->setAnchorPoint(Vec2(.5, .5));
@@ -2069,14 +2088,14 @@ IntroduceSystem::IntroduceSystem() {
 	node->addChild(text);
 
 	ui::Text* textTitle = ui::Text::create("HOW TO PLAY", "fonts/courbd.ttf",
-		40);
+			40);
 	textTitle->setColor(Color3B::WHITE);
 	textTitle->enableOutline(Color4B::BLACK, 2);
 	textTitle->setAnchorPoint(Vec2(.5, .5));
 	textTitle->setPositionY(200);
 	node->addChild(textTitle);
 
-	node->setCameraMask((unsigned short)CameraFlag::USER1);
+	node->setCameraMask((unsigned short) CameraFlag::USER1);
 }
 
 void IntroduceSystem::initialize() {
@@ -2090,8 +2109,8 @@ void IntroduceSystem::begin() {
 void IntroduceSystem::processEntity(artemis::Entity &e) {
 	timeOnState += world->getDelta();
 	artemis::Entity &goku = world->getTagManager()->getEntity("goku");
-	StateComponent* gokuState = (StateComponent*)goku.getComponent<
-		StateComponent>();
+	StateComponent* gokuState = (StateComponent*) goku.getComponent<
+			StateComponent>();
 	if (step == 0 && timeOnState > 1) {
 		step = 1;
 		subStep = 0;
@@ -2100,15 +2119,14 @@ void IntroduceSystem::processEntity(artemis::Entity &e) {
 	}
 	if (step == 1) {
 		if (gokuState->state == R::CharacterState::STAND
-			&& gokuState->time_on_state > .5f) {
+				&& gokuState->time_on_state > .5f) {
 
 			gokuState->setState(R::CharacterState::ATTACK);
 			if (subStep % 3 == 0) {
 				text->setString("Tap to use kick");
 				text->setVisible(true);
 				gokuState->attack = R::Attack::GOKU_KICK1;
-			}
-			else if (subStep % 3 == 1)
+			} else if (subStep % 3 == 1)
 				gokuState->attack = R::Attack::GOKU_KICK2;
 			else
 				gokuState->attack = R::Attack::GOKU_KICK3;
@@ -2125,7 +2143,7 @@ void IntroduceSystem::processEntity(artemis::Entity &e) {
 
 	if (step == 2) {
 		if (gokuState->state == R::CharacterState::STAND
-			&& gokuState->time_on_state > .5f) {
+				&& gokuState->time_on_state > .5f) {
 
 			gokuState->setState(R::CharacterState::ATTACK);
 			if (subStep % 3 == 0) {
@@ -2133,11 +2151,9 @@ void IntroduceSystem::processEntity(artemis::Entity &e) {
 
 				text->setVisible(true);
 				gokuState->attack = R::Attack::GOKU_BEAT1;
-			}
-			else if (subStep % 3 == 1) {
+			} else if (subStep % 3 == 1) {
 				gokuState->attack = R::Attack::GOKU_BEAT2;
-			}
-			else {
+			} else {
 				gokuState->attack = R::Attack::GOKU_BEAT3;
 			}
 			if (subStep >= 3) {
@@ -2155,7 +2171,7 @@ void IntroduceSystem::processEntity(artemis::Entity &e) {
 	if (step == 3) {
 		if (subStep == 1) {
 			if (gokuState->state == R::CharacterState::RIGHT
-				|| gokuState->state == R::CharacterState::WALK_RIGHT) {
+					|| gokuState->state == R::CharacterState::WALK_RIGHT) {
 				gokuState->setState(R::CharacterState::WALK_RIGHT);
 			}
 
@@ -2179,7 +2195,7 @@ void IntroduceSystem::processEntity(artemis::Entity &e) {
 
 		if (subStep == 2) {
 			if (gokuState->state == R::CharacterState::LEFT
-				|| gokuState->state == R::CharacterState::WALK_LEFT) {
+					|| gokuState->state == R::CharacterState::WALK_LEFT) {
 				gokuState->setState(R::CharacterState::WALK_LEFT);
 			}
 
@@ -2213,7 +2229,7 @@ void IntroduceSystem::processEntity(artemis::Entity &e) {
 
 	if (step == 4) {
 		if (gokuState->state == R::CharacterState::STAND
-			&& gokuState->time_on_state > .5) {
+				&& gokuState->time_on_state > .5) {
 			gokuState->setState(R::CharacterState::JUMP);
 			subStep++;
 			text->setString("Swipe up to jump");
@@ -2230,7 +2246,7 @@ void IntroduceSystem::processEntity(artemis::Entity &e) {
 
 	if (step == 5) {
 		if (gokuState->state == R::CharacterState::STAND
-			&& gokuState->time_on_state > .5) {
+				&& gokuState->time_on_state > .5) {
 			if (subStep <= 2) {
 				text->setString("Press and hold to use skill");
 				text->setVisible(true);
@@ -2252,12 +2268,12 @@ void IntroduceSystem::processEntity(artemis::Entity &e) {
 
 	if (step == 6) {
 		if (gokuState->state == R::CharacterState::STAND
-			&& gokuState->time_on_state > .5) {
+				&& gokuState->time_on_state > .5) {
 			subStep++;
 		}
 		if (subStep == 1) {
 			if (gokuState->state == R::CharacterState::STAND
-				&& gokuState->direction != R::Direction::TOP_RIGHT) {
+					&& gokuState->direction != R::Direction::TOP_RIGHT) {
 				text->setString("Swipe top right");
 				text->setVisible(true);
 				gokuState->setState(R::CharacterState::JUMP);
@@ -2266,7 +2282,7 @@ void IntroduceSystem::processEntity(artemis::Entity &e) {
 		}
 		if (subStep == 2) {
 			if (gokuState->state == R::CharacterState::STAND
-				&& gokuState->direction != R::Direction::TOP_LEFT) {
+					&& gokuState->direction != R::Direction::TOP_LEFT) {
 				text->setString("Swipe top left");
 				text->setVisible(true);
 				gokuState->setState(R::CharacterState::JUMP);
@@ -2283,7 +2299,7 @@ void IntroduceSystem::processEntity(artemis::Entity &e) {
 				return;
 			}
 			if (gokuState->state == R::CharacterState::STAND
-				&& gokuState->direction == R::Direction::TOP_LEFT) {
+					&& gokuState->direction == R::Direction::TOP_LEFT) {
 				gokuState->setState(R::CharacterState::RIGHT);
 				gokuState->direction = R::Direction::RIGHT;
 			}
@@ -2292,12 +2308,12 @@ void IntroduceSystem::processEntity(artemis::Entity &e) {
 
 	if (step == 7) {
 		if (gokuState->state == R::CharacterState::STAND
-			&& gokuState->time_on_state > .5) {
+				&& gokuState->time_on_state > .5) {
 			subStep++;
 		}
 		if (subStep == 1) {
 			if (gokuState->state == R::CharacterState::RIGHT
-				|| gokuState->state == R::CharacterState::WALK_RIGHT) {
+					|| gokuState->state == R::CharacterState::WALK_RIGHT) {
 				gokuState->setState(R::CharacterState::WALK_RIGHT);
 			}
 
@@ -2309,8 +2325,7 @@ void IntroduceSystem::processEntity(artemis::Entity &e) {
 					gokuState->direction = R::Direction::RIGHT;
 					timeOnState = 0;
 					return;
-				}
-				else {
+				} else {
 					text->setVisible(false);
 					gokuState->setState(R::CharacterState::STAND);
 					timeOnState = 0;
@@ -2330,7 +2345,7 @@ void IntroduceSystem::processEntity(artemis::Entity &e) {
 
 		if (subStep == 2) {
 			if (gokuState->state == R::CharacterState::LEFT
-				|| gokuState->state == R::CharacterState::WALK_LEFT) {
+					|| gokuState->state == R::CharacterState::WALK_LEFT) {
 				gokuState->setState(R::CharacterState::WALK_LEFT);
 			}
 			if (gokuState->state == R::CharacterState::STAND) {
@@ -2340,8 +2355,7 @@ void IntroduceSystem::processEntity(artemis::Entity &e) {
 					timeOnState = 0;
 					text->setString("Swipe left to move left");
 					text->setVisible(true);
-				}
-				else {
+				} else {
 					gokuState->setState(R::CharacterState::RIGHT);
 					gokuState->direction = R::Direction::RIGHT;
 					subStep = 3;
@@ -2361,7 +2375,7 @@ void IntroduceSystem::processEntity(artemis::Entity &e) {
 		if (subStep >= 3) {
 			if (gokuState->state == R::CharacterState::RIGHT) {
 				SkeletonComponent* skeletonComponent =
-					(SkeletonComponent*)goku.getComponent<SkeletonComponent>();
+						(SkeletonComponent*) goku.getComponent<SkeletonComponent>();
 				skeletonComponent->node->setScaleX(1);
 				gokuState->setState(R::CharacterState::STAND);
 				gokuState->direction = R::Direction::RIGHT;
@@ -2378,20 +2392,21 @@ void IntroduceSystem::callBackInputDone() {
 	//node->removeFromParent();
 	//ECSWorld::getInstance()->matchType = R::Match_Type::GOKU_BEAR;
 	//ECSWorld::getInstance()->resetCurrentMatch();
+	ECSWorld::getInstance()->ignoreWorld(true);
 	node->removeFromParent();
 	auto scene = HomeScreen::createScene();
 	Director::getInstance()->replaceScene(
-		TransitionFade::create(0.3, scene, Color3B(0, 0, 0)));
+			TransitionFade::create(0.5, scene, Color3B(0, 0, 0)));
 }
 
 void IntroduceSystem::notifyInput(Touch* touch, GameHud::EventType event,
-	GameHud::TouchType touchType) {
+		GameHud::TouchType touchType) {
 	GameStateComponent* gameState =
-		(GameStateComponent*)world->getTagManager()->getEntity("gameState").getComponent<
-		GameStateComponent>();
+			(GameStateComponent*) world->getTagManager()->getEntity("gameState").getComponent<
+					GameStateComponent>();
 	if (gameState->gameState == R::GameState::NONE) {
 		if (event == GameHud::EventType::BEGIN
-			&& touchType == GameHud::TouchType::TAP) {
+				&& touchType == GameHud::TouchType::TAP) {
 			gameState->setGameState(R::GameState::PREPARE);
 		}
 		return;
@@ -2400,7 +2415,7 @@ void IntroduceSystem::notifyInput(Touch* touch, GameHud::EventType event,
 	if (gameState->gameState == R::GameState::WIN) {
 		return;
 		if (event == GameHud::EventType::BEGIN
-			&& touchType == GameHud::TouchType::TAP) {
+				&& touchType == GameHud::TouchType::TAP) {
 			ECSWorld::getInstance()->nextMatch();
 		}
 	}
@@ -2408,7 +2423,7 @@ void IntroduceSystem::notifyInput(Touch* touch, GameHud::EventType event,
 	if (gameState->gameState == R::GameState::LOSE) {
 		return;
 		if (event == GameHud::EventType::BEGIN
-			&& touchType == GameHud::TouchType::TAP) {
+				&& touchType == GameHud::TouchType::TAP) {
 			ECSWorld::getInstance()->resetCurrentMatch();
 
 		}
@@ -2429,7 +2444,7 @@ void SkillSystem::processEntity(artemis::Entity &e) {
 	if (skillComponent) {
 		skillComponent->kamekameha->update(world);
 		if (skillComponent->kamekameha->state
-			== skillComponent->kamekameha->STATE_DISMISS) {
+				== skillComponent->kamekameha->STATE_DISMISS) {
 			e.remove();
 		}
 	}

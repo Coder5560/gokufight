@@ -103,6 +103,7 @@ public:
 	std::string _avatar;
 	ui::Layout* mana;
 	ui::Layout* blood;
+	ui::ImageView* board_bg;
 	Size size;
 };
 
@@ -236,11 +237,31 @@ public:
 	std::function<void()> negativeCallback;
 	std::function<void()> positiveCallback;
 
+	ui::Layout* layout;
+	ui::Button* negative;
+	ui::Button* positive;
+	ui::Text* text;
+};
+
+class DialogComfirmInGame : public Effects{
+
+public:
+	DialogComfirmInGame();
+	void setPositive(std::string text, const std::function<void()> &callback);
+	void setNegative(std::string text, const std::function<void()> &callback);
+	void setMessage(std::string message);
+	void setMessage(std::string message, int size);
+
+	std::function<void()> negativeCallback;
+	std::function<void()> positiveCallback;
+
+	ui::Layout* layout;
 	ui::Button* negative;
 	ui::Button* positive;
 	ui::Text* text;
 
 };
+
 
 class HowToPlay :public Effects{
 public :

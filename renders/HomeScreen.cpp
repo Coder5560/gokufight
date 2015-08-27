@@ -1,7 +1,5 @@
 #include "HomeScreen.h"
 
-
-
 Scene* HomeScreen::createScene() {
 	auto scene = Scene::create();
 	auto layer = HomeScreen::create();
@@ -24,11 +22,56 @@ bool HomeScreen::init() {
 	
 	return true;
 }
+
+
+void HomeScreen::inviteCallback(int result)
+{
+	cocos2d::log("MONKEYFIGHT invite result = %d", result);
+	if (result == 1){
+		R::Constants::remaininglife += 3;
+		if (R::Constants::remaininglife > R::Constants::MAX_LIFE){
+			R::Constants::remaininglife = R::Constants::MAX_LIFE;
+		}
+		R::Constants::updateVariable();
+		auto scene = HomeScreen::createScene();
+		Director::getInstance()->replaceScene(TransitionFade::create(0.3, scene, Color3B(0, 0, 0)));
+		return;
+	}
+	else{
+		auto scene = HomeScreen::createScene();
+		Director::getInstance()->replaceScene(TransitionFade::create(0.3, scene, Color3B(0, 0, 0)));
+	}
+
+}
+
 void HomeScreen::update(float delta){
 	if (showingStartLayer && gokuAnimation){
 		if (!gokuAnimation->isVisible()) {
 			gokuAnimation->setVisible(true);
 			gokuAnimation->setAnimation(0, "Run", true);
+
+
+			const Vec2 destination = nameGame->getPosition();
+
+			nameGame->setPositionY( - 100 - nameGame->getContentSize().height);
+			nameGame->setVisible(true);
+			MoveTo* moveTo = MoveTo::create(.4f,destination);
+			CallFunc* callBack = CallFunc::create([=](){
+				music->setVisible(true);
+				music->setOpacity(0);
+
+				guide->setVisible(true);
+				guide->setOpacity(0);
+
+				sound->setVisible(true);
+				sound->setOpacity(0);
+
+				music->runAction(FadeIn::create(.2f));
+				sound->runAction(FadeIn::create(.3f));
+				guide->runAction(FadeIn::create(.4f));
+			});
+
+			nameGame->runAction(Sequence::create(moveTo, callBack, nullptr));
 		}
 		float destination = 160;
 		float speed = 300;
@@ -36,10 +79,14 @@ void HomeScreen::update(float delta){
 			gokuAnimation->setPositionX(gokuAnimation->getPositionX() + speed*delta);
 		}
 		else{
-			if (R::Constants::unlocked>0)
-			buttonContinue->setVisible(true);
-
+			if (R::Constants::unlocked>0) buttonContinue->setVisible(true);
 			buttonPlay->setVisible(true);
+			background->setVisible(true);
+			sound->setVisible(true);
+			music->setVisible(true);
+			guide->setVisible(true);
+			nameGame->setVisible(true);
+			remainingLife->show();
 			gokuAnimation->setPositionX(destination);
 			gokuAnimation->setToSetupPose();
 			gokuAnimation->setAnimation(0, "Stand", true);
@@ -56,7 +103,7 @@ void HomeScreen::showStartLayer(){
 		CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic(R::Constants::MENU, true);
 	}
 
-	Sprite* background = Sprite::create("backgrounds/bg1.png");
+	background = Sprite::create("backgrounds/bg1.png");
 	background->ignoreAnchorPointForPosition(false);
 	background->setPositionX(500);
 	background->setPositionY(getContentSize().height / 2);
@@ -70,14 +117,7 @@ void HomeScreen::showStartLayer(){
 	layoutPlay->setLayoutType(ui::Layout::Type::ABSOLUTE);
 
 
-	pageView = ui::PageView::create();
-	pageView->setContentSize(getContentSize());
-	pageView->addPage(layoutPlay);
-	pageView->setUsingCustomScrollThreshold(true);
-	pageView->setCustomScrollThreshold(80);
-	pageView->setTouchEnabled(false);
-	this->addChild(pageView);
-
+	
 
 	nameGame = Sprite::create("menu/namegame.png");
 	nameGame->ignoreAnchorPointForPosition(false);
@@ -110,7 +150,7 @@ void HomeScreen::showStartLayer(){
 	});
 
 
-	 music = ui::ImageView::create(R::Constants::musicEnable ? "menu/music_on.png" : "menu/music_off.png");
+	music = ui::ImageView::create(R::Constants::musicEnable ? "menu/music_on.png" : "menu/music_off.png");
 	music->setScale9Enabled(true);
 	music->setScale(.6);
 	music->ignoreAnchorPointForPosition(false);
@@ -200,15 +240,35 @@ void HomeScreen::showStartLayer(){
 	gokuAnimation->setPosition(Vec2(160, 290));
 	layoutPlay->addChild(gokuAnimation);
 
-	buttonPlay->setVisible(false);
-	gokuAnimation->setVisible(false);
-	gokuAnimation->setPositionX(-100);
 
 	
 	Node* node = Node::create();
 	node->setPosition(30, getContentSize().height - 30);
 	remainingLife = new RemainingLife(node);
 	layoutPlay->addChild(node);
+
+
+
+	music->setVisible(false);
+	sound->setVisible(false);
+	guide->setVisible(false);
+	buttonPlay->setVisible(false);
+	buttonContinue->setVisible(false);
+	gokuAnimation->setVisible(false);
+	gokuAnimation->setPositionX(-100);
+	nameGame->setVisible(false);
+	remainingLife->hide();
+
+
+	pageView = ui::PageView::create();
+	pageView->setContentSize(getContentSize());
+	pageView->addPage(layoutPlay);
+	pageView->setUsingCustomScrollThreshold(true);
+	pageView->setCustomScrollThreshold(80);
+	pageView->setTouchEnabled(false);
+	this->addChild(pageView);
+
+
 }
 
 void HomeScreen::onMusicClick(){
@@ -352,13 +412,14 @@ void HomeScreen::goToGame(R::Match_Type type){
 				Director::getInstance()->replaceScene(TransitionFade::create(0.3, scene, Color3B(0, 0, 0)));
 			});
 			subDialog->setPositive("Yes", [=](){
-				R::Constants::remaininglife += 3;
+				FacebookManager::inviteFriends(JavaCppBridge::put(CC_CALLBACK_1(HomeScreen::inviteCallback, this)));
+				/*R::Constants::remaininglife += 3;
 				if (R::Constants::remaininglife > R::Constants::MAX_LIFE){
 					R::Constants::remaininglife = R::Constants::MAX_LIFE;
 				}
 				R::Constants::updateVariable();
 				auto scene = HomeScreen::createScene();
-				Director::getInstance()->replaceScene(TransitionFade::create(0.3, scene, Color3B(0, 0, 0)));
+				Director::getInstance()->replaceScene(TransitionFade::create(0.3, scene, Color3B(0, 0, 0)));*/
 			});
 
 		});

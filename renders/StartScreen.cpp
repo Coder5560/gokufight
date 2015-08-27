@@ -21,7 +21,6 @@ bool StartScreen::init() {
 	R::Constants::loadVariable();
 	showFlashImage();
 	this->scheduleUpdate();
-
 	return true;
 }
 void StartScreen::update(float delta){
@@ -29,16 +28,24 @@ void StartScreen::update(float delta){
 		if (!gokuAnimation->isVisible()) {
 			gokuAnimation->setVisible(true);
 			gokuAnimation->setAnimation(0, "Run", true);
+
+			/*const Vec2 destination = nameGame->getPosition();
+
+			nameGame->setPositionY( - 100 - nameGame->getContentSize().height);
+			nameGame->setVisible(true);
+			MoveTo* moveTo = MoveTo::create(.4f,destination);*/
+
+
 		}
 		float destination = 160;
 		float speed = 300;
 		if (gokuAnimation->getPositionX() < destination){
 			gokuAnimation->setPositionX(gokuAnimation->getPositionX() + speed*delta);
-		}
-		else{
+		}	else{
 			if (R::Constants::unlocked >0)
 				buttonContinue->setVisible(true);
 			buttonPlay->setVisible(true);
+			remainingLife->show();
 			gokuAnimation->setPositionX(destination);
 			gokuAnimation->setToSetupPose();
 			gokuAnimation->setAnimation(0, "Stand", true);
@@ -70,24 +77,12 @@ void StartScreen::showFlashImage(){
 }
 
 void StartScreen::showStartLayer(){
-
-	// begin test
-	/*HowToPlay* howToPlay = new HowToPlay();
-	howToPlay->showSwipeTopleft([howToPlay](){
-	});*/
-
-	
-	// end test
-
-
 	auto userDefault = UserDefault::sharedUserDefault();
 	if (!R::Constants::howtoplay){
 		R::Constants::howtoplay = true;
 		goToGame(R::Match_Type::GOKU_BEAR_INTRODUCE);
 		return;
 	}
-
-	AdsManager::showAds(false);
 	if (R::Constants::musicEnable) {
 		CocosDenshion::SimpleAudioEngine::getInstance()->setBackgroundMusicVolume(R::Constants::musicVolumn);
 		CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic(R::Constants::MENU, true);
@@ -121,6 +116,7 @@ void StartScreen::showStartLayer(){
 	nameGame->setScale(.6f);
 	nameGame->setPosition(Vec2(200, 150));
 	layoutPlay->addChild(nameGame);
+	
 
 	buttonPlay = ui::ImageView::create("menu/button_play.png");
 	buttonPlay->setScale9Enabled(true);
@@ -130,7 +126,7 @@ void StartScreen::showStartLayer(){
 	layoutPlay->addChild(buttonPlay);
 	buttonPlay->setTouchEnabled(true);
 
-	buttonPlay->addClickEventListener([=](Ref* sender){
+	buttonPlay->addClickEventListener([this](Ref* sender){
 		onSelectPlayGame();
 	});
 
@@ -142,6 +138,7 @@ void StartScreen::showStartLayer(){
 	layoutPlay->addChild(buttonContinue);
 	buttonContinue->setTouchEnabled(true);
 	buttonContinue->addClickEventListener([=](Ref* sender){
+
 		onSelectContinueGame();
 	});
 
@@ -236,10 +233,7 @@ void StartScreen::showStartLayer(){
 	gokuAnimation->setPosition(Vec2(160, 290));
 	layoutPlay->addChild(gokuAnimation);
 
-	buttonPlay->setVisible(false);
-	buttonContinue->setVisible(false);
-	gokuAnimation->setVisible(false);
-	gokuAnimation->setPositionX(-100);
+	
 
 
 	Node* node = Node::create();
@@ -247,6 +241,35 @@ void StartScreen::showStartLayer(){
 	remainingLife = new RemainingLife(node);
 	layoutPlay->addChild(node);
 
+	/*music->setVisible(false);
+	sound->setVisible(false);
+	guide->setVisible(false);*/
+	buttonPlay->setVisible(false);
+	buttonContinue->setVisible(false);
+	gokuAnimation->setVisible(false);
+	gokuAnimation->setPositionX(-100);
+	//nameGame->setVisible(false);
+	remainingLife->hide();
+
+}
+
+void StartScreen::inviteCallback(int result)
+{
+	cocos2d::log("MONKEYFIGHT invite result = %d", result);
+	if (result == 1){
+		R::Constants::remaininglife += 3;
+		if (R::Constants::remaininglife > R::Constants::MAX_LIFE){
+			R::Constants::remaininglife = R::Constants::MAX_LIFE;
+		}
+		R::Constants::updateVariable();
+		auto scene = HomeScreen::createScene();
+		Director::getInstance()->replaceScene(TransitionFade::create(0.3, scene, Color3B(0, 0, 0)));
+		return;
+	}
+	else{
+		auto scene = HomeScreen::createScene();
+		Director::getInstance()->replaceScene(TransitionFade::create(0.3, scene, Color3B(0, 0, 0)));
+	}
 
 }
 
@@ -394,13 +417,7 @@ void StartScreen::goToGame(R::Match_Type type){
 				Director::getInstance()->replaceScene(TransitionFade::create(0.3, scene, Color3B(0, 0, 0)));
 			});
 			subDialog->setPositive("Yes", [=](){
-				R::Constants::remaininglife += 3;
-				if (R::Constants::remaininglife > R::Constants::MAX_LIFE){
-					R::Constants::remaininglife = R::Constants::MAX_LIFE;
-				}
-				R::Constants::updateVariable();
-				auto scene = HomeScreen::createScene();
-				Director::getInstance()->replaceScene(TransitionFade::create(0.3, scene, Color3B(0, 0, 0)));
+				FacebookManager::inviteFriends(JavaCppBridge::put(CC_CALLBACK_1(StartScreen::inviteCallback, this)));
 			});
 		
 		});

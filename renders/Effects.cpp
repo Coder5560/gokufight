@@ -238,7 +238,7 @@ void IntroduceMessage::start(std::string message){
 PlayerInfoLeft::PlayerInfoLeft(Node* container, std::string name, std::string avatar) : _name(name), _avatar(avatar){
 	this->node = container;
 	ui::ImageView* imgAvatar = ui::ImageView::create(_avatar);
-	ui::ImageView* board_bg = ui::ImageView::create("textures/board_info.png");
+	board_bg = ui::ImageView::create("textures/board_info.png");
 	ui::Text* playerName = ui::Text::create(name, "fonts/courbd.ttf", 16);
 	playerName->setColor(Color3B::BLACK);
 
@@ -852,15 +852,32 @@ void RemainingLife::updatePosition(){
 		heart->setPosition(Vec2(text->getContentSize().width + (i + 1)*pading + i*heart->getContentSize().width, 0));
 	}
 }
+void RemainingLife::hide(){
+	text->setVisible(false);
+	for (int i = 0; i < hearts.size(); i++){
+		hearts.at(i)->setOpacity(0);
+	}
+}
 
+void RemainingLife::show(){
+	text->setVisible(true);
+	for (int i = 0; i < hearts.size(); i++){
+		FadeIn* fadeIn = FadeIn::create(.2f + i*.1f);
+		hearts.at(i)->runAction(fadeIn);
+	}
+}
 
 DialogComfirm::DialogComfirm(){
-	ui::Layout* layout = ui::Layout::create();
+	layout = ui::Layout::create();
 	layout->setContentSize(Director::getInstance()->getRunningScene()->getContentSize());
+	layout->setAnchorPoint(Vec2(0.5,0.5));
+	layout->setPosition(layout->getContentSize()/2);
+	layout->ignoreAnchorPointForPosition(false);
 	layout->setBackGroundColorType(ui::Layout::BackGroundColorType::SOLID);
 	layout->setBackGroundColor(Color3B::BLACK);
 	layout->setBackGroundColorOpacity(100);
 	layout->setTouchEnabled(true);
+	
 
 	Director::getInstance()->getRunningScene()->addChild(layout);
 
@@ -940,6 +957,99 @@ void DialogComfirm::setPositive(std::string text, const std::function<void()> & 
 	positive->setTitleText(text);
 	positiveCallback = callback;
 }
+
+
+DialogComfirmInGame::DialogComfirmInGame(){
+	layout = ui::Layout::create();
+	layout->setContentSize(RenderLayer::getInstance()->getHudLayer()->getContentSize());
+	layout->setBackGroundColorType(ui::Layout::BackGroundColorType::SOLID);
+	layout->setBackGroundColor(Color3B::BLACK);
+	layout->setBackGroundColorOpacity(100);
+	layout->setTouchEnabled(true);
+
+
+	
+
+	ui::Layout* bg = ui::Layout::create();
+	bg->setBackGroundImage("textures/bgNotify.png", ui::Widget::TextureResType::LOCAL);
+	bg->setAnchorPoint(Vec2(.5, .5));
+	bg->ignoreContentAdaptWithSize(false);
+	bg->setPosition(layout->getContentSize() / 2);
+	layout->addChild(bg);
+
+
+	text = ui::Text::create("Out of lives!", "fonts/arial.ttf", 30);
+	text->setColor(Color3B::BLACK);
+	text->setAnchorPoint(Vec2(.5, .5));
+	text->setTextHorizontalAlignment(TextHAlignment::CENTER);
+	bg->addChild(text);
+	text->setPosition(bg->getContentSize() / 2);
+	text->setPositionY(-40);
+	text->ignoreContentAdaptWithSize(false);
+	text->setTextAreaSize(Size(280, 180));
+
+	positive = ui::Button::create("textures/btnOK.png", "textures/btnOK_down.png", "textures/btnOK.png", ui::Widget::TextureResType::LOCAL);
+	positive->setScale9Enabled(true);
+	positive->setTitleText("Reset");
+	positive->setTitleColor(Color3B::BLACK);
+	positive->setTitleFontName("fonts/arial.ttf");
+	positive->setTitleFontSize(20);
+	positive->setPosition(Vec2(bg->getContentSize().width / 2 - 60, -40));
+	bg->addChild(positive);
+
+	positive->setTouchEnabled(true);
+	positive->addClickEventListener([=](Ref* sender){
+		RemoveSelf* removeSelf = RemoveSelf::create();
+		CallFunc* callback = CallFunc::create([=](){
+			if (positiveCallback) positiveCallback();
+		});
+		Sequence* sequence = Sequence::create(removeSelf, callback, nullptr);
+		layout->runAction(sequence);
+	});
+
+
+	negative = ui::Button::create("textures/btnOK.png", "textures/btnOK_down.png", "textures/btnOK.png", ui::Widget::TextureResType::LOCAL);
+	negative->setScale9Enabled(true);
+	negative->setTitleText("More lives");
+	negative->setTitleColor(Color3B::BLACK);
+	negative->setTitleFontName("fonts/arial.ttf");
+	negative->setTitleFontSize(20);
+	negative->setContentSize(Size(negative->getContentSize().width + 20, negative->getContentSize().height));
+	negative->setPosition(Vec2(bg->getContentSize().width / 2 + 60, -40));
+	bg->addChild(negative);
+
+	negative->setTouchEnabled(true);
+	negative->addClickEventListener([=](Ref* sender){
+		RemoveSelf* removeSelf = RemoveSelf::create();
+		CallFunc* callback = CallFunc::create([=](){
+			if (negativeCallback) negativeCallback();
+		});
+		Sequence* sequence = Sequence::create(removeSelf, callback, nullptr);
+		layout->runAction(sequence);
+	});
+
+	RenderLayer::getInstance()->getHudLayer()->addChild(layout);
+	layout->setCameraMask((unsigned short)CameraFlag::USER1);
+}
+
+void DialogComfirmInGame::setMessage(std::string message){
+	text->setText(message);
+}
+
+void DialogComfirmInGame::setMessage(std::string message, int fontSize){
+	text->setText(message);
+	text->setFontSize(fontSize);
+}
+void DialogComfirmInGame::setNegative(std::string text, const std::function<void()> & callback){
+	negative->setTitleText(text);
+	negativeCallback = callback;
+}
+
+void DialogComfirmInGame::setPositive(std::string text, const std::function<void()> & callback){
+	positive->setTitleText(text);
+	positiveCallback = callback;
+}
+
 
 HowToPlay::HowToPlay(){
 	step = 0;

@@ -10,9 +10,12 @@
 #include "ui/UIPageView.h"
 #include "AdsManager.h"
 #include "renders/Effects.h"
+#include "FacebookManager.h"
+#include "CppJavaMethodManager.h"
 USING_NS_CC;
 
 class CharacterItem;
+class FacebookManager;
 
 class StartScreen : public cocos2d::LayerColor
 {
@@ -36,6 +39,8 @@ public:
 	void onSoundClick();
 	void onMusicClick();
 	void onGuildClick();
+
+	void inviteCallback(int result);
 
 
 	ui::Layout* layoutPlay;

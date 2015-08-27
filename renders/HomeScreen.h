@@ -27,7 +27,8 @@ public:
 	void onSelectContinue();
 	void switchToSelectScreen();
 	void switchToContinueGame();
-	
+	void inviteCallback(int result);
+
 	void addCharacterItem(int index, int state, std::string name, std::string unlock, std::string lock, const std::function<void()> &callback);
 	void addCharacterItem(int index, std::string name, std::string unlock, std::string lock, const std::function<void()> &callback);
 	void goToGame(R::Match_Type matchType);
@@ -35,7 +36,7 @@ public:
 	void onSoundClick();
 	void onMusicClick();
 	void onGuildClick();
-
+	
 
 	ui::Layout* layoutPlay;
 	ui::Layout* layoutSelect;

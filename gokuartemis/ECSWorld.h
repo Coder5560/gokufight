@@ -22,6 +22,7 @@
 #include "Characters/Picolo.h"
 #include "Characters/EnemyNormalAI.h"
 #include "Characters/EnemyAttackAI.h"
+#include "Characters/EnemyDefenseAI.h"
 #include "Characters/KarillinAI.h"
 #include "AdsManager.h"
 
