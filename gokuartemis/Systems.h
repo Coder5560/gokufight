@@ -171,6 +171,7 @@ public:
 	virtual bool checkProcessing();
 	virtual void end();
 
+
 private:
 
 	artemis::ComponentMapper<PhysicComponent> physicMapper;
@@ -309,6 +310,7 @@ public:
 	CharacterRenderSystem();
 	virtual void begin();
 	virtual void initialize();
+	virtual void createElement();
 	virtual void processEntity(artemis::Entity &e);
 	virtual void onGameState(bool isPlaying);
 	virtual void pauseGame();
@@ -340,6 +342,7 @@ public:
 	bool enableInput;
 	bool doneInput;
 	int step;
+	bool canStartDirection;
 	Node* node;
 	ui::Text* text;
 	ui::ImageView* button;

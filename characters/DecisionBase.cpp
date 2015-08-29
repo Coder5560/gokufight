@@ -34,14 +34,14 @@ void DecisionBase::move(StateComponent* stateComponent, R::Direction direction){
 
 
 void GokuDecision::decision(artemis::Entity &e){
-
+return;
 }
 void GokuDecision::obsever(artemis::Entity &e){
 	super.obsever(e);
-	StateComponent* stateComponent = (StateComponent*)e.getComponent<StateComponent>();
-	if (stateComponent->state == R::CharacterState::STAND && stateComponent->time_on_state > 2){
-		stateComponent->setState(R::CharacterState::START);
-	}
+//	StateComponent* stateComponent = (StateComponent*)e.getComponent<StateComponent>();
+//	if (stateComponent->state == R::CharacterState::STAND && stateComponent->time_on_state > 2){
+//		stateComponent->setState(R::CharacterState::START);
+//	}
 }
 
 GiranDecision::GiranDecision() :totalChoose(0){ this->isActive = true; }
@@ -1036,7 +1036,7 @@ void KarillinDecision::obsever(artemis::Entity &e){
 			return;
 		}
 		else{
-			// Goku không đứng yên 
+			// Goku không đứng yên
 
 		}
 

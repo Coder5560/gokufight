@@ -1,12 +1,12 @@
-#include "EnemyAttackAI.h"
+#include "EnemyFullAttackAI.h"
 
-EnemyAttackAI::EnemyAttackAI() {
+EnemyFullAttackAI::EnemyFullAttackAI() {
 	this->isActive = true;
 	mapInfo = new MapInfo();
 }
-EnemyAttackAI::~EnemyAttackAI(){}
+EnemyFullAttackAI::~EnemyFullAttackAI(){}
 
-void EnemyAttackAI::obsever(artemis::Entity &e) {
+void EnemyFullAttackAI::obsever(artemis::Entity &e) {
 	artemis::Entity &gameState = world->getTagManager()->getEntity("gameState");
 	GameStateComponent* gameStateComponent =
 		(GameStateComponent*)gameState.getComponent<GameStateComponent>();
@@ -48,11 +48,33 @@ void EnemyAttackAI::obsever(artemis::Entity &e) {
 	if (targetState->state == R::CharacterState::JUMP){
 		if (characterState->state != R::CharacterState::STAND || characterState->state != R::CharacterState::JUMP){
 			srand(time(NULL));
-			int number = rand() % 15;
-			if (number == 2){
+			int number = rand() % 20 + 1;
+			if (number > 2){
 				characterState->setState(R::CharacterState::STAND);
 			}
+			else{
+				if (characterState->direction == R::Direction::RIGHT){
+					characterState->direction = R::Direction::TOP_LEFT;
+					characterState->setState(R::CharacterState::JUMP);
+				}
+				else if (characterState->direction == R::Direction::LEFT){
+					characterState->direction = R::Direction::TOP_RIGHT;
+					characterState->setState(R::CharacterState::JUMP);
+				}
+				else{
+					auto camera = Camera::getDefaultCamera();
+					bool jumpLeft = characterPosition->x > camera->getPositionX();
+					characterState->direction = jumpLeft ? R::Direction::TOP_LEFT : R::Direction::TOP_RIGHT;
+					characterState->setState(R::CharacterState::JUMP);
+				}
+			}
 		}
+		return;
+	}
+
+	// trường hợp đánh thằng goku ngã
+	if (characterState->state == R::CharacterState::DEFENSE
+		&& (targetState->defense == R::Defense::TRUNG_DON && targetState->time_on_state < .4f)) {
 		return;
 	}
 
@@ -78,7 +100,7 @@ void EnemyAttackAI::obsever(artemis::Entity &e) {
 		return;
 	}
 
-	float rangeAttack = 20;
+	float rangeAttack = 10;
 	float distance = abs(targetPosition->x - characterPosition->x);
 
 	processAvoidAttack();
@@ -87,22 +109,21 @@ void EnemyAttackAI::obsever(artemis::Entity &e) {
 	else
 		processInRangeAttack();
 }
-void EnemyAttackAI::processOutRangeAttack() {
+void EnemyFullAttackAI::processOutRangeAttack() {
 	bool targetOnTheLeft = (targetPosition->x + targetBound->x2) < (characterPosition->x + characterBound->x1);
 	float distance = abs(targetPosition->x - characterPosition->x);
-	if (characterInfo->hasManaForSkill(40) && distance < 130) {
+	if (characterInfo->hasManaForSkill(30) && distance < 70) {
 		if (characterState->state == R::CharacterState::LEFT || characterState->state == R::CharacterState::WALK_LEFT || characterState->state == R::CharacterState::RIGHT || characterState->state == R::CharacterState::WALK_RIGHT){
 			characterState->setState(R::CharacterState::STAND);
 			return;
 		}
-		if (characterState->state == R::CharacterState::STAND){
-			if (distance < 80){
-				characterState->attack = R::Attack::CAMAP_PUNCH_AIR;
+		if (characterState->state == R::CharacterState::STAND && characterState->time_on_state >= .03f){
+			srand(time(NULL));
+			int r = rand() % 20;
+			if (r % 3 == 0)	{
+				characterState->attack = R::Attack::JACK_PUNCH_1;
+				characterState->setState(R::CharacterState::ATTACK);
 			}
-			else{
-				characterState->attack = R::Attack::CAMAP_SKILL;
-			}
-			characterState->setState(R::CharacterState::ATTACK);
 		}
 		return;
 	}
@@ -143,7 +164,7 @@ void EnemyAttackAI::processOutRangeAttack() {
 		}
 	}
 }
-void EnemyAttackAI::processAvoidAttack() {
+void EnemyFullAttackAI::processAvoidAttack() {
 	if (world->getTagManager()->isSubscribed("gokupunch")) {
 		artemis::Entity &gokuPunch = world->getTagManager()->getEntity(
 			"gokupunch");
@@ -168,11 +189,11 @@ void EnemyAttackAI::processAvoidAttack() {
 	}
 }
 
-bool EnemyAttackAI::canMakeDecision(){
+bool EnemyFullAttackAI::canMakeDecision(){
 	float thinkingTime = .02f;
 	return ((characterState->state == R::CharacterState::STAND || characterState->state == R::CharacterState::DEFENSE) && characterState->time_on_state >= thinkingTime);
 }
-void EnemyAttackAI::processInRangeAttack() {
+void EnemyFullAttackAI::processInRangeAttack() {
 	avoidCloseAttack();
 	//moveAway();
 	closeRangeAttack();
@@ -183,63 +204,55 @@ void EnemyAttackAI::processInRangeAttack() {
 		characterState->setState(R::CharacterState::STAND);
 	}
 }
-void EnemyAttackAI::closeRangeAttack() {
+void EnemyFullAttackAI::closeRangeAttack() {
 	float thinkingTime = .02f;
 	bool targetDangTrundon = targetState->state == R::CharacterState::DEFENSE && targetState->time_on_state >= .1f;
-	bool targetOnTheLeft = (targetPosition->x + targetBound->x2) < (characterPosition->x + characterBound->x1);
+	bool targetOnTheLeft = (targetPosition->x) < (characterPosition->x);
 	if (!targetDangTrundon && canMakeDecision()){
-		float distance = characterPosition->x - targetPosition->x;
 		srand(time(NULL));
-		int random = rand() % 5 + 1;
-		R::Direction direction = targetOnTheLeft ? R::Direction::LEFT : R::Direction::RIGHT;
-		characterState->direction = direction;
-		characterSkeleton->node->setScaleX(targetOnTheLeft ? -1 : 1);
+		int random = rand() % 8 + 1;
+		float distance = characterPosition->x - targetPosition->x;
 
-		if (characterInfo->hasManaForSkill(40)) {
-			// kich 3 vs punch AIR
-			if (distance > targetBound->getWidth()) {
-				if (random <= 3)
-					characterState->attack = R::Attack::CAMAP_PUNCH_AIR;
+		if (characterInfo->hasManaForSkill(30)) {
+
+			if (random % 2 == 0){
+				characterState->direction = targetOnTheLeft ? R::Direction::LEFT : R::Direction::RIGHT;
+				characterSkeleton->node->setScaleX(targetOnTheLeft ? -1 : 1);
+				characterState->attack = R::Attack::JACK_PUNCH_1;
+				characterState->setState(R::CharacterState::ATTACK);
+				return;
 			}
-			else {
-				if (random <= 2) {
-					characterState->attack = R::Attack::CAMAP_PUNCH2;
-				}
-				else if (random == 3) {
-					characterState->attack = R::Attack::CAMAP_KICK2;
-				}
-				else if (random == 4) {
-					characterState->attack = R::Attack::CAMAP_PUNCH1;
-				}
-				else
-					characterState->attack = R::Attack::CAMAP_PUNCH3;
-			}
+
+			/*R::Direction jumpDirection = targetOnTheLeft ? R::Direction::TOP_RIGHT : R::Direction::TOP_LEFT;
+			if (random < 3){
+			if (characterPosition->x < 60)	jumpDirection = R::Direction::TOP_RIGHT;
+			if (characterPosition->x>R::Constants::MAX_SCREEN_WIDTH - 80) jumpDirection = R::Direction::TOP_LEFT;
+			characterState->direction = jumpDirection;
+			characterState->setState(R::CharacterState::JUMP);
+			return;
+			}*/
 		}
-		else {
-			if (random <= 2) {
-				characterState->attack = R::Attack::CAMAP_PUNCH2;
-			}
-			else if (random == 3) {
-				characterState->attack = R::Attack::CAMAP_KICK2;
-			}
-			else if (random == 4) {
-				characterState->attack = R::Attack::CAMAP_PUNCH1;
-			}
-			else
-				characterState->attack = R::Attack::CAMAP_PUNCH3;
-		}
+		characterState->direction = targetOnTheLeft ? R::Direction::LEFT : R::Direction::RIGHT;
+		characterSkeleton->node->setScaleX(targetOnTheLeft ? -1 : 1);
+		if (random <= 2) 	characterState->attack = R::Attack::JACK_BEAT3;
+		else if (random == 3) 	characterState->attack = R::Attack::JACK_KICK2;
+		else if (random == 4) 	characterState->attack = R::Attack::JACK_KICK3;
+		else if (random == 5) 	characterState->attack = R::Attack::JACK_PUNCH_AIR;
+
+		else  	characterState->attack = R::Attack::JACK_PUNCH_2;
 
 		characterState->setState(R::CharacterState::ATTACK);
+
 	}
 }
-void EnemyAttackAI::moveAway() {
+void EnemyFullAttackAI::moveAway() {
 	if (!canMakeDecision()) return;
 	bool targetOnTheLeft = (targetPosition->x + targetBound->x2)
 		< (characterPosition->x + characterBound->x1);
 	srand(time(NULL));
 	int randomInt = rand() % 15;
 	if (randomInt == 2 || targetState->trungdonlientiep % 5 == 3) {
-		R::Direction direction =	!targetOnTheLeft ?
+		R::Direction direction = !targetOnTheLeft ?
 			R::Direction::TOP_LEFT : R::Direction::TOP_RIGHT;
 		characterState->direction = direction;
 		characterSkeleton->node->setScaleX(!targetOnTheLeft ? 1 : -1);
@@ -247,11 +260,16 @@ void EnemyAttackAI::moveAway() {
 		targetState->trungdonlientiep = 0;
 	}
 }
-void EnemyAttackAI::avoidCloseAttack(){
+void EnemyFullAttackAI::avoidCloseAttack(){
 	float distance = abs(targetPosition->x - characterPosition->x);
-	if (canMakeDecision() && targetState->state == R::CharacterState::STAND && targetState->time_on_state < .4f  && distance <80){
-		bool targetOnTheLeft = (targetPosition->x + targetBound->x2)< (characterPosition->x + characterBound->x1);
-		R::Direction direction = !targetOnTheLeft ?	R::Direction::TOP_LEFT : R::Direction::TOP_RIGHT;characterState->direction = direction;
+	srand(time(NULL));
+	if (rand() % 5 == 2 && canMakeDecision() && targetState->state == R::CharacterState::ATTACK && targetState->time_on_state < .2f  && distance < 80){
+
+		bool targetOnTheLeft = (targetPosition->x) < (characterPosition->x);
+		R::Direction direction = !targetOnTheLeft ? R::Direction::TOP_LEFT : R::Direction::TOP_RIGHT;
+		if (characterPosition->x < 60)	direction = R::Direction::TOP_RIGHT;
+		if (characterPosition->x>R::Constants::MAX_SCREEN_WIDTH - 80) direction = R::Direction::TOP_LEFT;
+		characterState->direction = direction;
 		characterSkeleton->node->setScaleX(!targetOnTheLeft ? 1 : -1);
 		characterState->setState(R::CharacterState::JUMP);
 	}

@@ -45,6 +45,13 @@ void CharacterStateSystem::processEntity(artemis::Entity& e){
 			}
 		}
 
+		artemis::Entity& gameState = world->getTagManager()->getEntity("gameState");
+		GameStateComponent* gameStateComponent = (GameStateComponent*) gameState.getComponent<GameStateComponent>();
+
+		if(gameStateComponent ->gameState == R::GameState::WIN || gameStateComponent->gameState == R::GameState::LOSE){
+			return;
+		}
+
 		WallSensorComponent* wallSensor = (WallSensorComponent*)e.getComponent<WallSensorComponent>();
 		PhysicComponent* physic = (PhysicComponent*)e.getComponent<PhysicComponent>();
 		CharacterInfoComponent* characterInfo = (CharacterInfoComponent*)e.getComponent<CharacterInfoComponent>();

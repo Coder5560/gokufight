@@ -24,6 +24,7 @@
 #include "Characters/EnemyAttackAI.h"
 #include "Characters/EnemyDefenseAI.h"
 #include "Characters/KarillinAI.h"
+#include "Characters/EnemyFullAttackAI.h"
 #include "AdsManager.h"
 
 

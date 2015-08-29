@@ -11,11 +11,13 @@ bool HomeScreen::init() {
 	if (!LayerColor::initWithColor(Color4B::BLACK)) {
 		return false;
 	}
-
+	exitEnable = false;
+	isShowingExitDialog = false;
 	this->showingStartLayer = false;
 	this->layoutSelectCreated = false;
 	this->setContentSize(Size(R::Constants::WIDTH_SCREEN, R::Constants::HEIGHT_SCREEN));
 	this->setSwallowsTouches(false);
+	this->setKeypadEnabled(true);
 	showStartLayer();
 
 	this->scheduleUpdate();
@@ -23,7 +25,25 @@ bool HomeScreen::init() {
 	return true;
 }
 
-
+void HomeScreen::onKeyReleased(EventKeyboard::KeyCode keyCode, Event* event) {
+	if (exitEnable&& keyCode == EventKeyboard::KeyCode::KEY_BACK) {
+		if (!isShowingExitDialog) {
+				isShowingExitDialog = true;
+				dialog = new DialogComfirm();
+				dialog->setMessage("Exit game?");
+				dialog->setNegative("No", [=]() {
+					isShowingExitDialog = false;
+				});
+				dialog->setPositive("Yes", [=]() {Director::getInstance()->end();
+				});
+				isShowingExitDialog = true;
+			} else {
+				if (dialog) {
+					dialog->negativeCallback();
+				}
+			}
+	}
+}
 void HomeScreen::inviteCallback(int result)
 {
 	cocos2d::log("MONKEYFIGHT invite result = %d", result);
@@ -79,6 +99,7 @@ void HomeScreen::update(float delta){
 			gokuAnimation->setPositionX(gokuAnimation->getPositionX() + speed*delta);
 		}
 		else{
+			this->exitEnable = true;
 			if (R::Constants::unlocked>0) buttonContinue->setVisible(true);
 			buttonPlay->setVisible(true);
 			background->setVisible(true);
@@ -113,9 +134,17 @@ void HomeScreen::showStartLayer(){
 
 	showingStartLayer = true;
 	layoutPlay = ui::Layout::create();
-	layoutPlay->setContentSize(getContentSize());
+	layoutPlay->setContentSize(Size(480, 800));
 	layoutPlay->setLayoutType(ui::Layout::Type::ABSOLUTE);
 
+
+	layoutPlay->setScale(getContentSize().width / 480);
+	layoutPlay->setAnchorPoint(Vec2(.5, .5));
+	layoutPlay->setPosition(getContentSize() / 2);
+	containerForLayoutSelect = ui::Layout::create();
+	containerForLayoutSelect->setContentSize(getContentSize());
+	containerForLayoutSelect->setLayoutType(ui::Layout::Type::ABSOLUTE);
+	containerForLayoutSelect->addChild(layoutPlay);
 
 	
 
@@ -262,7 +291,7 @@ void HomeScreen::showStartLayer(){
 
 	pageView = ui::PageView::create();
 	pageView->setContentSize(getContentSize());
-	pageView->addPage(layoutPlay);
+	pageView->addPage(containerForLayoutSelect);
 	pageView->setUsingCustomScrollThreshold(true);
 	pageView->setCustomScrollThreshold(80);
 	pageView->setTouchEnabled(false);
@@ -401,6 +430,14 @@ void HomeScreen::switchToSelectScreen(){
 void HomeScreen::goToGame(R::Match_Type type){
 
 	CocosDenshion::SimpleAudioEngine::getInstance()->stopBackgroundMusic(true);
+
+	if(type == R::Match_Type::GOKU_BEAR_INTRODUCE){
+		auto scene = HelloWorld::createScene(type);
+		Director::getInstance()->replaceScene(
+				TransitionFade::create(0.3, scene, Color3B(0, 0, 0)));
+		return;
+	}
+
 	if (R::Constants::remaininglife == 0){
 		DialogComfirm* dialogComfirm = new DialogComfirm();
 		dialogComfirm->setNegative("More lives", [=](){
@@ -413,13 +450,13 @@ void HomeScreen::goToGame(R::Match_Type type){
 			});
 			subDialog->setPositive("Yes", [=](){
 				FacebookManager::inviteFriends(JavaCppBridge::put(CC_CALLBACK_1(HomeScreen::inviteCallback, this)));
-				/*R::Constants::remaininglife += 3;
-				if (R::Constants::remaininglife > R::Constants::MAX_LIFE){
-					R::Constants::remaininglife = R::Constants::MAX_LIFE;
-				}
-				R::Constants::updateVariable();
-				auto scene = HomeScreen::createScene();
-				Director::getInstance()->replaceScene(TransitionFade::create(0.3, scene, Color3B(0, 0, 0)));*/
+//				R::Constants::remaininglife += 3;
+//				if (R::Constants::remaininglife > R::Constants::MAX_LIFE){
+//					R::Constants::remaininglife = R::Constants::MAX_LIFE;
+//				}
+//				R::Constants::updateVariable();
+//				auto scene = HomeScreen::createScene();
+//				Director::getInstance()->replaceScene(TransitionFade::create(0.3, scene, Color3B(0, 0, 0)));
 			});
 
 		});

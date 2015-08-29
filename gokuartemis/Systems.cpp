@@ -382,6 +382,16 @@ bool GameStateSystem::checkLives() {
 								Director::getInstance()->replaceScene(TransitionFade::create(1, scene, Color3B(0, 0, 0)));
 							});
 					subDialog->setPositive("Yes", [this]() {
+
+								/*	R::Constants::remaininglife += 3;
+								 if (R::Constants::remaininglife > R::Constants::MAX_LIFE) {
+								 R::Constants::remaininglife = R::Constants::MAX_LIFE;
+								 }
+								 R::Constants::updateVariable();
+								 ECSWorld::getInstance()->ignoreWorld(true);
+								 auto scene = HomeScreen::createScene();
+								 Director::getInstance()->replaceScene(TransitionFade::create(1, scene, Color3B(0, 0, 0)));*/
+
 								FacebookManager::inviteFriends(JavaCppBridge::put([this](int result) {
 													if (result == 1) {
 														R::Constants::remaininglife += 3;
@@ -500,15 +510,19 @@ void GameStateSystem::switchToAppear() {
 	if (ECSWorld::getInstance()->matchType
 			== R::Match_Type::GOKU_BEAR_INTRODUCE) {
 		gokuPosition->x = worldWidth / 2 - 40;
-		gokuPosition->y = 3 * worldHeight / 4;
+		gokuPosition->y = worldHeight / 4;
 		enemyPosition->x = 2 * worldWidth;
 		enemyPosition->y = 3 * worldHeight / 4;
 
 	} else {
-		gokuPosition->x = worldWidth / 2 - 140;
+		gokuPosition->x = worldWidth / 2 - 160;
 		gokuPosition->y = 3 * worldHeight / 4;
-		enemyPosition->x = worldWidth / 2 + 40;
+		enemyPosition->x = worldWidth / 2 + 20;
 		enemyPosition->y = 3 * worldHeight / 4;
+		StateComponent* gokuState = (StateComponent*) enemy.getComponent<
+				StateComponent>();
+		gokuState->state = R::CharacterState::JUMP;
+		gokuState->time_on_state = .5f;
 	}
 
 	SkeletonComponent* gokuSkeleton = (SkeletonComponent*) goku.getComponent<
@@ -656,6 +670,11 @@ void InputSystem::notifyInput(Touch* touch, GameHud::EventType event,
 		if (event == GameHud::EventType::BEGIN
 				&& touchType == GameHud::TouchType::TAP) {
 			gameState->setGameState(R::GameState::PREPARE);
+			if (ECSWorld::getInstance()->matchType
+					!= R::Match_Type::GOKU_BEAR_INTRODUCE) {
+				R::Constants::remaininglife -= 1;
+				R::Constants::updateVariable();
+			}
 		}
 		return;
 	}
@@ -1248,7 +1267,6 @@ void CameraFollowSystem::processEntity(artemis::Entity &e) {
 		cameraX = (cameraX > maxX) ? maxX : cameraX;
 		defaulcamera->setPositionX(cameraX);
 		//	}
-		CCLOG("CameraFollow");
 	}
 }
 
@@ -1774,6 +1792,7 @@ CharacterRenderSystem::CharacterRenderSystem() {
 	addComponentType<CharacterUIComponent>();
 	isCreated = false;
 	isTouch = false;
+	isPlaying = true;
 }
 bool CharacterRenderSystem::checkLives() {
 	if (R::Constants::remaininglife == 0) {
@@ -1788,6 +1807,15 @@ bool CharacterRenderSystem::checkLives() {
 								Director::getInstance()->replaceScene(TransitionFade::create(1, scene, Color3B(0, 0, 0)));
 							});
 					subDialog->setPositive("Yes", [this]() {
+								/*R::Constants::remaininglife += 3;
+								 if (R::Constants::remaininglife > R::Constants::MAX_LIFE) {
+								 R::Constants::remaininglife = R::Constants::MAX_LIFE;
+								 }
+								 R::Constants::updateVariable();
+								 ECSWorld::getInstance()->ignoreWorld(true);
+								 auto scene = HomeScreen::createScene();
+								 Director::getInstance()->replaceScene(TransitionFade::create(1, scene, Color3B(0, 0, 0)));*/
+
 								FacebookManager::inviteFriends(JavaCppBridge::put([this](int result) {
 													if (result == 1) {
 														R::Constants::remaininglife += 3;
@@ -1843,9 +1871,10 @@ void CharacterRenderSystem::onGameState(bool isPlay) {
 	if (isPlaying) {
 		pauseIcon->setTouchEnabled(true);
 	}
-	if (pauseIcon)
-	{
-		pauseIcon->loadTexture(	!isPlaying ? "textures/play.png" : "textures/pause.png",ui::Widget::TextureResType::LOCAL);
+	if (pauseIcon) {
+		pauseIcon->loadTexture(
+				!isPlaying ? "textures/play.png" : "textures/pause.png",
+				ui::Widget::TextureResType::LOCAL);
 		pauseIcon->setCameraMask((unsigned short) CameraFlag::USER1);
 	}
 
@@ -1893,6 +1922,11 @@ void CharacterRenderSystem::pauseGame() {
 			});
 	pauseScene->setReplayCallback([=]() {
 		if (!checkLives()) {
+			if (ECSWorld::getInstance()->matchType
+							!= R::Match_Type::GOKU_BEAR_INTRODUCE) {
+						R::Constants::remaininglife -= 1;
+						R::Constants::updateVariable();
+					}
 			ECSWorld::getInstance()->resetCurrentMatch(true);
 		}
 	});
@@ -1925,94 +1959,92 @@ void CharacterRenderSystem::resumeGame() {
 		}
 	}
 }
+void CharacterRenderSystem::createElement() {
 
+	float centerX = Director::getInstance()->getWinSize().width / 2;
+	float centerY = Director::getInstance()->getWinSize().height - 100;
+
+	artemis::Entity &goku = world->getTagManager()->getEntity("goku");
+	artemis::Entity &enemy = world->getTagManager()->getEntity("enemy");
+	CharacterInfoComponent* gokuInfo =
+			(CharacterInfoComponent*) goku.getComponent<CharacterInfoComponent>();
+	CharacterInfoComponent* enemyInfo =
+			(CharacterInfoComponent*) enemy.getComponent<CharacterInfoComponent>();
+
+	infoLeft = new PlayerInfoLeft(RenderLayer::getInstance()->createHudNode(),
+			gokuInfo->name, gokuInfo->avatar);
+	infoRight = new PlayerInfoRight(RenderLayer::getInstance()->createHudNode(),
+			enemyInfo->name, enemyInfo->avatar);
+	infoLeft->node->setScale(.9f);
+	infoRight->node->setScale(.9f);
+	infoLeft->node->setPosition(Vec2(centerX - 230 * .9f, centerY));
+	infoRight->node->setPosition(Vec2(centerX + 20, centerY));
+	infoLeft->node->setCameraMask((unsigned short) CameraFlag::USER1);
+	infoRight->node->setCameraMask((unsigned short) CameraFlag::USER1);
+
+	Node* nodePause = RenderLayer::getInstance()->createHudNode();
+	pauseIcon = ui::ImageView::create("textures/pause.png");
+	pauseIcon->setScale9Enabled(true);
+	pauseIcon->setScale(.8);
+	pauseIcon->ignoreAnchorPointForPosition(false);
+	pauseIcon->setPosition(Vec2(centerX, centerY));
+	pauseIcon->setTouchEnabled(true);
+
+//	pauseIcon->addClickEventListener([=](Ref* sender) {
+//		CCLOG("MONKEY FIGHT : Touch to pause Icon");
+//		onGameState(!isPlaying);
+//	});
+
+	pauseIcon->addTouchEventListener(
+			[this](Ref* sender,ui::Widget::TouchEventType type) {
+				cocos2d::log("touch to pause");
+				if(type == ui::Widget::TouchEventType::ENDED) {
+					cocos2d::log("touch ended");
+					ScaleTo* scaleIn = ScaleTo::create(.1f, .76f);
+					ScaleTo* scaleout = ScaleTo::create(.1f, .8f);
+					CallFunc* call = CallFunc::create([=]() {
+								pauseIcon->setTouchEnabled(true);
+								onGameState(!isPlaying);
+							});
+					pauseIcon->runAction(Sequence::create(scaleIn, scaleout, call, nullptr));
+				}
+			});
+
+	nodePause->addChild(pauseIcon);
+	nodePause->setCameraMask((unsigned short) CameraFlag::USER1);
+
+	Node* nodeLife = RenderLayer::getInstance()->createHudNode();
+	remainingLife = new RemainingLife(nodeLife);
+	remainingLife->text->setString("");
+	remainingLife->updatePosition();
+	nodeLife->setScale(.6f);
+	nodeLife->setPosition(
+			Vec2(
+					infoLeft->node->getPositionX()
+							+ infoLeft->board_bg->getPositionX()
+							- infoLeft->board_bg->getContentSize().width / 2
+							+ 30,
+					infoLeft->node->getPositionY()
+							+ infoLeft->board_bg->getContentSize().height
+							+ remainingLife->node->getContentSize().height
+									/ 2));
+
+	nodeLife->setCameraMask((unsigned short) CameraFlag::USER1);
+
+}
 void CharacterRenderSystem::begin() {
 	if (!isCreated && world->getTagManager()->isSubscribed("characterrender")) {
-		artemis::Entity &goku = world->getTagManager()->getEntity("goku");
-		artemis::Entity &enemy = world->getTagManager()->getEntity("enemy");
-		CharacterInfoComponent* gokuInfo =
-				(CharacterInfoComponent*) goku.getComponent<
-						CharacterInfoComponent>();
-		CharacterInfoComponent* enemyInfo =
-				(CharacterInfoComponent*) enemy.getComponent<
-						CharacterInfoComponent>();
-
-		infoLeft = new PlayerInfoLeft(
-				RenderLayer::getInstance()->createHudNode(), gokuInfo->name,
-				gokuInfo->avatar);
-		infoRight = new PlayerInfoRight(
-				RenderLayer::getInstance()->createHudNode(), enemyInfo->name,
-				enemyInfo->avatar);
-		infoLeft->node->setPosition(
-				Vec2(10, R::Constants::HEIGHT_SCREEN - 120));
-		infoRight->node->setPosition(
-				Vec2(260, R::Constants::HEIGHT_SCREEN - 120));
-		infoLeft->node->setCameraMask((unsigned short) CameraFlag::USER1);
-		infoRight->node->setCameraMask((unsigned short) CameraFlag::USER1);
+		createElement();
 		isCreated = true;
-
-		pauseIcon = ui::ImageView::create("textures/pause.png");
-		pauseIcon->setScale9Enabled(true);
-		pauseIcon->setScale(.8);
-		pauseIcon->ignoreAnchorPointForPosition(false);
-		pauseIcon->setPosition(
-				Vec2(R::Constants::WIDTH_SCREEN / 2,
-						R::Constants::HEIGHT_SCREEN - 110));
-		pauseIcon->setTouchEnabled(true);
-
-		/*	EventListenerTouchOneByOne* listenerForPauseIcon =
-		 EventListenerTouchOneByOne::create();
-		 listenerForPauseIcon->onTouchBegan =
-		 [this](Touch* touch, Event* event) {
-		 cocos2d::log("Touch Begin");
-		 isTouch = false;
-		 if(pauseIcon->getBoundingBox().containsPoint(touch->getLocation())) {
-		 cocos2d::log("Touch Begin inside");
-		 isTouch = true;
-		 return true;
-		 }
-		 return false;
-
-		 };
-		 listenerForPauseIcon->onTouchMoved =[this](Touch* touch, Event* event) {if(touch->getDelta().length() >10) {
-		 isTouch = false;
-		 }
-		 };
-
-		 listenerForPauseIcon->onTouchEnded =
-		 [this](Touch* touch, Event* event) {
-		 if(isTouch) onGameState(!isPlaying);
-		 };
-		 Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(
-		 listenerForPauseIcon, pauseIcon);
-		 */
-		pauseIcon->addClickEventListener([=](Ref* sender) {
-			onGameState(!isPlaying);
-		});
-		RenderLayer::getInstance()->getHudLayer()->addChild(pauseIcon);
-		pauseIcon->setCameraMask((unsigned short) CameraFlag::USER1);
-
-		Node* nodeLife = RenderLayer::getInstance()->createHudNode();
-		remainingLife = new RemainingLife(nodeLife);
-
-		remainingLife->text->setString("");
-		remainingLife->updatePosition();
-		nodeLife->setScale(.6f);
-		nodeLife->setPosition(
-				Vec2(
-						infoLeft->board_bg->getPositionX()
-								- infoLeft->board_bg->getContentSize().width / 2
-								+ 50,
-						infoLeft->node->getPositionY()
-								+ infoLeft->board_bg->getContentSize().height
-								+ remainingLife->node->getContentSize().height
-										/ 2));
-
-		nodeLife->setCameraMask((unsigned short) CameraFlag::USER1);
 	}
+
+
 }
 
 void CharacterRenderSystem::processEntity(artemis::Entity &e) {
+	if(remainingLife){
+			remainingLife->update();
+		}
 	if (isCreated) {
 		artemis::Entity &goku = world->getTagManager()->getEntity("goku");
 		artemis::Entity &enemy = world->getTagManager()->getEntity("enemy");
@@ -2100,17 +2132,24 @@ IntroduceSystem::IntroduceSystem() {
 
 void IntroduceSystem::initialize() {
 	introduceMapper.init(*world);
-
+	canStartDirection = false;
 }
 
 void IntroduceSystem::begin() {
 
 }
 void IntroduceSystem::processEntity(artemis::Entity &e) {
-	timeOnState += world->getDelta();
 	artemis::Entity &goku = world->getTagManager()->getEntity("goku");
 	StateComponent* gokuState = (StateComponent*) goku.getComponent<
 			StateComponent>();
+
+	artemis::Entity &gameState = world->getTagManager()->getEntity("gameState");
+	GameStateComponent* state = (GameStateComponent*) gameState.getComponent<
+			GameStateComponent>();
+	if (state->gameState != R::GameState::FIGHTING) {
+		return;
+	}
+	timeOnState += world->getDelta();
 	if (step == 0 && timeOnState > 1) {
 		step = 1;
 		subStep = 0;
@@ -2135,6 +2174,7 @@ void IntroduceSystem::processEntity(artemis::Entity &e) {
 				gokuState->setState(R::CharacterState::STAND);
 				subStep = 0;
 				step = 2;
+				button->setVisible(true);
 				return;
 			}
 			subStep++;
@@ -2188,6 +2228,7 @@ void IntroduceSystem::processEntity(artemis::Entity &e) {
 					gokuState->setState(R::CharacterState::STAND);
 					subStep = 2;
 					timeOnState = 0;
+
 					text->setVisible(false);
 				}
 			}
@@ -2247,7 +2288,7 @@ void IntroduceSystem::processEntity(artemis::Entity &e) {
 	if (step == 5) {
 		if (gokuState->state == R::CharacterState::STAND
 				&& gokuState->time_on_state > .5) {
-			if (subStep <= 2) {
+			if (subStep <= 1) {
 				text->setString("Press and hold to use skill");
 				text->setVisible(true);
 				gokuState->setState(R::CharacterState::ATTACK);
@@ -2256,11 +2297,11 @@ void IntroduceSystem::processEntity(artemis::Entity &e) {
 			}
 			subStep++;
 		}
-		if (subStep == 3) {
+		if (subStep == 2) {
 			gokuState->setState(R::CharacterState::STAND);
 			subStep = 0;
 			step = 6;
-			button->setVisible(true);
+
 			text->setVisible(false);
 			return;
 		}

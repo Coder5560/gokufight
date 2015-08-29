@@ -10,7 +10,8 @@
 #include "ui/UIPageView.h"
 #include "renders/StartScreen.h"
 #include "renders/Effects.h"
-
+#include "FacebookManager.h"
+#include "CppJavaMethodManager.h"
 USING_NS_CC;
 class HomeScreen : public cocos2d::LayerColor
 {
@@ -19,6 +20,7 @@ public:
 	static cocos2d::Scene* createScene();
 	virtual bool init();
 	CREATE_FUNC(HomeScreen);
+	virtual void onKeyReleased(EventKeyboard::KeyCode keyCode, Event* event);
 
 	virtual void update(float delta);
 
@@ -37,7 +39,7 @@ public:
 	void onMusicClick();
 	void onGuildClick();
 	
-
+	ui::Layout* containerForLayoutSelect;
 	ui::Layout* layoutPlay;
 	ui::Layout* layoutSelect;
 	ui::PageView* pageView;
@@ -55,5 +57,7 @@ public:
 	Sprite* nameGame;
 	Sprite* background;
 	RemainingLife* remainingLife;
-
+	bool exitEnable;
+	bool isShowingExitDialog;
+	DialogComfirm* dialog;
 };

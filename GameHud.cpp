@@ -8,8 +8,7 @@ void GameHud::buildComponent() {
 	Size size = getContentSize();
 	this->setSwallowsTouches(true);
 
-	EventListenerTouchOneByOne* listenerMove =
-		EventListenerTouchOneByOne::create();
+	EventListenerTouchOneByOne* listenerMove =	EventListenerTouchOneByOne::create();
 	listenerMove->onTouchBegan = [this](Touch* touchElement, Event* event) {
 		timeTouch = 0;
 		timeCatchEvent = -1;

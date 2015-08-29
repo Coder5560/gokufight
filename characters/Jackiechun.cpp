@@ -42,6 +42,9 @@ void Jackiechun::changeState(artemis::Entity &e){
 			attackComponent->maxX = position->x + 70;
 			attackComponent->minY = position->y - 140;
 			attackComponent->maxY = position->y + 140;
+			attackComponent->isSpecialSkill = true;
+			attackComponent->manaOfAttack = 30;
+			attackComponent->powerOfAttack = characterInfo->SPECIAL_SKILL_POWER;
 		}
 		else if (state->attack == R::Attack::JACK_PUNCH_2){
 			actionPunch2(e, state->direction);

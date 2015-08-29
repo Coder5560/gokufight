@@ -23,9 +23,9 @@ const char* R::Constants::MENU = "sounds/menu.mp3";
 const char* R::Constants::LANDING = "sounds/landing.mp3";
 
 const float R::Constants::SCALE = 1;
-const int R::Constants::WIDTH_SCREEN = 480;
-const int R::Constants::HEIGHT_SCREEN = 800;
-const int R::Constants::MAX_SCREEN_WIDTH = 1280;
+int R::Constants::WIDTH_SCREEN = 480;
+int R::Constants::HEIGHT_SCREEN = 800;
+int R::Constants::MAX_SCREEN_WIDTH = 1280;
 const int R::Constants::MAX_LIFE = 5;
 const int R::Constants::MAX_LEVEL = 8;
 
@@ -65,21 +65,21 @@ void R::Constants::loadVariable() {
 		unlocked = 0;
 		remaininglife = 5;
 		howtoplay = true;
-		lastPlay = 1;
+		lastPlay = 0;
 	}
 
-	/*// begin test
-	 musicEnable = false;
-	 soundEnable = false;
-	 unlocked = 6;
-	 remaininglife = 5;
-	 howtoplay = true;
-	 lastPlay = 5;
-	 // end test*/
+	// begin test
+//	 musicEnable = false;
+//	 soundEnable = false;
+//	 unlocked = 8;
+//	 remaininglife = 5;
+//	 howtoplay = true;
+//	 lastPlay = 0;
+	 // end test
 }
 
 void R::Constants::updateVariable() {
-	
+
 	auto userDefault = UserDefault::sharedUserDefault();
 	userDefault->setBoolForKey("musicEnable", musicEnable);
 	userDefault->setBoolForKey("soundEnable", soundEnable);

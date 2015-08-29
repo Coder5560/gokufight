@@ -33,9 +33,9 @@ namespace R{
 		static void updateVariable();
 
 		static const float SCALE;
-		static const int WIDTH_SCREEN;
-		static const int HEIGHT_SCREEN;
-		static const int MAX_SCREEN_WIDTH;
+		static  int WIDTH_SCREEN;
+		static  int HEIGHT_SCREEN;
+		static  int MAX_SCREEN_WIDTH;
 		static const int MAX_LIFE;
 		static const int MAX_LEVEL;
 

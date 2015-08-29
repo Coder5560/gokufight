@@ -38,13 +38,23 @@ bool AppDelegate::applicationDidFinishLaunching() {
     if(!glview) {
         glview = GLViewImpl::create("Goku Fight");
         director->setOpenGLView(glview);
-		glview->setFrameSize(R::Constants::WIDTH_SCREEN,600);
+		//glview->setFrameSize(320, 480);
+		//glview->setFrameSize(640,960);
+		//glview->setFrameSize(640, 1136);
+		//glview->setFrameSize(750, 1334);
+		glview->setFrameSize(1242, 2208);
+		//glview->setFrameSize(480, 800);
+
+		glview->setFrameZoomFactor(.2f);
     }
+
+	CCLOG("FrameSize : %f  %f", Director::getInstance()->getOpenGLView()->getFrameSize().width, Director::getInstance()->getOpenGLView()->getFrameSize().height);
 
     // turn on display FPS
     director->setDisplayStats(false);
-	director->getOpenGLView()->setDesignResolutionSize(R::Constants::WIDTH_SCREEN, R::Constants::HEIGHT_SCREEN, ResolutionPolicy::SHOW_ALL);
-  
+	director->getOpenGLView()->setDesignResolutionSize(R::Constants::WIDTH_SCREEN, R::Constants::HEIGHT_SCREEN, ResolutionPolicy::FIXED_HEIGHT);
+	
+	R::Constants::WIDTH_SCREEN = Director::getInstance()->getWinSize().width;
 
 	/*Size winSize = Size(R::Constants::WIDTH_SCREEN, 800);
 	Size frameSize = glview->getFrameSize();

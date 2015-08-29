@@ -24,6 +24,7 @@ public:
 	static cocos2d::Scene* createScene();
 	virtual bool init();
 	CREATE_FUNC(StartScreen);
+	virtual void onKeyReleased(EventKeyboard::KeyCode keyCode, Event* event);
 
 	virtual void update(float delta);
 	void showFlashImage();
@@ -42,7 +43,7 @@ public:
 
 	void inviteCallback(int result);
 
-
+	ui::Layout* containerForLayoutSelect;
 	ui::Layout* layoutPlay;
 	ui::Layout* layoutSelect;
 	ui::PageView* pageView;
@@ -60,7 +61,9 @@ public:
 	Sprite* nameGame;
 	Sprite* background;
 	RemainingLife* remainingLife;
-
+	bool exitEnable;
+	bool isShowingExitDialog;
+	DialogComfirm* dialog;
 };
 
 class CharacterItem : public ui::Layout{

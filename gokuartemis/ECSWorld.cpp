@@ -68,7 +68,6 @@ void ECSWorld::createWorld(R::Match_Type matchType){
 		R::Constants::lastPlay = 7;
 		break;
 	default:
-		R::Constants::lastPlay = -1;
 		break;
 	}
 
@@ -168,9 +167,6 @@ void ECSWorld::createWorld(R::Match_Type matchType){
 		node->addChild(text);
 		node->setTag(200);
 		node->setCameraMask((unsigned short)CameraFlag::USER1);
-	}
-	if (matchType != R::Match_Type::GOKU_BEAR_INTRODUCE){ 
-		R::Constants::remaininglife -= 1; 
 	}
 	R::Constants::updateVariable();
 }
@@ -276,10 +272,12 @@ void ECSWorld::createMainCharacter(){	// create main Character
 		characterInfo->NORMAL_SKILL_POWER = 1.5f;
 		break;
 	case R::Match_Type::GOKU_JACKIECHUN:
-	
+		characterInfo->SPECIAL_SKILL_POWER = 6;
+		characterInfo->NORMAL_SKILL_POWER = 1;
 		break;
 	case R::Match_Type::GOKU_PICOLO:
-		
+		characterInfo->SPECIAL_SKILL_POWER = 6;
+		characterInfo->NORMAL_SKILL_POWER = 1;
 		break;
 	default:
 	
@@ -315,7 +313,7 @@ void ECSWorld::createMainCharacter(){	// create main Character
 
 	artemis::Entity &character = (world->getEntityManager()->create());
 	character.addComponent(new CharacterTypeComponent(R::CharacterType::GOKU));
-	character.addComponent(new PosComponent(Director::getInstance()->getVisibleSize().width / 4, Director::getInstance()->getVisibleSize().height / 2));
+	character.addComponent(new PosComponent(Director::getInstance()->getWinSize().width / 4, -1000));
 	character.addComponent(new BoundComponent(-30, -12, 30, 60));
 	character.addComponent(new WallSensorComponent());
 	character.addComponent(new GravityComponent());
@@ -333,8 +331,6 @@ void ECSWorld::createMainCharacter(){	// create main Character
 void ECSWorld::createEnemyCharacter(){
 	if (matchType == R::Match_Type::GOKU_GIRAN){
 		createGiranCharacter();
-
-
 	}
 	else if (matchType == R::Match_Type::GOKU_BEAR){
 		createBearCharacter();
@@ -403,7 +399,7 @@ void ECSWorld::createGiranCharacter(){
 
 	artemis::Entity &character = (world->getEntityManager()->create());
 	character.addComponent(new CharacterTypeComponent(R::CharacterType::GIRAN));
-	character.addComponent(new PosComponent(3 * Director::getInstance()->getVisibleSize().width / 4, Director::getInstance()->getVisibleSize().height / 2));
+	character.addComponent(new PosComponent(3 * Director::getInstance()->getVisibleSize().width / 4, -1000));
 	character.addComponent(new BoundComponent(-50, -12, 50, 100));
 	character.addComponent(new WallSensorComponent());
 	character.addComponent(new GravityComponent());
@@ -458,7 +454,7 @@ void ECSWorld::createBearCharacter(){
 
 	artemis::Entity &character = (world->getEntityManager()->create());
 	character.addComponent(new CharacterTypeComponent(R::CharacterType::BEAR));
-	character.addComponent(new PosComponent(3 * Director::getInstance()->getVisibleSize().width / 4, Director::getInstance()->getVisibleSize().height / 2));
+	character.addComponent(new PosComponent(3 * Director::getInstance()->getVisibleSize().width / 4, -1000));
 	character.addComponent(new BoundComponent(-50, 0, 50, 100));
 	character.addComponent(new WallSensorComponent());
 	character.addComponent(new GravityComponent());
@@ -512,7 +508,7 @@ void ECSWorld::createBearIntroduceCharacter(){
 
 	artemis::Entity &character = (world->getEntityManager()->create());
 	character.addComponent(new CharacterTypeComponent(R::CharacterType::BEAR));
-	character.addComponent(new PosComponent(3 * Director::getInstance()->getVisibleSize().width / 4, Director::getInstance()->getVisibleSize().height / 2));
+	character.addComponent(new PosComponent(3 * Director::getInstance()->getVisibleSize().width / 4,-1000));
 	character.addComponent(new BoundComponent(-50, 0, 50, 100));
 	character.addComponent(new WallSensorComponent());
 	character.addComponent(new GravityComponent());
@@ -537,6 +533,8 @@ void ECSWorld::createJackiechunCharacter(){
 	characterInfo->MAX_POWER = 100;
 	characterInfo->blood = 100;
 	characterInfo->power = 100;
+	characterInfo->NORMAL_SKILL_POWER = 2.5f;
+	characterInfo->SPECIAL_SKILL_POWER = 8;
 	//create keletoncomponent
 	spine::SkeletonAnimation* skeletonAnimation =
 		spine::SkeletonAnimation::createWithFile("spine/JackieChun.json",
@@ -557,7 +555,7 @@ void ECSWorld::createJackiechunCharacter(){
 
 	DecisionComponent* decisionComponent = new DecisionComponent();
 	decisionComponent->DECISION_TIME = .4;
-	decisionComponent->decisionBase = new JackiechunDecision();
+	decisionComponent->decisionBase = new EnemyFullAttackAI();
 	//decisionComponent->DECISION_TIME = 10000;
 	//decisionComponent->decisionBase = new JackiechunDecision2();
 	decisionComponent->decisionBase->setWorld(world);
@@ -568,7 +566,7 @@ void ECSWorld::createJackiechunCharacter(){
 
 	artemis::Entity &character = (world->getEntityManager()->create());
 	character.addComponent(new CharacterTypeComponent(R::CharacterType::JACKIECHUN));
-	character.addComponent(new PosComponent(3 * Director::getInstance()->getVisibleSize().width / 4, Director::getInstance()->getVisibleSize().height / 2));
+	character.addComponent(new PosComponent(3 * Director::getInstance()->getVisibleSize().width / 4, -1000));
 	character.addComponent(new BoundComponent(-30, -10, 30, 80));
 	character.addComponent(new WallSensorComponent());
 	character.addComponent(new GravityComponent());
@@ -625,7 +623,7 @@ void ECSWorld::createTegiacCharacter(){
 
 	artemis::Entity &character = (world->getEntityManager()->create());
 	character.addComponent(new CharacterTypeComponent(R::CharacterType::TEGIAC));
-	character.addComponent(new PosComponent(3 * Director::getInstance()->getVisibleSize().width / 4, Director::getInstance()->getVisibleSize().height / 2));
+	character.addComponent(new PosComponent(3 * Director::getInstance()->getVisibleSize().width / 4, -1000));
 	character.addComponent(new BoundComponent(-30, -10, 30, 80));
 	character.addComponent(new WallSensorComponent());
 	character.addComponent(new GravityComponent());
@@ -667,7 +665,7 @@ void ECSWorld::createEnemyAssistant(){
 
 	artemis::Entity &character = (world->getEntityManager()->create());
 	character.addComponent(new CharacterTypeComponent(R::CharacterType::CAT));
-	character.addComponent(new PosComponent(3 * Director::getInstance()->getVisibleSize().width / 4, Director::getInstance()->getVisibleSize().height / 2));
+	character.addComponent(new PosComponent(3 * Director::getInstance()->getVisibleSize().width / 4,-1000));
 	character.addComponent(characterSkeleton);
 	character.addComponent(new CatFollowComponent());
 	character.setTag("meo");
@@ -715,7 +713,7 @@ void ECSWorld::createRuaCharacter(){
 
 	artemis::Entity &character = (world->getEntityManager()->create());
 	character.addComponent(new CharacterTypeComponent(R::CharacterType::RUA));
-	character.addComponent(new PosComponent(3 * Director::getInstance()->getVisibleSize().width / 4, Director::getInstance()->getVisibleSize().height / 2));
+	character.addComponent(new PosComponent(3 * Director::getInstance()->getVisibleSize().width / 4, -1000));
 	character.addComponent(new BoundComponent(-40, 0, 40, 90));
 	character.addComponent(new WallSensorComponent());
 	character.addComponent(new GravityComponent());
@@ -770,7 +768,7 @@ void ECSWorld::createCamapCharacter(){
 
 	artemis::Entity &character = (world->getEntityManager()->create());
 	character.addComponent(new CharacterTypeComponent(R::CharacterType::CAMAP));
-	character.addComponent(new PosComponent(3 * Director::getInstance()->getVisibleSize().width / 4, Director::getInstance()->getVisibleSize().height / 2));
+	character.addComponent(new PosComponent(3 * Director::getInstance()->getVisibleSize().width / 4, -1000));
 	character.addComponent(new BoundComponent(-30, -10, 30, 80));
 	character.addComponent(new WallSensorComponent());
 	character.addComponent(new GravityComponent());
@@ -826,7 +824,7 @@ void ECSWorld::createKarillinCharacter(){
 
 	artemis::Entity &character = (world->getEntityManager()->create());
 	character.addComponent(new CharacterTypeComponent(R::CharacterType::KARILLIN));
-	character.addComponent(new PosComponent(3 * Director::getInstance()->getVisibleSize().width / 4, Director::getInstance()->getVisibleSize().height / 2));
+	character.addComponent(new PosComponent(3 * Director::getInstance()->getVisibleSize().width / 4, -1000));
 	character.addComponent(new BoundComponent(-25, -12, 25, 50));
 	character.addComponent(new WallSensorComponent());
 	character.addComponent(new GravityComponent());
@@ -850,6 +848,8 @@ void ECSWorld::createPicoloCharacter(){
 	characterInfo->MAX_POWER = 100;
 	characterInfo->blood = 100;
 	characterInfo->power = 100;
+	characterInfo->NORMAL_SKILL_POWER = 2.5f;
+	characterInfo->SPECIAL_SKILL_POWER = 8;
 	//create keletoncomponent
 	spine::SkeletonAnimation* skeletonAnimation =
 		spine::SkeletonAnimation::createWithFile("spine/doi.json",
@@ -879,7 +879,7 @@ void ECSWorld::createPicoloCharacter(){
 
 	artemis::Entity &character = (world->getEntityManager()->create());
 	character.addComponent(new CharacterTypeComponent(R::CharacterType::PICOLO));
-	character.addComponent(new PosComponent(3 * Director::getInstance()->getVisibleSize().width / 4, Director::getInstance()->getVisibleSize().height / 2));
+	character.addComponent(new PosComponent(3 * Director::getInstance()->getVisibleSize().width / 4,-1000));
 	character.addComponent(new BoundComponent(-25, 0, 25, 50));
 	character.addComponent(new WallSensorComponent());
 	character.addComponent(new GravityComponent());

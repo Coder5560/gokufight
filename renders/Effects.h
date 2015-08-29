@@ -219,6 +219,7 @@ public:
 	~RemainingLife();
 	void show();
 	void hide();
+	void update();
 	void updatePosition();
 	Node* node;
 	std::vector<ui::ImageView*> hearts;
